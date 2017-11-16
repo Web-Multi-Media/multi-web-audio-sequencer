@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+    <head>
+        <title>HUMACHAT</title>
+    </head>
+    <body>
+        <script 
+            src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+            <script src="/socket.io/socket.io.js"></script>
+        <h1>THE HUMACHAT</h1>
+
+        <div>
+            <ul id="message"></ul>
+        </div>
+        <div>
+            <form action="/chat" method="post" id="form">
+            <label for="messages"></label>
+            <input type="text" placeholder="votre message" name="messages" id="msg"/>
+            <input type="submit" value="envoyer">
+        </form>
+        </div>
+        <div>
+            <script>
+                $(function(){
+                    var socket = io.connect('http://localhost:8080');
+                    socket.on('message', function(message) {
+                       alert(message);
+                    })
+                    $('#form').submit(function(){
+                        socket.emit('message', $('#msg').val());
+                        $('#msg').val('');
+                        return false;
+                    });
+                    socket.on('chat message', function(msg) {
+                        $('#message').append('<p>' + msg + '</p>');
+                    });
+                })
+                </script>
+        </div>
+    </body>
+</html>
