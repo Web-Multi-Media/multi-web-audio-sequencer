@@ -25,9 +25,10 @@ io.sockets.on('connection', function(socket) {
     socket.emit('message', 'vous venez de vous connecter');
     socket.on('pad', function (message) {
         console.log('Réception des pads ' + message);
+        socket.broadcast.emit('sendPad', message);
     });	
     
-    socket.broadcast.emit('sendPad', 'envoi du pad a tous les clients');
+   
     	
 });
 

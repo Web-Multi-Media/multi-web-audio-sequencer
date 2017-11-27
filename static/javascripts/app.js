@@ -128,8 +128,8 @@ function toggleSelectedListener() {
   $('.pad').click(function() {
     $(this).toggleClass("selected");
     // SEND THIS TO SERVER WITH SOCKET
-    console.log($(this).attr('class'), $(this).parent().attr("data-instrument"));
-    socket.emit('pad', $(this).attr('class'), $(this).parent().attr("data-instrument"));
+    //console.log($(this).attr('class'), $(this).parent().attr("data-instrument"));
+    socket.emit('pad', $(this).attr('class') + ' ' + $(this).parent().attr("data-instrument"));
   });
 }
 
@@ -154,17 +154,12 @@ function toggleSelectedListenerSocket(msg) {
     var current_state = (pad_el.getAttribute("class").split(" ")[2] == "selected") ? true : false;
     if (current_state) {
       if (activate == false) {
-    	  socket.on('sendPad', function(event) {
-              alert(toggleSelectedListenerSocket(event));
-              pad_el.classList.remove("selected")
-           })
-}
+        pad_el.classList.remove("selected")
+      }
     } else {
       if (activate) {
-    	  socket.on('sendPad', function(event) {
-    	  pad_el.classList.add("selected")
-    	  })
-    }
+        pad_el.classList.add("selected")
+      }
     }
   }
 }
