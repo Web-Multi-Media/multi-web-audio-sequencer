@@ -4,6 +4,7 @@ var session = require('cookie-session');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
+var eventEmitter = require('events').EventEmitter
 
 // middleware des websockets
 
@@ -12,60 +13,33 @@ app.set('view engine','ejs');
 
 //middleware
 app.use(session({secret: 'azaezaedzadzea'}));
+app.use('/assets', express.static(__dirname + '/static'));
 
 io.on('connection', function(socket) {
     console.log('un utilisateur s\'est connecté');
 })
 
-io.sockets.on('pseudo', function(pseudo){
-    pseudo = ent.encode(pseudo);
-    socket.pseudo = pseudo;
-    socket.broadcast.emit('nouveau_client', pseudo);
-});
 
+//PAD RECEPTION VIA THE CLIENT
 io.sockets.on('connection', function(socket) {
     socket.emit('message', 'vous venez de vous connecter');
+    socket.on('pad', function (message) {
+        console.log('Réception des pads ' + message);
+    });	
+    
+    socket.broadcast.emit('sendPad', 'envoi du pad a tous les clients');
+    	
 });
 
-io.sockets.on('connection', function(socket){
-    socket.on('message', function(msg){
-        console.log('message :' + msg);
-    });
-});
+//SEND PAD TO ALL THE CLIENTS
 
-io.sockets.on('connection', function(socket){
-    socket.on('message', function (message){
-        io.emit('chat message', message);
-    })    
-})
-
-
-// app.use((req, res, next) => {
-//     if (typeof  req.session.messageAffiche == 'undefined'){
-//         req.session.messageAffiche = [];
-//     }
-//     next();
-// })
 
 app.get('/', (req, res) => {
-    // app.on('connection', function(socket){
-    //     io.messageAffiche = messageAffiche;
-        //  res.render('index', {messageAffiche: req.body.messageAffiche});
          res.render('index.ejs', { messageAffiche: req.session.messageAffiche });
-         
             
-        // })
 })
 
 
-// app.post('/chat', (req, res) => {
-//     io.on('connection', (socket) => {
-//         socket.on('msg', (msg) => {
-//             io.emit('msg', msg);
-//         })
-//     })
-//     res.redirect('/');
-// })
 
 
 

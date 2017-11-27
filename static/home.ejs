@@ -1,23 +1,13 @@
-<!doctype html>
-<html>
-    <head>
-        <title>HUMACHAT</title>
-          <meta charset="UTF-8">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
   <title>808 Sequencer</title>
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="../assets/stylesheets/styles.css">
-    </head>
-    <body>
-        <script 
-            src="https://code.jquery.com/jquery-3.2.1.min.js"
-            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-            crossorigin="anonymous"></script>
-            <script src="/socket.io/socket.io.js"></script>
-        <h1>THE HUMACHAT</h1>
-
-
-
+  <link rel="stylesheet" type="text/css" href="stylesheets/styles.css">
+</head>
+<body>
   <div class="container">
     <div class="row">
       <h1>Web Audio Drum Sequencer</h1>
@@ -85,7 +75,7 @@
         
       </div>
     </div>
-    <div class="row" data-instrument="snare" id="snare">
+    <div class="row" data-instrument="snare">
       <span class="instrument-label"><strong>Snare</strong></span>
       <div class="pad column_0">
         
@@ -208,25 +198,59 @@
       </div>
     </div>
   </div>
+  
+  <div>
+            <ul id="message"></ul>
+        </div>
+        <div>
+            <form action="/snare" method="post" id="formSnare">
+            <label for="snare"></label>
+            <input type="text" placeholder="votre message" name="snare" id="s"/>
+            <input type="submit" value="envoyer">
+        </form>
+         <form action="/kick" method="post" id="formKick">
+            <label for="kick"></label>
+            <input type="text" placeholder="votre message" name="kick" id="k"/>
+            <input type="submit" value="envoyer">
+        </form>
+        </div>
+        <div>
+            <script>
+                $(function(){
+                    var socket = io.connect('http://localhost:8080');
+                    socket.on('event', function(event) {
+                       alert(event);
+                    })
+                    $('#formSnare').submit(function(){
+                        socket.emit('eventSnare', $('#s').val());
+                        $('#s').val('');
+                        return false;
+                    });
+                    socket.on('snare', function(s) {
+                        $('#message').append('<p>' + s + '</p>');
+                    });
+                    
+                     $('#formKick').submit(function(){
+                        socket.emit('eventKick', $('#k').val());
+                        $('#k').val('');
+                        return false;
+                    });
+                    socket.on('kick', function(k) {
+                        $('#message').append('<p>' + k + '</p>');
+                    });
+                    
+                })
+                </script>
+        </div>
+        
+        
 
   <!-- Javascripts -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/kit.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/app.js"></script>
-
-
-            <script>
-                $(function(){
-                    var socket = io.connect('http://localhost:8080');
-                    socket.on('sendPad', function(event) {
-                       alert(toggleSelectedListenerSocket(event));
-                    })
-               
-                })
-                </script>
-        </div>
-    </body>
+  <script type="text/javascript" src="javascripts/kit.js"></script>
+  <script type="text/javascript" src="javascripts/impulse-response.js"></script>
+  <script type="text/javascript" src="javascripts/app.js"></script>
+</body>
 </html>

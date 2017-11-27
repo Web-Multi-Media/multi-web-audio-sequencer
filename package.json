@@ -1,7 +1,6 @@
 {
   "name": "chatnodejs",
   "version": "1.0.0",
-  "description": "",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -22,5 +21,15 @@
     "session.socket.io": "^0.2.1",
     "socket.io": "^2.0.3",
     "socket.io-express-session": "^0.1.3"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/valou5940/chatHuma.git"
+  },
+  "bugs": {
+    "url": "https://github.com/valou5940/chatHuma/issues"
+  },
+  "homepage": "https://github.com/valou5940/chatHuma#readme",
+  "description": ""
 }
