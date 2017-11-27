@@ -1,7 +1,7 @@
 var NUM_INSTRUMENTS = 2;
 
 function Kit(name) {
-  this.SAMPLE_BASE_PATH = "sounds/drum-samples/";
+  this.SAMPLE_BASE_PATH = "assets/sounds/drum-samples/";
   this.name = name;
 
   this.kickBuffer = null;
