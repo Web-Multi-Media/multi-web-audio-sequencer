@@ -125,11 +125,17 @@ function playPauseListener() {
 }
 
 function toggleSelectedListener() {
+
   $('.pad').click(function() {
     $(this).toggleClass("selected");
     // SEND THIS TO SERVER WITH SOCKET
     //console.log($(this).attr('class'), $(this).parent().attr("data-instrument"));
-    socket.emit('pad', $(this).attr('class') + ' ' + $(this).parent().attr("data-instrument"));
+    var instru = $(this).parent().attr("data-instrument");
+    var pad = $(this).attr('class');
+    var tempo = $('#tempo-input').val();
+
+    //socket.emit('pads', padsJson);
+    socket.emit('pad', pad + ' ' + instru + ' ' + tempo);
   });
 }
 
@@ -137,7 +143,7 @@ function toggleSelectedListener() {
 function toggleSelectedListenerSocket(msg) {
   messages = msg.split(" ");
   if (messages[0] == "pad") {
-    var instrument = messages[messages.length-1];
+    var instrument = messages[messages.length-2];
     var column = parseInt(messages[1].split("_")[1]);
     var activate = (messages[2] == "selected") ? true : false;
     switch (instrument) {

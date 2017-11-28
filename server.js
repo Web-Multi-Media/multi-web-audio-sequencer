@@ -34,7 +34,7 @@ io.sockets.on('connection', function(socket) {
     
     socket.on('pad', function (message) {
         console.log('Réception des pads ' + message);
-        
+        socket.broadcast.emit('sendPad', message);
         
             var msg = message.split(' ');
             console.log(msg);
@@ -77,17 +77,9 @@ io.sockets.on('connection', function(socket) {
                 }
           
           console.log(padsJson);
-          //socket.broadcast.emit('sendPad', padsJson);
-
-
-        socket.on('pads', function(message) {
-        	console.log('Réception de tous les pads ', message);
-        	socket.broadcast.emit('sendPads', message);
-        })
-
-    });	
+          
     
-   
+            });
     	
 });
 
