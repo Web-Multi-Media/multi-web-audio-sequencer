@@ -7,8 +7,7 @@ var bodyParser = require('body-parser');
 var eventEmitter = require('events').EventEmitter
 var padsJson = { kick: new Map(),
     snare: new Map(),
-    hihat: new Map(),
-    name: 'test'
+    hihat: new Map()
    // room: ''
   };
 

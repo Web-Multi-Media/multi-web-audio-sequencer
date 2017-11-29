@@ -125,7 +125,7 @@ function playPauseListener() {
 }
 
 function TranslateStateInActions(json) {
-    console.log(json.name);
+    console.log(json.kick);
 }
 
 function toggleSelectedListener() {
