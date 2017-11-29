@@ -5,13 +5,11 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 var eventEmitter = require('events').EventEmitter
-var padsJson = { kick: [],
-    snare: [],
-    hihat: [],
-    tempo: ''
+var padsJson = { kick: new Map(),
+    snare: new Map(),
+    hihat: new Map()
    // room: ''
   };
-
 
 // middleware des websockets
 
@@ -23,74 +21,63 @@ app.use(session({secret: 'azaezaedzadzea'}));
 app.use('/assets', express.static(__dirname + '/static'));
 
 io.on('connection', function(socket) {
-    console.log('un utilisateur s\'est connecté');
+    console.log('A user just connected, Send him current state');
+    socket.emit('SendCurrentState',  [JSON.stringify([...padsJson.kick]), JSON.stringify([...padsJson.snare]), JSON.stringify([...padsJson.hihat])]);
 })
 
-
-	  
+      
 //PAD RECEPTION VIA THE CLIENT
 io.sockets.on('connection', function(socket) {
     socket.emit('message', 'vous venez de vous connecter');
     
     socket.on('pad', function (message) {
-        console.log('Réception des pads ' + message);
+        console.log('Réception des pads :' + message);
         socket.broadcast.emit('sendPad', message);
-        
+            
             var msg = message.split(' ');
             console.log(msg);
-            var instru = msg[msg.length - 2];
-            var tempo = msg[msg.length -1];
+            var instru = msg[msg.length - 1];
+            //var tempo = msg[msg.length -1];
             var pad = message.split('_')[1].substring(0,2);
             console.log(instru);
-            console.log(tempo);
+           // console.log(tempo);
             console.log(pad);
-            padsJson.tempo = tempo;
+            //padsJson.tempo = tempo;
 
         if(instru == 'kick') {
             if (message.indexOf('selected') !== -1) {
-                padsJson.kick.push( {id_pad: pad });
-            } else {
-                for(let kickLoop of padsJson.kick){
-                    var index = padsJson.kick.indexOf(kickLoop);
-                    padsJson.kick.splice(index, 1);
-                }
+               // padsJson.kick.set(pad, message);
+               padsJson.kick.set(pad, message);
+               console.log(JSON.stringify([...padsJson.kick]));
+               
+            } else if (padsJson.kick.has(pad)) {
+                padsJson.kick.delete(pad);
             }
+                
             
          } else if(instru == 'snare') {
                 if (message.indexOf('selected') !== -1) {
-                    padsJson.snare.push( {id_pad: pad });
-                } else {
-                    for(let snareLoop of padsJson.snare){
-                        var index = padsJson.snare.indexOf(snareLoop);
-                        padsJson.snare.splice(index, 1);
-                    }
+                    padsJson.snare.set(pad, message);
+                } else if (padsJson.snare.has(pad)) {
+                    padsJson.snare.delete(pad);
                 }
         } else if(instru == 'hihat') {
                     if (message.indexOf('selected') !== -1) {
-                        padsJson.hihat.push( {id_pad: pad });
-                    } else {
-                        for(let hihatLoop of padsJson.hihat){
-                            var index = padsJson.hihat.indexOf(hihatLoop);
-                            padsJson.hihat.splice(index, 1);
-                        }
+                        padsJson.hihat.set(pad, message);
+                    } else if (padsJson.hihat.has(pad)) {
+                        padsJson.hihat.delete(pad);
                     }
                 }
-          
           console.log(padsJson);
-          
-    
             });
-    	
 });
 
 //SEND PAD TO ALL THE CLIENTS
-
 
 app.get('/', (req, res) => {
          res.render('index.ejs', { messageAffiche: req.session.messageAffiche });
             
 })
-
 
 
 http.listen(8080, function(){
