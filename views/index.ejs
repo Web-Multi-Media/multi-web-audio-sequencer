@@ -219,14 +219,18 @@
   <script>
       $(function(){
           var socket = io.connect('http://localhost:8080');
+          socket.on('SendCurrentState', function(json) {
+            console.log("ReceiveCurrentSequencerState"+json);
+            TranslateStateInActions(json);             
+          })
           socket.on('sendPad', function(event) {
             //console.log(event);
              toggleSelectedListenerSocket(event);   
           });
+        }
           //  socket.on('sendPads', function(message) {
         	//   toggleSelectedListenerSocketJson(message);
           // }); 
-      })
   </script>
   </body>
 </html>

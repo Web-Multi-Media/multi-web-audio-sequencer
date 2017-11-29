@@ -50,6 +50,7 @@ io.sockets.on('connection', function(socket) {
                padsJson.kick.set(pad, message);
                console.log(JSON.stringify([...padsJson.kick]));
                
+                padsJson.kick.set(pad, message);
             } else if (padsJson.kick.has(pad)) {
                 padsJson.kick.delete(pad);
             }

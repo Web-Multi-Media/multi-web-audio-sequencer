@@ -124,6 +124,10 @@ function playPauseListener() {
   });
 }
 
+function TranslateStateInActions(json) {
+    console.log(json.kick);
+}
+
 function toggleSelectedListener() {
 
   $('.pad').click(function() {
@@ -135,7 +139,7 @@ function toggleSelectedListener() {
     var tempo = $('#tempo-input').val();
 
     //socket.emit('pads', padsJson);
-    socket.emit('pad', pad + ' ' + instru + ' ' + tempo);
+    socket.emit('pad', pad + ' ' + instru);
   });
 }
 
@@ -143,7 +147,7 @@ function toggleSelectedListener() {
 function toggleSelectedListenerSocket(msg) {
   messages = msg.split(" ");
   if (messages[0] == "pad") {
-    var instrument = messages[messages.length-2];
+    var instrument = messages[messages.length-1];
     var column = parseInt(messages[1].split("_")[1]);
     var activate = (messages[2] == "selected") ? true : false;
     switch (instrument) {
@@ -169,6 +173,7 @@ function toggleSelectedListenerSocket(msg) {
     }
   }
 }
+
 
 function init() {
   initializeAudioNodes();
