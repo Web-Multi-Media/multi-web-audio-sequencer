@@ -7,7 +7,8 @@ var bodyParser = require('body-parser');
 var eventEmitter = require('events').EventEmitter
 var padsJson = { kick: new Map(),
     snare: new Map(),
-    hihat: new Map()
+    hihat: new Map(),
+    name: 'test'
    // room: ''
   };
 
@@ -22,7 +23,8 @@ app.use(session({secret: 'azaezaedzadzea'}));
 app.use('/assets', express.static(__dirname + '/static'));
 
 io.on('connection', function(socket) {
-    console.log('un utilisateur s\'est connecté');
+    console.log('A user just connected, Send him current state');
+    socket.emit('SendCurrentState', padsJson);
 })
 
 

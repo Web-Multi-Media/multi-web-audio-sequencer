@@ -124,6 +124,10 @@ function playPauseListener() {
   });
 }
 
+function TranslateStateInActions(json) {
+    console.log(json.name);
+}
+
 function toggleSelectedListener() {
 
   $('.pad').click(function() {
