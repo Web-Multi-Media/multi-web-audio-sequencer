@@ -22,7 +22,10 @@ app.use('/assets', express.static(__dirname + '/static'));
 
 io.on('connection', function(socket) {
     console.log('A user just connected, Send him current state');
-    socket.emit('SendCurrentState',  [JSON.stringify([...padsJson.kick]), JSON.stringify([...padsJson.snare]), JSON.stringify([...padsJson.hihat])]);
+    socket.emit('SendCurrentState',  {kick: JSON.stringify([...padsJson.kick]), 
+                                     snare: JSON.stringify([...padsJson.snare]), 
+                                     hihat: JSON.stringify([...padsJson.hihat])}
+                                    );
 })
 
       
