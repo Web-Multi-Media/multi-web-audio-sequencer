@@ -31,6 +31,7 @@ if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudio
 
 $(function () {
   init();
+  addNewTrack()
   toggleSelectedListener();
   playPauseListener();
   lowPassFilterListener();
@@ -125,29 +126,29 @@ function playPauseListener() {
 }
 
 function TranslateStateInActions(json) {
-  console.log(JSON.parse(json.kick));
+  console.log(json);
+  // console.log(JSON.parse(json.pads));
 
-  var kickTab = JSON.parse(json.kick);
-  var snareTab = JSON.parse(json.snare);
-  var hihatTab = JSON.parse(json.hihat);
+  // var kickTab = JSON.parse(json.kick);
+  // var snareTab = JSON.parse(json.snare);
+  // var hihatTab = JSON.parse(json.hihat);
 
-  for (var i = 0; i < kickTab.length; i++) {
-    console.log(kickTab[i]);
-    toggleSelectedListenerSocket(kickTab[i][1]);
-  }
+  // for (var i = 0; i < kickTab.length; i++) {
+  //   console.log(kickTab[i]);
+  //   toggleSelectedListenerSocket(kickTab[i][1]);
+  // }
 
-  for (var i = 0; i < snareTab.length; i++) {
-    console.log(snareTab[i]);
-    toggleSelectedListenerSocket(snareTab[i][1]);
-  }
+  // for (var i = 0; i < snareTab.length; i++) {
+  //   console.log(snareTab[i]);
+  //   toggleSelectedListenerSocket(snareTab[i][1]);
+  // }
 
-  for (var i = 0; i < hihatTab.length; i++) {
-    console.log(hihatTab[i]);
-    toggleSelectedListenerSocket(hihatTab[i][1]);
-  }
-
-
+  // for (var i = 0; i < hihatTab.length; i++) {
+  //   console.log(hihatTab[i]);
+  //   toggleSelectedListenerSocket(hihatTab[i][1]);
+  // }
 }
+
 
 function toggleSelectedListener() {
 
@@ -159,7 +160,6 @@ function toggleSelectedListener() {
     var pad = $(this).attr('class');
     var tempo = $('#tempo-input').val();
 
-    //socket.emit('pads', padsJson);
     socket.emit('pad', pad + ' ' + instru);
   });
 }
@@ -171,16 +171,7 @@ function toggleSelectedListenerSocket(msg) {
     var instrument = messages[messages.length - 1];
     var column = parseInt(messages[1].split("_")[1]);
     var activate = (messages[2] == "selected") ? true : false;
-    switch (instrument) {
-      case "kick":
-        var pad_el = $("[data-instrument='kick']").children()[column + 1];
-        break;
-      case "snare":
-        var pad_el = $("[data-instrument='snare']").children()[column + 1];
-        break;
-      case "hihat":
-        var pad_el = $("[data-instrument='hihat']").children()[column + 1];
-        break;
+    var pad_el = $('[data-instrument="' + instrument + '"]').children()[column + 1];
     }
     var current_state = (pad_el.getAttribute("class").split(" ")[2] == "selected") ? true : false;
     if (current_state) {
@@ -193,7 +184,6 @@ function toggleSelectedListenerSocket(msg) {
       }
     }
   }
-}
 
 
 function init() {
@@ -408,3 +398,11 @@ function changeTempoListener() {
     }
   });
 }
+
+function addNewTrack() {
+  $('#addNewTrack').click(function(){
+   var prevTrack = $('.instruments').children().last();
+   prevTrack.after('<div class="row" data-instrument="' + $('#newTrackName').val() + '">' + prevTrack.html() + '</div>');
+   $('.instrumentName').last().text($('#newTrackName').val());
+  })
+ }
