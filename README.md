@@ -9,4 +9,6 @@ Linux:
 
 Windows:
 
-* To Be Done
+* npm install
+* npm install nodemon
+* npm start

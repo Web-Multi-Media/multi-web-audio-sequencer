@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head>
-        <title>HUMACHAT</title>
+        <title>Multi Web Audio Sequencer</title>
           <meta charset="UTF-8">
   <title>808 Sequencer</title>
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
@@ -14,7 +14,7 @@
             integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
             crossorigin="anonymous"></script>
             <script src="/socket.io/socket.io.js"></script>
-        <h1>THE HUMACHAT</h1>
+        <h1>Multi Web Audio Sequencer</h1>
 
 
 
@@ -219,11 +219,18 @@
   <script>
       $(function(){
           var socket = io.connect('http://localhost:8080');
+          socket.on('SendCurrentState', function(json) {
+            console.log("ReceiveCurrentSequencerState"+json);
+            TranslateStateInActions(json);             
+          })
           socket.on('sendPad', function(event) {
             //console.log(event);
-            toggleSelectedListenerSocket(event);   
-          })
-      })
+             toggleSelectedListenerSocket(event);   
+          });
+        })
+          //  socket.on('sendPads', function(message) {
+        	//   toggleSelectedListenerSocketJson(message);
+          // }); 
   </script>
   </body>
 </html>
