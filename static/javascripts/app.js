@@ -127,16 +127,21 @@ function playPauseListener() {
 
 function TranslateStateInActions(json) {
   console.log(json);
-  // console.log(JSON.parse(json.pads));
+   
+  // console.log(JSON.parse(json));
 
-  // var kickTab = JSON.parse(json.kick);
-  // var snareTab = JSON.parse(json.snare);
-  // var hihatTab = JSON.parse(json.hihat);
+  //  var instruTab = JSON.parse(json.pads);
+  // // var snareTab = JSON.parse(json.snare);
+  // // var hihatTab = JSON.parse(json.hihat);
 
-  // for (var i = 0; i < kickTab.length; i++) {
-  //   console.log(kickTab[i]);
-  //   toggleSelectedListenerSocket(kickTab[i][1]);
-  // }
+  for (var i = 0; i < json.length; i++) {
+    var tabJson = JSON.parse(json[i]);
+     for(var j =0; j < tabJson.length; j++) {
+      toggleSelectedListenerSocket(tabJson[j][1]);
+       console.log(json[j]);
+     }
+     
+   }
 
   // for (var i = 0; i < snareTab.length; i++) {
   //   console.log(snareTab[i]);
@@ -404,5 +409,6 @@ function addNewTrack() {
    var prevTrack = $('.instruments').children().last();
    prevTrack.after('<div class="row" data-instrument="' + $('#newTrackName').val() + '">' + prevTrack.html() + '</div>');
    $('.instrumentName').last().text($('#newTrackName').val());
+   toggleSelectedListener();
   })
  }
