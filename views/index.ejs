@@ -225,6 +225,13 @@
   <script>
       $(function(){
           var socket = io.connect('http://localhost:8080');
+
+          $('.pad').click(function () {
+            console.log($(this));
+            
+            socket.emit('pad', toggleSelectedListener($(this)));
+          });
+
           socket.on('SendCurrentState', function(json) {
             console.log("ReceiveCurrentSequencerState", json);
             TranslateStateInActions(json);             

@@ -1,4 +1,3 @@
-var socket = io.connect('http://localhost:8080');
 
 
 //audio node variables
@@ -30,15 +29,17 @@ if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudio
 }
 
 $(function () {
+  
   init();
-  addNewTrack()
-  toggleSelectedListener();
+  addNewTrack();
+  //toggleSelectedListener();
   playPauseListener();
   lowPassFilterListener();
   reverbListener();
   createLowPassFilterSliders();
   initializeTempo();
   changeTempoListener();
+  
 });
 
 function createLowPassFilterSliders() {
@@ -128,12 +129,6 @@ function playPauseListener() {
 function TranslateStateInActions(json) {
   console.log(json);
    
-  // console.log(JSON.parse(json));
-
-  //  var instruTab = JSON.parse(json.pads);
-  // // var snareTab = JSON.parse(json.snare);
-  // // var hihatTab = JSON.parse(json.hihat);
-
   for (var i = 0; i < json.length; i++) {
     var tabJson = JSON.parse(json[i]);
      for(var j =0; j < tabJson.length; j++) {
@@ -142,35 +137,26 @@ function TranslateStateInActions(json) {
      }
      
    }
-
-  // for (var i = 0; i < snareTab.length; i++) {
-  //   console.log(snareTab[i]);
-  //   toggleSelectedListenerSocket(snareTab[i][1]);
-  // }
-
-  // for (var i = 0; i < hihatTab.length; i++) {
-  //   console.log(hihatTab[i]);
-  //   toggleSelectedListenerSocket(hihatTab[i][1]);
-  // }
 }
 
 
-function toggleSelectedListener() {
+function toggleSelectedListener(padMessage) {
 
-  $('.pad').click(function () {
-    $(this).toggleClass("selected");
+ // $('.pad').click(function () {
+  padMessage.toggleClass("selected");
     // SEND THIS TO SERVER WITH SOCKET
-    //console.log($(this).attr('class'), $(this).parent().attr("data-instrument"));
-    var instru = $(this).parent().attr("data-instrument");
-    var pad = $(this).attr('class');
-    var tempo = $('#tempo-input').val();
+    console.log(padMessage.attr('class'), padMessage.parent().attr("data-instrument"));
+    var instru = padMessage.parent().attr("data-instrument");
+    var pad = padMessage.attr('class');
+    //var tempo = $('#tempo-input').val();
 
-    socket.emit('pad', pad + ' ' + instru);
-  });
+    return pad + ' ' + instru;
+  //});
 }
 
 // CALL THIS FUNCTION WHEN RECIEVING SOCKET
 function toggleSelectedListenerSocket(msg) {
+  console.log(msg);
   messages = msg.split(" ");
   if (messages[0] == "pad") {
     var instrument = messages[messages.length - 1];
@@ -409,6 +395,6 @@ function addNewTrack() {
    var prevTrack = $('.instruments').children().last();
    prevTrack.after('<div class="row" data-instrument="' + $('#newTrackName').val() + '">' + prevTrack.html() + '</div>');
    $('.instrumentName').last().text($('#newTrackName').val());
-   toggleSelectedListener();
+  // toggleSelectedListener();
   })
  }

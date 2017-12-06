@@ -75,32 +75,6 @@ io.sockets.on('connection', function(socket) {
                  stateJson.pads[instru].delete(pad);
             }
             
-        // if(instru == 'kick') {
-        //     if (message.indexOf('selected') !== -1) {
-        //        // padsJson.kick.set(pad, message);
-        //        stateJson.pads.kick.set(pad, message);
-        //        console.log(JSON.stringify([...stateJson.kick]));
-               
-        //     } else if (stateJson.pads.kick.has(pad)) {
-        //         stateJson.pads.kick.delete(pad);
-        //     }
-                
-            
-        //  } else if(instru == 'snare') {
-        //         if (message.indexOf('selected') !== -1) {
-        //             stateJson.pads.snare.set(pad, message);
-        //         } else if (stateJson.pads.snare.has(pad)) {
-        //             stateJson.pads.snare.delete(pad);
-        //         }
-        // } else if(instru == 'hihat') {
-        //             if (message.indexOf('selected') !== -1) {
-        //                 stateJson.pads.hihat.set(pad, message);
-        //             } else if (stateJson.pads.hihat.has(pad)) {
-        //                 stateJson.pads.hihat.delete(pad);
-        //             }
-        //         }
-       
-        
         console.log('valeur du tableau JSON : ', stateJson);
 
          // console.log('Valeur du JSON : ' , JSON.stringify([...stateJson.pads[instru]]));
