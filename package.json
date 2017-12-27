@@ -17,7 +17,7 @@
     "express": "^4.16.2",
     "express-session": "^1.15.6",
     "mysql": "^2.15.0",
-    "nodemon": "^1.12.1",
+    "nodemon": "^1.14.3",
     "session-file-store": "^1.1.2",
     "session.socket.io": "^0.2.1",
     "socket.io": "^2.0.3",

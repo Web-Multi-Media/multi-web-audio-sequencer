@@ -391,10 +391,32 @@ function changeTempoListener() {
 }
 
 function addNewTrack() {
+  
   $('#addNewTrack').click(function(){
+
+    var padEl = '<div class="pad column_0">\n\n</div>\n';
+    
+      for (var i=1;i<16;i++){
+        padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
+      }
+    
+      var addNewTrackName = $('#newTrackName').val();
+      console.log(addNewTrackName);
+      
+      var newTrack = '<div class="row" data-instrument="'  
+                      + addNewTrackName + '">' 
+                      + '<span class="instrument-label"><strong class="instrumentName">' 
+                      + addNewTrackName + 
+                      '</strong></span>\n' +
+                       padEl +
+                       '</div>';
+
    var prevTrack = $('.instruments').children().last();
-   prevTrack.after('<div class="row" data-instrument="' + $('#newTrackName').val() + '">' + prevTrack.html() + '</div>');
-   $('.instrumentName').last().text($('#newTrackName').val());
-  // toggleSelectedListener();
+   prevTrack.after(newTrack);
+  //  $('.instrumentName').last().text($('#newTrackName').val());
+  // $('.pad').click(function () {
+  //   console.log($(this));
+  //   toggleSelectedListener($(this));
+  // });
   })
  }
