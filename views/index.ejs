@@ -38,7 +38,14 @@
     </div>
     <div class="row">
       <input type="text" id="newTrackName" placeholder="New track name">
+      <input type="text" id="newTrackUrl" placeholder="Sound url">
       <button type="button" id="addNewTrack">New track</button>
+    </div>
+    <div id="search-container">
+      <input type="text" id="search-query" placeholder="Enter query">
+      <button type="button" id="search-button">Search</button>
+      <div id="search-result-container"></div>
+      <div id="error" style="color:red"></div>
     </div>
     <div class="row">
       <div class="filter-controls col-md-4">
@@ -66,11 +73,12 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="./assets/javascripts/freesound.js"></script>
   <script type="text/javascript" src="./assets/javascripts/kit.js"></script>
   <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
   <script>
-    function addClickEvent(socket, instrument = null) {
+    function addPadClickEvent(socket, instrument = null) {
       if (instrument) {
         // if an instrument is given, select the pads of it
         var pads = $('div[data-instrument="' + instrument + '"]').children(".pad");
@@ -90,7 +98,6 @@
 
     $(function() {
       socket = io.connect('http://localhost:8080');
-      addClickEvent(socket);
 
       // on recieve sequencer state
       socket.on('SendCurrentState', function(json) {

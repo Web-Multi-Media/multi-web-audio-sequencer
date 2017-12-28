@@ -39,6 +39,7 @@ $(function () {
   createLowPassFilterSliders();
   initializeTempo();
   changeTempoListener();
+  addSearchButtonEvent();
   
 });
 
@@ -321,9 +322,6 @@ function schedule() {
   timeoutId = requestAnimationFrame(schedule)
 }
 
-// Load sound into a track buffer
-// currentKit.loadSample("http://www.freesound.org/data/previews/102/102130_1721044-lq.mp3", "test")
-
 function drawPlayhead(xindex) {
   var lastIndex = (xindex + LOOP_LENGTH - 1) % LOOP_LENGTH;
 
@@ -399,6 +397,7 @@ function addNewTrackEvent() {
 }
                           
 function addNewTrack(trackName) {
+  // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
   for (var i = 1; i < 16; i++) {
@@ -416,6 +415,49 @@ function addNewTrack(trackName) {
   var prevTrack = $('.instruments').children().last();
   prevTrack.after(newTrack);
 
+  // load buffer
+  var url = $('#newTrackUrl').val();
+  currentKit.loadSample(url, trackName);
+  
   // add click event
-  addClickEvent(socket, trackName);
+  addPadClickEvent(socket, trackName);
+}
+
+// FREESOUND
+freesound.setToken("bs5DQrWNL9d8zrQl0ApCvcQqwg0gg8ytGE60qg5o");
+
+function searchFreesound(query) {
+  var page = 1
+  var filter = "duration:[0.3 TO 2.0]"
+  var sort = "rating_desc"
+  freesound.textSearch(query, {
+      page: page,
+      filter: filter,
+      sort: sort,
+      fields: 'id,name,url,previews',
+    },
+    function (sounds) {
+      var msg = ""
+      
+      msg = "<h3>Searching for: " + query + "</h3>"
+      msg += "With filter: " + filter + " and sorting: " + sort + "<br>"
+      msg += "Num results: " + sounds.count + "<br><ul>"
+      for (i = 0; i <= 10; i++) {
+        var snd = sounds.getSound(i);
+        msg += "<li>" + snd.name + " with url " + snd.previews["preview-lq-mp3"] + "</li>"
+      }
+      msg += "</ul>"
+      document.getElementById("search-result-container").innerHTML=msg;
+    },
+    function () {
+      document.getElementById('error').innerHTML="Error while searching...";
+    }
+  );
+}
+
+function addSearchButtonEvent() {
+  $('#search-button').click(function() {
+    var query = $('#search-query').val();
+    searchFreesound(query);
+  });
 }
