@@ -128,14 +128,21 @@ function playPauseListener() {
 
 function TranslateStateInActions(json) {
   console.log(json);
-   
-  for (var i = 0; i < json.length; i++) {
-    var tabJson = JSON.parse(json[i]);
+  
+  // Add tracks
+  var trackList = json[1];
+  for (var j=0; j<trackList.length; j++) {
+    addNewTrack(trackList[j]);
+  }
+  
+  // Activate pads
+  var jsonState = json[0];
+  for (var i = 0; i < jsonState.length; i++) {
+    var tabJson = JSON.parse(jsonState[i]);
      for(var j =0; j < tabJson.length; j++) {
       toggleSelectedListenerSocket(tabJson[j][1]);
-       console.log(json[j]);
+       console.log(jsonState[j]);
      }
-     
    }
 }
 

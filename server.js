@@ -6,7 +6,11 @@ var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 var eventEmitter = require('events').EventEmitter
 var stateJson = {
-  pads: {}
+  pads: {
+    'kick': new Map(),
+    'snare': new Map(),
+    'hihat': new Map()
+  }
 
   // room: ''
 };
@@ -33,8 +37,9 @@ io.on('connection', function (socket) {
       console.log(key + " -> " + stateJson.pads[key]);
     }
   }
+  var trackList = Object.keys(stateJson['pads']);
   console.log(state);
-  socket.emit('SendCurrentState', state);
+  socket.emit('SendCurrentState', [state, trackList]);
 })
 
 io.sockets.on('connection', function (socket) {
@@ -80,8 +85,9 @@ io.sockets.on('connection', function (socket) {
   
   // NEW TRACK
   socket.on('newTrack', function(message) {
-    socket.broadcast.emit('sendNewTrack', message);
     console.log('new track: ' + message);
+    socket.broadcast.emit('sendNewTrack', message);
+    stateJson.pads[message] = new Map();
   });
   
 });
