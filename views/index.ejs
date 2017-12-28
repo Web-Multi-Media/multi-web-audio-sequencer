@@ -223,33 +223,46 @@
   <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
   <script>
-      function addClickEvent(socket, instrument=null) {
-          if (instrument) {
-              // if an instrument is given, select the pads of it
-              var pads = $('div[data-instrument="'+instrument+'"]').children(".pad");
-          } else {
-              // if there is no instrument given, select all the pads
-              var pads = $('.pad');
-          }
-          $('.pad').click(function () {
-              console.log($(this));
-              socket.emit('pad', toggleSelectedListener($(this)));
-          });
+    function addClickEvent(socket, instrument = null) {
+      if (instrument) {
+        // if an instrument is given, select the pads of it
+        var pads = $('div[data-instrument="' + instrument + '"]').children(".pad");
+      } else {
+        // if there is no instrument given, select all the pads
+        var pads = $('.pad');
       }
-      
-      $(function(){
-          socket = io.connect('http://localhost:8080');
-          addClickEvent(socket);
+      $('.pad').click(function() {
+        console.log($(this));
+        socket.emit('pad', toggleSelectedListener($(this)));
+      });
+    }
 
-          socket.on('SendCurrentState', function(json) {
-            console.log("ReceiveCurrentSequencerState", json);
-            TranslateStateInActions(json);             
-          })
-          socket.on('sendPad', function(event) {
-            console.log('Valeur des pads reçues', event);
-             toggleSelectedListenerSocket(event);   
-          });
-        })
+    function sendNewTrack(trackName) {
+      socket.emit('newTrack', trackName)
+    }
+
+    $(function() {
+      socket = io.connect('http://localhost:8080');
+      addClickEvent(socket);
+      
+      // on recieve sequencer state
+      socket.on('SendCurrentState', function(json) {
+        console.log("ReceiveCurrentSequencerState", json);
+        TranslateStateInActions(json);
+      })
+      
+      // on recieve pad change
+      socket.on('sendPad', function(event) {
+        console.log('Valeur des pads reçues', event);
+        toggleSelectedListenerSocket(event);
+      });
+      
+      // on recieve new track
+      socket.on('sendNewTrack', function(message) {
+        addNewTrack(message);
+        console.log('recieveNewTrack: ' + message);
+      });
+    })
   </script>
-  </body>
+</body>
 </html>

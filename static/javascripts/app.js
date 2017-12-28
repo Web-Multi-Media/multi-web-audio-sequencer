@@ -31,7 +31,7 @@ if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudio
 $(function () {
   
   init();
-  addNewTrack();
+  addNewTrackEvent();
   //toggleSelectedListener();
   playPauseListener();
   lowPassFilterListener();
@@ -390,28 +390,34 @@ function changeTempoListener() {
   });
 }
 
-function addNewTrack() {
+function addNewTrackEvent() {
   $('#addNewTrack').click(function(){
-    var padEl = '<div class="pad column_0">\n\n</div>\n';
+    var trackName = $('#newTrackName').val();
+    addNewTrack(trackName);
     
-      for (var i=1;i<16;i++){
-        padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
-      }
-    
-      var addNewTrackName = $('#newTrackName').val();
-      console.log(addNewTrackName);
-      var newTrack = '<div class="row" data-instrument="'  
-                      + addNewTrackName + '">' 
-                      + '<span class="instrument-label"><strong class="instrumentName">' 
-                      + addNewTrackName + 
-                      '</strong></span>\n' +
-                       padEl +
-                       '</div>';
-    
-    var prevTrack = $('.instruments').children().last();
-    prevTrack.after(newTrack);
-  
-    // add click event
-    addClickEvent(socket, addNewTrackName);
-  })
- }
+    // send to server
+    sendNewTrack(trackName);
+ });
+}
+                          
+function addNewTrack(trackName) {
+  var padEl = '<div class="pad column_0">\n\n</div>\n';
+
+  for (var i = 1; i < 16; i++) {
+    padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
+  }
+
+  var newTrack = '<div class="row" data-instrument="' +
+    trackName + '">' +
+    '<span class="instrument-label"><strong class="instrumentName">' +
+    trackName +
+    '</strong></span>\n' +
+    padEl +
+    '</div>';
+
+  var prevTrack = $('.instruments').children().last();
+  prevTrack.after(newTrack);
+
+  // add click event
+  addClickEvent(socket, trackName);
+}
