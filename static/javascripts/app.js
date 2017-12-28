@@ -308,19 +308,8 @@ function schedule() {
     $currentPads.each(function () {
       if ($(this).hasClass("selected")) {
         var instrumentName = $(this).parents().data("instrument");
-        switch (instrumentName) {
-          case "kick":
-            playNote(currentKit.kickBuffer, contextPlayTime);
-            break;
-          case "snare":
-            playNote(currentKit.snareBuffer, contextPlayTime);
-            break;
-          case "hihat":
-            playNote(currentKit.hihatBuffer, contextPlayTime);
-            break;
-        }
-        //play the buffer
-        //store a data element in the row that tells you what instrument
+        var bufferName = instrumentName + "Buffer";
+        playNote(currentKit[bufferName], contextPlayTime);
       }
     });
     if (noteTime != lastDrawTime) {
@@ -329,9 +318,11 @@ function schedule() {
     }
     advanceNote();
   }
-
   timeoutId = requestAnimationFrame(schedule)
 }
+
+// Load sound into a track buffer
+// currentKit.loadSample("http://www.freesound.org/data/previews/102/102130_1721044-lq.mp3", "test")
 
 function drawPlayhead(xindex) {
   var lastIndex = (xindex + LOOP_LENGTH - 1) % LOOP_LENGTH;
