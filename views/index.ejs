@@ -78,7 +78,7 @@
         // if there is no instrument given, select all the pads
         var pads = $('.pad');
       }
-      $('.pad').click(function() {
+      pads.click(function() {
         console.log($(this));
         socket.emit('pad', toggleSelectedListener($(this)));
       });
