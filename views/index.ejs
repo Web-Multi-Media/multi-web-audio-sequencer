@@ -223,14 +223,23 @@
   <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
   <script>
-      $(function(){
-          var socket = io.connect('http://localhost:8080');
-
+      function addClickEvent(socket, instrument=null) {
+          if (instrument) {
+              // if an instrument is given, select the pads of it
+              var pads = $('div[data-instrument="'+instrument+'"]').children(".pad");
+          } else {
+              // if there is no instrument given, select all the pads
+              var pads = $('.pad');
+          }
           $('.pad').click(function () {
-            console.log($(this));
-            
-            socket.emit('pad', toggleSelectedListener($(this)));
+              console.log($(this));
+              socket.emit('pad', toggleSelectedListener($(this)));
           });
+      }
+      
+      $(function(){
+          socket = io.connect('http://localhost:8080');
+          addClickEvent(socket);
 
           socket.on('SendCurrentState', function(json) {
             console.log("ReceiveCurrentSequencerState", json);
