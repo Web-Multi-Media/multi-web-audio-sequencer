@@ -427,6 +427,10 @@ function addNewTrack(trackName, soundUrl) {
 // FREESOUND
 freesound.setToken("bs5DQrWNL9d8zrQl0ApCvcQqwg0gg8ytGE60qg5o");
 
+function freesoundIframe(soundId) {
+  return '<iframe frameborder="0" scrolling="no" src="https://freesound.org/embed/sound/iframe/'+soundId+'/simple/small/" width="375" height="30"></iframe>';
+}
+
 function searchFreesound(query) {
   var page = 1
   var filter = "duration:[0.3 TO 2.0]"
@@ -439,13 +443,12 @@ function searchFreesound(query) {
     },
     function (sounds) {
       var msg = ""
-      
-      msg = "<h3>Searching for: " + query + "</h3>"
-      msg += "With filter: " + filter + " and sorting: " + sort + "<br>"
-      msg += "Num results: " + sounds.count + "<br><ul>"
+//      msg = "<h3>Searching for: " + query + "</h3>"
+//      msg += "With filter: " + filter + " and sorting: " + sort + "<br>"
+//      msg += "Num results: " + sounds.count + "<br><ul>"
       for (i = 0; i <= 10; i++) {
         var snd = sounds.getSound(i);
-        msg += "<li>" + snd.name + " with url " + snd.previews["preview-lq-mp3"] + "</li>"
+        msg += "<div sound-url='" + snd.previews["preview-lq-mp3"] + "'>" + freesoundIframe(snd.id) + "</div>"
       }
       msg += "</ul>"
       document.getElementById("search-result-container").innerHTML=msg;
