@@ -97,6 +97,15 @@ io.sockets.on('connection', function (socket) {
     stateJson.sounds[trackName] = soundUrl;
   });
   
+  // LOAD SOUND INTO A TRACK
+  socket.on('loadSound', function(message) {
+    var trackName = message[0];
+    var soundUrl = message[1];
+    console.log('load sound: ' + message);
+    socket.broadcast.emit('sendLoadSound', message);
+    stateJson.sounds[trackName] = soundUrl;
+  });
+  
 });
 
 app.get('/', (req, res) => {

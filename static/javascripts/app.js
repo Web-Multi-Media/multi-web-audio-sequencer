@@ -394,7 +394,7 @@ function addNewTrackEvent() {
     addNewTrack(trackName, soundUrl);
     
     // send to server
-    sendNewTrack([trackName, soundUrl]);
+    sendNewTrack(trackName, soundUrl);
  });
 }
                           
@@ -483,4 +483,5 @@ function drop(ev) {
   var trackEl = $(target).hasClass('row') ? $(target) : $(target).parents('.row');
   var trackName = trackEl.attr("data-instrument");
   currentKit.loadSample(currentSoundUrl, trackName);
+  sendLoadSound(trackName, currentSoundUrl);
 }

@@ -93,8 +93,12 @@
       });
     }
 
-    function sendNewTrack(trackName) {
-      socket.emit('newTrack', trackName)
+    function sendNewTrack(trackName, soundUrl=null) {
+      socket.emit('newTrack', [trackName, soundUrl]);
+    }
+    
+    function sendLoadSound(trackName, soundUrl) {
+      socket.emit('loadSound', [trackName, soundUrl]);
     }
 
     $(function() {
@@ -116,6 +120,11 @@
       socket.on('sendNewTrack', function(message) {
         addNewTrack(message[0], message[1]);
         console.log('recieveNewTrack: ' + message);
+      });
+      
+      // on recieve load sound
+      socket.on('sendLoadSound', function(message) {
+        currentKit.loadSample(message[1], message[0]);
       });
     })
   </script>
