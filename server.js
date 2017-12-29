@@ -10,9 +10,12 @@ var stateJson = {
     'kick': new Map(),
     'snare': new Map(),
     'hihat': new Map()
+  },
+  sounds: {
+    'kick': 'http://localhost:8080/assets/sounds/drum-samples/TR808/kick.mp3',
+    'snare': 'http://localhost:8080/assets/sounds/drum-samples/TR808/snare.mp3',
+    'hihat': 'http://localhost:8080/assets/sounds/drum-samples/TR808/hihat.mp3'
   }
-
-  // room: ''
 };
 
 // middleware des websockets
@@ -37,9 +40,10 @@ io.on('connection', function (socket) {
       console.log(key + " -> " + stateJson.pads[key]);
     }
   }
-  var trackList = Object.keys(stateJson['pads']);
+  var trackUrl = stateJson['sounds'];//Object.keys(stateJson['pads']);
+  //var urlList = Object.values(stateJson['sounds']);
   console.log(state);
-  socket.emit('SendCurrentState', [state, trackList]);
+  socket.emit('SendCurrentState', [state, trackUrl]);
 })
 
 io.sockets.on('connection', function (socket) {
@@ -85,9 +89,12 @@ io.sockets.on('connection', function (socket) {
   
   // NEW TRACK
   socket.on('newTrack', function(message) {
+    var trackName = message[0];
+    var soundUrl = message[1];
     console.log('new track: ' + message);
     socket.broadcast.emit('sendNewTrack', message);
-    stateJson.pads[message] = new Map();
+    stateJson.pads[trackName] = new Map();
+    stateJson.sounds[trackName] = soundUrl;
   });
   
 });

@@ -130,10 +130,11 @@ function playPauseListener() {
 function TranslateStateInActions(json) {
   console.log(json);
   
-  // Add tracks
-  var trackList = json[1];
-  for (var j=0; j<trackList.length; j++) {
-    addNewTrack(trackList[j]);
+  // Add tracks and load buffers
+  var trackUrl = json[1];
+  var trackNameList = Object.keys(trackUrl);
+  for (var j=0; j<trackNameList.length; j++) {
+    addNewTrack(trackNameList[j], trackUrl[trackNameList[j]]);
   }
   
   // Activate pads
@@ -389,14 +390,15 @@ function changeTempoListener() {
 function addNewTrackEvent() {
   $('#addNewTrack').click(function(){
     var trackName = $('#newTrackName').val();
-    addNewTrack(trackName);
+    var soundUrl = $('#newTrackUrl').val();
+    addNewTrack(trackName, soundUrl);
     
     // send to server
-    sendNewTrack(trackName);
+    sendNewTrack([trackName, soundUrl]);
  });
 }
                           
-function addNewTrack(trackName) {
+function addNewTrack(trackName, soundUrl) {
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
@@ -416,8 +418,7 @@ function addNewTrack(trackName) {
   prevTrack.after(newTrack);
 
   // load buffer
-  var url = $('#newTrackUrl').val();
-  currentKit.loadSample(url, trackName);
+  currentKit.loadSample(soundUrl, trackName);
   
   // add click event
   addPadClickEvent(socket, trackName);
