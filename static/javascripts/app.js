@@ -406,7 +406,7 @@ function addNewTrack(trackName, soundUrl) {
     padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
   }
 
-  var newTrack = '<div class="row" data-instrument="' +
+  var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" class="row" data-instrument="' +
     trackName + '">' +
     '<span class="instrument-label"><strong class="instrumentName">' +
     trackName +
@@ -448,7 +448,7 @@ function searchFreesound(query) {
 //      msg += "Num results: " + sounds.count + "<br><ul>"
       for (i = 0; i <= 10; i++) {
         var snd = sounds.getSound(i);
-        msg += "<div sound-url='" + snd.previews["preview-lq-mp3"] + "'>" + freesoundIframe(snd.id) + "</div>"
+        msg += "<div>" + freesoundIframe(snd.id) + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" + snd.previews["preview-lq-mp3"] + "'>Drag</div></div>";
       }
       msg += "</ul>"
       document.getElementById("search-result-container").innerHTML=msg;
@@ -464,4 +464,23 @@ function addSearchButtonEvent() {
     var query = $('#search-query').val();
     searchFreesound(query);
   });
+}
+
+
+// Drag and drop sounds
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function drag(ev) {
+  currentSoundUrl = ev.target.getAttribute("sound-url");
+  ev.dataTransfer.setData("text", "");
+}
+
+function drop(ev) {
+  ev.preventDefault();
+  var target = ev.target;
+  var trackEl = $(target).hasClass('row') ? $(target) : $(target).parents('.row');
+  var trackName = trackEl.attr("data-instrument");
+  currentKit.loadSample(currentSoundUrl, trackName);
 }
