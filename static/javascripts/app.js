@@ -480,7 +480,6 @@ function exitDrop(ev) {
   var target = ev.target;
   var trackEl = $(target).hasClass('row') ? $(target) : $(target).parents('.row');
   trackEl.removeClass("drop-over");
-  console.log('exit');
 }
 
 function drag(ev) {
@@ -495,4 +494,5 @@ function drop(ev) {
   var trackName = trackEl.attr("data-instrument");
   currentKit.loadSample(currentSoundUrl, trackName);
   sendLoadSound(trackName, currentSoundUrl);
+  trackEl.removeClass("drop-over");
 }
