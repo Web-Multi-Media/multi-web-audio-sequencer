@@ -406,7 +406,7 @@ function addNewTrack(trackName, soundUrl) {
     padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
   }
 
-  var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" class="row" data-instrument="' +
+  var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row" data-instrument="' +
     trackName + '">' +
     '<span class="instrument-label"><strong class="instrumentName">' +
     trackName +
@@ -470,6 +470,17 @@ function addSearchButtonEvent() {
 // Drag and drop sounds
 function allowDrop(ev) {
   ev.preventDefault();
+  var target = ev.target;
+  var trackEl = $(target).hasClass('row') ? $(target) : $(target).parents('.row');
+  trackEl.addClass("drop-over");
+}
+
+function exitDrop(ev) {
+  ev.preventDefault();
+  var target = ev.target;
+  var trackEl = $(target).hasClass('row') ? $(target) : $(target).parents('.row');
+  trackEl.removeClass("drop-over");
+  console.log('exit');
 }
 
 function drag(ev) {

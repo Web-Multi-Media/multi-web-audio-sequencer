@@ -1,11 +1,10 @@
 .pad {
   width: 3em; 
   height: 3em; 
-  margin-bottom: 1em;
+  margin: 2px;
   display: inline-block; 
   background: #DADADA; 
   box-shadow: rgba(0, 0, 0, 0.0980392) -6px 6px 0px 0px inset;
-  margin-right: 1em; 
   cursor: pointer;
 }
 
@@ -75,4 +74,10 @@
   position: absolute;
   text-align: center;
   padding-top: 7px;
+}
+
+.drop-over {
+ border-width: 1px;
+ border-style: groove;
+ border-color: greenyellow;
 }
