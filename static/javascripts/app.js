@@ -15,6 +15,7 @@ var timeoutId;
 var testBuffer = null;
 
 var currentKit = null;
+var wave = null;
 var reverbImpulseResponse = null;
 
 var tempo = 120;
@@ -509,4 +510,10 @@ function drop(ev) {
   currentKit.loadSample(currentSoundUrl, trackName);
   sendLoadSound(trackName, currentSoundUrl);
   trackEl.removeClass("drop-over");
+}
+
+
+// Wave visu
+function loadVisu() {
+  wave = new Wave();
 }
