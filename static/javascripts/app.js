@@ -401,7 +401,7 @@ function addNewTrack(trackName, soundUrl) {
     padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
   }
 
-  var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row" data-instrument="' +
+  var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
     trackName + '">' +
     '<span class="instrument-label"><strong class="instrumentName">' +
     trackName +

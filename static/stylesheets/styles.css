@@ -1,9 +1,9 @@
 .pad {
-  width: 3em; 
-  height: 3em; 
+  width: 3em;
+  height: 3em;
   margin: 2px;
-  display: inline-block; 
-  background: #DADADA; 
+  display: inline-block;
+  background: #DADADA;
   box-shadow: rgba(0, 0, 0, 0.0980392) -6px 6px 0px 0px inset;
   cursor: pointer;
 }
@@ -17,16 +17,16 @@
 }
 
 .playing.selected {
-  background: radial-gradient(#E6FFE6, #99FF99, #66FF66); 
+  background: radial-gradient(#E6FFE6, #99FF99, #66FF66);
 }
 
 .noselect {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 #play-pause {
@@ -38,13 +38,19 @@
 }
 
 .instrument-label {
-    display: inline-block;
-    vertical-align: top;
-    width: 4em;
-    position: relative;
-    top: 1em;
-    text-align: right;
-    margin-right: 0.5em;
+  display: inline-block;
+  vertical-align: top;
+  width: 4em;
+  position: relative;
+  top: 1em;
+  text-align: right;
+  margin-right: 0.5em;
+}
+
+.instrument {
+  border-width: 1px;
+  border-style: groove;
+  border-color: transparent;
 }
 
 .tempo-container {
@@ -77,16 +83,16 @@
 }
 
 .drop-over {
- border-width: 1px;
- border-style: groove;
- border-color: greenyellow;
+  /* border-width: 1px;*/
+  border-style: groove;
+  border-color: greenyellow;
 }
 
 .deleteTrackButton {
-  display: inline-block; 
+  display: inline-block;
   position: absolute;
-  width: 5em; 
-  height: 3em; 
+  width: 5em;
+  height: 3em;
   margin: 2px;
   margin-left: 20px;
 }
