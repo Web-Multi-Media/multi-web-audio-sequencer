@@ -106,6 +106,15 @@ io.sockets.on('connection', function (socket) {
     stateJson.sounds[trackName] = soundUrl;
   });
   
+  // DELETE TRACK
+  socket.on('deleteTrack', function(message) {
+    var trackName = message;
+    console.log('delete track: ' + trackName);
+    socket.broadcast.emit('sendDeleteTrack', trackName);
+    delete stateJson.pads[trackName];
+    delete stateJson.sounds[trackName];
+  });
+  
 });
 
 app.get('/', (req, res) => {

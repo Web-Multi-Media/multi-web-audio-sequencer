@@ -81,3 +81,12 @@
  border-style: groove;
  border-color: greenyellow;
 }
+
+.deleteTrackButton {
+  display: inline-block; 
+  position: absolute;
+  width: 5em; 
+  height: 3em; 
+  margin: 2px;
+  margin-left: 20px;
+}

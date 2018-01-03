@@ -1,5 +1,3 @@
-
-
 //audio node variables
 var context;
 var convolver;
@@ -29,7 +27,7 @@ if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudio
 }
 
 $(function () {
-  
+
   init();
   addNewTrackEvent();
   //toggleSelectedListener();
@@ -40,7 +38,7 @@ $(function () {
   initializeTempo();
   changeTempoListener();
   addSearchButtonEvent();
-  
+
 });
 
 function createLowPassFilterSliders() {
@@ -71,8 +69,7 @@ function lowPassFilterListener() {
       $(this).addClass("btn-warning");
       lowPassFilterNode.active = true;
       $("#freq-slider,#quality-slider").slider("option", "disabled", false);
-    }
-    else {
+    } else {
       $(this).addClass("btn-default");
       $(this).removeClass("btn-warning");
       lowPassFilterNode.active = false;
@@ -89,8 +86,7 @@ function reverbListener() {
       $(this).removeClass("btn-default");
       $(this).addClass("btn-warning");
       convolver.active = true;
-    }
-    else {
+    } else {
       $(this).addClass("btn-default");
       $(this).removeClass("btn-warning");
       convolver.active = false;
@@ -118,8 +114,7 @@ function playPauseListener() {
       $span.removeClass('glyphicon-play');
       $span.addClass('glyphicon-pause');
       handlePlay();
-    }
-    else {
+    } else {
       $span.addClass('glyphicon-play');
       $span.removeClass('glyphicon-pause');
       handleStop();
@@ -129,37 +124,37 @@ function playPauseListener() {
 
 function TranslateStateInActions(json) {
   console.log(json);
-  
+
   // Add tracks and load buffers
   var trackUrl = json[1];
   var trackNameList = Object.keys(trackUrl);
-  for (var j=0; j<trackNameList.length; j++) {
+  for (var j = 0; j < trackNameList.length; j++) {
     addNewTrack(trackNameList[j], trackUrl[trackNameList[j]]);
   }
-  
+
   // Activate pads
   var jsonState = json[0];
   for (var i = 0; i < jsonState.length; i++) {
     var tabJson = JSON.parse(jsonState[i]);
-     for(var j =0; j < tabJson.length; j++) {
+    for (var j = 0; j < tabJson.length; j++) {
       toggleSelectedListenerSocket(tabJson[j][1]);
-       console.log(jsonState[j]);
-     }
-   }
+      console.log(jsonState[j]);
+    }
+  }
 }
 
 
 function toggleSelectedListener(padMessage) {
 
- // $('.pad').click(function () {
+  // $('.pad').click(function () {
   padMessage.toggleClass("selected");
-    // SEND THIS TO SERVER WITH SOCKET
-    console.log(padMessage.attr('class'), padMessage.parent().attr("data-instrument"));
-    var instru = padMessage.parent().attr("data-instrument");
-    var pad = padMessage.attr('class');
-    //var tempo = $('#tempo-input').val();
+  // SEND THIS TO SERVER WITH SOCKET
+  console.log(padMessage.attr('class'), padMessage.parent().attr("data-instrument"));
+  var instru = padMessage.parent().attr("data-instrument");
+  var pad = padMessage.attr('class');
+  //var tempo = $('#tempo-input').val();
 
-    return pad + ' ' + instru;
+  return pad + ' ' + instru;
   //});
 }
 
@@ -172,18 +167,18 @@ function toggleSelectedListenerSocket(msg) {
     var column = parseInt(messages[1].split("_")[1]);
     var activate = (messages[2] == "selected") ? true : false;
     var pad_el = $('[data-instrument="' + instrument + '"]').children()[column + 1];
+  }
+  var current_state = (pad_el.getAttribute("class").split(" ")[2] == "selected") ? true : false;
+  if (current_state) {
+    if (activate == false) {
+      pad_el.classList.remove("selected")
     }
-    var current_state = (pad_el.getAttribute("class").split(" ")[2] == "selected") ? true : false;
-    if (current_state) {
-      if (activate == false) {
-        pad_el.classList.remove("selected")
-      }
-    } else {
-      if (activate) {
-        pad_el.classList.add("selected")
-      }
+  } else {
+    if (activate) {
+      pad_el.classList.add("selected")
     }
   }
+}
 
 
 function init() {
@@ -388,16 +383,16 @@ function changeTempoListener() {
 }
 
 function addNewTrackEvent() {
-  $('#addNewTrack').click(function(){
+  $('#addNewTrack').click(function () {
     var trackName = $('#newTrackName').val();
     var soundUrl = $('#newTrackUrl').val();
     addNewTrack(trackName, soundUrl);
-    
+
     // send to server
     sendNewTrack(trackName, soundUrl);
- });
+  });
 }
-                          
+
 function addNewTrack(trackName, soundUrl) {
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
@@ -412,23 +407,42 @@ function addNewTrack(trackName, soundUrl) {
     trackName +
     '</strong></span>\n' +
     padEl +
-    '</div>';
+    '<button class="deleteTrackButton">delete</button></div>';
 
   var prevTrack = $('.instruments').children().last();
   prevTrack.after(newTrack);
 
   // load buffer
   currentKit.loadSample(soundUrl, trackName);
-  
-  // add click event
+
+  // add click events
   addPadClickEvent(socket, trackName);
+  addDeleteTrackClickEvent(trackName);
+}
+
+function addDeleteTrackClickEvent(trackName) {
+  var deleteButton = $('div[data-instrument="' + trackName + '"]').children(".deleteTrackButton")[0];
+  $(deleteButton).click(function () {
+    deleteTrack(trackName);
+
+    // send to serveur
+    sendDeleteTrack(trackName);
+  });
+}
+
+function deleteTrack(trackName) {
+  // delete html
+  $(".row[data-instrument='" + trackName + "']").remove();
+
+  // delete buffer
+  delete currentKit[trackName + "Buffer"];
 }
 
 // FREESOUND
 freesound.setToken("bs5DQrWNL9d8zrQl0ApCvcQqwg0gg8ytGE60qg5o");
 
 function freesoundIframe(soundId) {
-  return '<iframe frameborder="0" scrolling="no" src="https://freesound.org/embed/sound/iframe/'+soundId+'/simple/small/" width="375" height="30"></iframe>';
+  return '<iframe frameborder="0" scrolling="no" src="https://freesound.org/embed/sound/iframe/' + soundId + '/simple/small/" width="375" height="30"></iframe>';
 }
 
 function searchFreesound(query) {
@@ -443,24 +457,24 @@ function searchFreesound(query) {
     },
     function (sounds) {
       var msg = ""
-//      msg = "<h3>Searching for: " + query + "</h3>"
-//      msg += "With filter: " + filter + " and sorting: " + sort + "<br>"
-//      msg += "Num results: " + sounds.count + "<br><ul>"
+      //      msg = "<h3>Searching for: " + query + "</h3>"
+      //      msg += "With filter: " + filter + " and sorting: " + sort + "<br>"
+      //      msg += "Num results: " + sounds.count + "<br><ul>"
       for (i = 0; i <= 10; i++) {
         var snd = sounds.getSound(i);
         msg += "<div>" + freesoundIframe(snd.id) + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" + snd.previews["preview-lq-mp3"] + "'>Drag</div></div>";
       }
       msg += "</ul>"
-      document.getElementById("search-result-container").innerHTML=msg;
+      document.getElementById("search-result-container").innerHTML = msg;
     },
     function () {
-      document.getElementById('error').innerHTML="Error while searching...";
+      document.getElementById('error').innerHTML = "Error while searching...";
     }
   );
 }
 
 function addSearchButtonEvent() {
-  $('#search-button').click(function() {
+  $('#search-button').click(function () {
     var query = $('#search-query').val();
     searchFreesound(query);
   });

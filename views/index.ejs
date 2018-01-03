@@ -100,6 +100,10 @@
     function sendLoadSound(trackName, soundUrl) {
       socket.emit('loadSound', [trackName, soundUrl]);
     }
+    
+    function sendDeleteTrack(trackName) {
+      socket.emit('deleteTrack', trackName);
+    }
 
     $(function() {
       socket = io.connect('http://localhost:8080');
@@ -125,6 +129,11 @@
       // on recieve load sound
       socket.on('sendLoadSound', function(message) {
         currentKit.loadSample(message[1], message[0]);
+      });
+      
+      // on delete track
+      socket.on('sendDeleteTrack', function(message) {
+        deleteTrack(message);
       });
     })
   </script>
