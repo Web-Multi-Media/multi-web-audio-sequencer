@@ -1,7 +1,8 @@
 function Wave() {
   this.soundBuffer = null;
   this.wavesurfer = null;
-  this.currentSound = null;
+  this.startTime = null;
+  this.endTime = null;
 }
 
 Wave.prototype.init = function(trackName) {
@@ -17,15 +18,20 @@ Wave.prototype.init = function(trackName) {
 
 Wave.prototype.load = function(soundUrl) {
   var wavesurfer = this.wavesurfer;
+  var wave = this;
   wavesurfer.load(soundUrl);
   wavesurfer.on('ready', function() {
+    var duration = wavesurfer.getDuration();
     wavesurfer.addRegion({
       start: 0,
-      end: wavesurfer.getDuration(),
+      end: duration,
       color: 'hsla(400, 100%, 30%, 0.1)',
     });
+    wave.startTime = 0;
+    wave.endTime = duration;
     wavesurfer.on('region-updated', function(obj){
-      console.log(obj.start, obj.end);
+      wave.startTime = obj.start;
+      wave.endTime = obj.end;
     });
   });
 }

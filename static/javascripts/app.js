@@ -274,10 +274,10 @@ function sequencePads() {
   });
 }
 
-function playNote(buffer, noteTime) {
+function playNote(buffer, noteTime, startTime, endTime) {
   var voice = context.createBufferSource();
   voice.buffer = buffer;
-
+  
   var currentLastNode = masterGainNode;
   if (lowPassFilterNode.active) {
     lowPassFilterNode.connect(currentLastNode);
@@ -290,7 +290,7 @@ function playNote(buffer, noteTime) {
   }
 
   voice.connect(currentLastNode);
-  voice.start(noteTime);
+  voice.start(noteTime, startTime, endTime-startTime);
 }
 
 function schedule() {
@@ -306,7 +306,9 @@ function schedule() {
       if ($(this).hasClass("selected")) {
         var instrumentName = $(this).parents().data("instrument");
         var bufferName = instrumentName + "Buffer";
-        playNote(currentKit[bufferName], contextPlayTime);
+        var waveName = instrumentName + "Wave";
+        var wave = currentKit[waveName];
+        playNote(currentKit[bufferName], contextPlayTime, wave.startTime, wave.endTime);
       }
     });
     if (noteTime != lastDrawTime) {
