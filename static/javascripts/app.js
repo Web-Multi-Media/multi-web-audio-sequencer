@@ -129,8 +129,10 @@ function TranslateStateInActions(json) {
   // Add tracks and load buffers
   var trackUrl = json[1];
   var trackNameList = Object.keys(trackUrl);
+  var trackWave = json[2];
   for (var j = 0; j < trackNameList.length; j++) {
-    addNewTrack(trackNameList[j], trackUrl[trackNameList[j]]);
+    var trackName = trackNameList[j];
+    addNewTrack(trackName, trackUrl[trackName], trackWave[trackName][0], trackWave[trackName][1]);
   }
 
   // Activate pads
@@ -395,7 +397,7 @@ function addNewTrackEvent() {
   });
 }
 
-function addNewTrack(trackName, soundUrl) {
+function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
@@ -426,6 +428,10 @@ function addNewTrack(trackName, soundUrl) {
 
   // load buffer
   currentKit.loadSample(soundUrl, trackName);
+  if (startTime) {
+    wave.startTime = startTime;
+    wave.endTime = endTime;
+  }
   
   // add click events
   addPadClickEvent(socket, trackName);
