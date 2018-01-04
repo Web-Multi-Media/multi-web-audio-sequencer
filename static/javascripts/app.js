@@ -107,6 +107,23 @@ function changeQuality(event, ui) {
   lowPassFilterNode.Q.value = ui.value * 30;
 }
 
+
+$(window).keypress(function (e) {
+  if (e.keyCode === 0 || e.keyCode === 32) {
+    e.preventDefault();
+    var $span = $('#play-pause').children("span");
+    if ($span.hasClass('glyphicon-play')) {
+      $span.removeClass('glyphicon-play');
+      $span.addClass('glyphicon-pause');
+      handlePlay();
+    } else {
+      $span.addClass('glyphicon-play');
+      $span.removeClass('glyphicon-pause');
+      handleStop();
+    }
+  }
+})
+
 function playPauseListener() {
   $('#play-pause').click(function () {
     var $span = $(this).children("span");
@@ -121,6 +138,7 @@ function playPauseListener() {
     }
   });
 }
+
 
 function TranslateStateInActions(json) {
   console.log(json);
