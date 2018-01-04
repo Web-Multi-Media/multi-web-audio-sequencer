@@ -4,6 +4,7 @@ function Wave() {
   this.startTime = null;
   this.endTime = null;
   this.duration = null;
+  this.trackName = null;
 }
 
 Wave.prototype.init = function(trackName) {
@@ -13,6 +14,7 @@ Wave.prototype.init = function(trackName) {
     waveColor: 'gray',
     progressColor: 'gray',
   });
+  this.trackName = trackName;
 };
 
 Wave.prototype.load = function(soundUrl) {
@@ -32,6 +34,12 @@ Wave.prototype.load = function(soundUrl) {
     wavesurfer.on('region-updated', function(obj){
       wave.startTime = obj.start;
       wave.endTime = obj.end;
+    });
+    
+    var timeline = Object.create(WaveSurfer.Timeline);
+    timeline.init({
+      wavesurfer: wavesurfer,
+      container: '#waveform-timeline-'+wave.trackName,
     });
   });
 };
