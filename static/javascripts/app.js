@@ -107,35 +107,30 @@ function changeQuality(event, ui) {
   lowPassFilterNode.Q.value = ui.value * 30;
 }
 
+function CheckAndTrigerPlayPause() {
+  var $span = $('#play-pause').children("span");
+  if ($span.hasClass('glyphicon-play')) {
+    $span.removeClass('glyphicon-play');
+    $span.addClass('glyphicon-pause');
+    handlePlay();
+  } else {
+    $span.addClass('glyphicon-play');
+    $span.removeClass('glyphicon-pause');
+    handleStop();
+  }
+}
+
 
 $(window).keypress(function (e) {
   if (e.keyCode === 0 || e.keyCode === 32) {
     e.preventDefault();
-    var $span = $('#play-pause').children("span");
-    if ($span.hasClass('glyphicon-play')) {
-      $span.removeClass('glyphicon-play');
-      $span.addClass('glyphicon-pause');
-      handlePlay();
-    } else {
-      $span.addClass('glyphicon-play');
-      $span.removeClass('glyphicon-pause');
-      handleStop();
-    }
+    CheckAndTrigerPlayPause();
   }
 })
 
 function playPauseListener() {
   $('#play-pause').click(function () {
-    var $span = $(this).children("span");
-    if ($span.hasClass('glyphicon-play')) {
-      $span.removeClass('glyphicon-play');
-      $span.addClass('glyphicon-pause');
-      handlePlay();
-    } else {
-      $span.addClass('glyphicon-play');
-      $span.removeClass('glyphicon-pause');
-      handleStop();
-    }
+    CheckAndTrigerPlayPause();
   });
 }
 
