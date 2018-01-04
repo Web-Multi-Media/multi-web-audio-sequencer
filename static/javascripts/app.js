@@ -413,7 +413,7 @@ function addNewTrack(trackName, soundUrl) {
     trackName +
     '"></div><div id="waveform-timeline-'+
     trackName +
-    '"></div></div>';
+    '"></div><button class="refreshWaveRegionButton">refresh</button></div>';
 
   var prevTrack = $('.instruments').children().last();
   prevTrack.after(newTrack);
@@ -422,6 +422,7 @@ function addNewTrack(trackName, soundUrl) {
   currentKit[trackName+'Wave'] = new Wave();
   var wave = currentKit[trackName+'Wave'];
   wave.init(trackName);
+  addRefreshRegionEvent(trackName);
 
   // load buffer
   currentKit.loadSample(soundUrl, trackName);
@@ -524,6 +525,10 @@ function drop(ev) {
 
 
 // Wave visu
-function loadVisu() {
-  wave = new Wave();
+function addRefreshRegionEvent(trackName) {
+  var refreshButton = $('div[data-instrument="' + trackName + '"]').children(".refreshWaveRegionButton")[0];
+  $(refreshButton).click(function () {
+    var waveName = trackName + "Wave";
+    currentKit[waveName].restartRegion();
+  });
 }
