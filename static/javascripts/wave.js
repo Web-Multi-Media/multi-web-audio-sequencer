@@ -52,8 +52,8 @@ Wave.prototype.load = function(soundUrl) {
 
 Wave.prototype.setStart = function(startTime) {
   this.startTime = startTime;
-  this.region.start = 0;  
-  this.region.onResize(startTime, 'start');
+  this.region.start = startTime;  
+  this.region.onResize(0, 'start');
 };
 
 Wave.prototype.setEnd = function(endTime) {
