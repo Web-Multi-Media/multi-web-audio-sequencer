@@ -247,8 +247,7 @@ function initializeAudioNodes() {
 function loadKits() {
   //name must be same as path
   var kit = new Kit("TR808");
-  kit.load();
-
+  
   //TODO: figure out how to test if a kit is loaded
   currentKit = kit;
 }
