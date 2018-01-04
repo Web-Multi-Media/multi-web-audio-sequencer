@@ -4,10 +4,10 @@ function Wave() {
   this.currentSound = null;
 }
 
-Wave.prototype.init = function() {
+Wave.prototype.init = function(trackName) {
   this.wavesurfer = WaveSurfer.create({
     cursorWidth: 0,
-    container: '#waveform',
+    container: '#waveform-'+trackName,
     waveColor: 'gray',
     progressColor: 'gray',
     maxCanvasWidth: 100,

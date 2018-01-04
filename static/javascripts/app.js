@@ -407,14 +407,21 @@ function addNewTrack(trackName, soundUrl) {
     trackName +
     '</strong></span>\n' +
     padEl +
-    '<button class="deleteTrackButton">delete</button></div>';
+    '<button class="deleteTrackButton">delete</button><div id="waveform-'+
+    trackName +
+    '"></div></div>';
 
   var prevTrack = $('.instruments').children().last();
   prevTrack.after(newTrack);
 
+  // load wavesurfer visu
+  currentKit[trackName+'Wave'] = new Wave();
+  var wave = currentKit[trackName+'Wave'];
+  wave.init(trackName);
+
   // load buffer
   currentKit.loadSample(soundUrl, trackName);
-
+  
   // add click events
   addPadClickEvent(socket, trackName);
   addDeleteTrackClickEvent(trackName);
