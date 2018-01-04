@@ -382,27 +382,30 @@ function changeTempoListener() {
   });
 }
 
+function singleTrack() {
+  var instru = $('.instrument');
+  var trackName = $('#newTrackName').val();
+  var duplicate = false;
+  console.log(trackName);
+  instru.each(function(index){
+    console.log($(this).attr('data-instrument'));
+   if(trackName === $(this).attr('data-instrument')){
+    duplicate = true;
+   }
+  });
+  return duplicate;
+}
+
 function addNewTrackEvent() {
   $('#addNewTrack').click(function () {
     var trackName = $('#newTrackName').val();
     var soundUrl = $('#newTrackUrl').val();
-    var instru = $('.instrument');
-    var count ='';
 
-    instru.each(function(index){
-
-     if(trackName === $(this).attr('data-instrument')){
-        count = true;
-     }
-    });
-
-    if (count == false) {
+    if (singleTrack() === false) {
       addNewTrack(trackName, soundUrl);
-     
-        // send to server
-        sendNewTrack(trackName, soundUrl);
-     }
-
+          // send to server
+      sendNewTrack(trackName, soundUrl);
+    }
   });
 }
 
@@ -422,7 +425,7 @@ function addNewTrack(trackName, soundUrl) {
     trackName +
     '</strong></span>\n' +
     padEl +
-    '<button class="deleteTrackButton">delete</button></div>';
+    '<button class="deleteTrackButton btn btn-warning">delete</button></div>';
 
   var prevTrack = $('.instruments').children().last();
   prevTrack.after(newTrack);
