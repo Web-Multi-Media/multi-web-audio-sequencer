@@ -382,7 +382,7 @@ function changeTempoListener() {
   });
 }
 
-function singleTrack() {
+function trackNameExist() {
   var instru = $('.instrument');
   var trackName = $('#newTrackName').val();
   var duplicate = false;
@@ -401,7 +401,7 @@ function addNewTrackEvent() {
     var trackName = $('#newTrackName').val();
     var soundUrl = $('#newTrackUrl').val();
 
-    if (singleTrack() === false) {
+    if (trackNameExist() === false) {
       addNewTrack(trackName, soundUrl);
           // send to server
       sendNewTrack(trackName, soundUrl);
