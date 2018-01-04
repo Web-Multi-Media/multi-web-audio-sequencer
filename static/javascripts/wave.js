@@ -34,9 +34,12 @@ Wave.prototype.load = function(soundUrl) {
     });
     wave.startTime = 0;
     wave.endTime = duration;
-    wavesurfer.on('region-updated', function(obj){
+    wavesurfer.on('region-updated', function(obj) {
       wave.startTime = obj.start;
       wave.endTime = obj.end;
+    });
+    wavesurfer.on('region-update-end', function(obj) {
+      wave.sendRegion();
     });
     
     var timeline = Object.create(WaveSurfer.Timeline);
@@ -49,17 +52,22 @@ Wave.prototype.load = function(soundUrl) {
 
 Wave.prototype.setStart = function(startTime) {
   this.startTime = startTime;
-  this.region.start = startTime;  
+  this.region.start = 0;  
   this.region.onResize(startTime, 'start');
 };
 
 Wave.prototype.setEnd = function(endTime) {
   this.endTime = endTime;
   this.region.end = endTime;  
-  this.region.onResize(endTime);
+  this.region.onResize(0);
 };
 
 Wave.prototype.restartRegion = function () {
   this.setStart(0);
   this.setEnd(this.duration);
+};
+
+Wave.prototype.sendRegion = function () {
+  socket.emit('waveRegion', [this.trackName, this.startTime, this.endTime]);
+  console.log('send wave region');
 };
