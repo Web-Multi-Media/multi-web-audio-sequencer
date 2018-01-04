@@ -388,10 +388,8 @@ function addNewTrackEvent() {
     var soundUrl = $('#newTrackUrl').val();
     var instru = $('.instrument');
     var count ='';
-    console.log('valeur de la track', trackName, $('.instrument').attr('data-instrument'));
 
     instru.each(function(index){
-      console.log($(this).attr('data-instrument'));
 
      if(trackName === $(this).attr('data-instrument')){
         count = true;
@@ -404,7 +402,7 @@ function addNewTrackEvent() {
         // send to server
         sendNewTrack(trackName, soundUrl);
      }
-     
+
   });
 }
 
