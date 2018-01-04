@@ -27,9 +27,11 @@ Wave.prototype.load = function(soundUrl) {
     }
     var duration = wavesurfer.getDuration();
     wave.duration = duration;
+    if (wave.startTime == null) {wave.startTime = 0;}
+    if (wave.endTime == null) {wave.endTime = duration;}
     wave.region = wavesurfer.addRegion({
-      start: 0,
-      end: duration,
+      start: wave.startTime,
+      end: wave.endTime,
       color: 'hsla(400, 100%, 30%, 0.1)',
     });
     wave.startTime = 0;
