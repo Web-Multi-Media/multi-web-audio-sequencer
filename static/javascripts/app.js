@@ -411,6 +411,8 @@ function addNewTrack(trackName, soundUrl) {
     padEl +
     '<button class="deleteTrackButton">delete</button><div id="waveform-'+
     trackName +
+    '"></div><div id="waveform-timeline-'+
+    trackName +
     '"></div></div>';
 
   var prevTrack = $('.instruments').children().last();
