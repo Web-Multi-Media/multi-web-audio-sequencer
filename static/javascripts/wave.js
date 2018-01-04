@@ -22,6 +22,9 @@ Wave.prototype.load = function(soundUrl) {
   var wave = this;
   wavesurfer.load(soundUrl);
   wavesurfer.on('ready', function() {
+    if (wave.region) {
+      wave.region.remove();
+    }
     var duration = wavesurfer.getDuration();
     wave.duration = duration;
     wave.region = wavesurfer.addRegion({
@@ -42,7 +45,7 @@ Wave.prototype.load = function(soundUrl) {
       container: '#waveform-timeline-'+wave.trackName,
     });
   });
-};
+};  
 
 Wave.prototype.setStart = function(startTime) {
   this.startTime = startTime;
