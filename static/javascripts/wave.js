@@ -34,21 +34,21 @@ Wave.prototype.load = function(soundUrl) {
       wave.endTime = obj.end;
     });
   });
-}
+};
 
 Wave.prototype.setStart = function(startTime) {
   this.startTime = startTime;
   this.region.start = startTime;  
   this.region.onResize(startTime, 'start');
-}
+};
 
 Wave.prototype.setEnd = function(endTime) {
   this.endTime = endTime;
   this.region.end = endTime;  
   this.region.onResize(endTime);
-}
+};
 
 Wave.prototype.restartRegion = function () {
   this.setStart(0);
   this.setEnd(this.duration);
-}
+};
