@@ -5,6 +5,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 var eventEmitter = require('events').EventEmitter
+var hostname = '127.0.0.1:8080';
 var stateJson = {
   pads: {
     'kick': new Map(),
@@ -118,7 +119,14 @@ io.sockets.on('connection', function (socket) {
 });
 
 app.get('/', (req, res) => {
-  res.render('index.ejs');
+  console.log(process.env.MULT_WEB_SEQ_SERV);
+  if (typeof process.env.MULT_WEB_SEQ_SERV != 'undefined')
+  {      
+      hostname=process.env.MULT_WEB_SEQ_SERV;
+  }
+  console.log('server is:', hostname);
+
+  res.render('index.ejs', {hostname:hostname});
 
 })
 
