@@ -1,8 +1,9 @@
 function Wave() {
-  this.soundBuffer = null;
   this.wavesurfer = null;
+  this.region = null;
   this.startTime = null;
   this.endTime = null;
+  this.duration = null;
 }
 
 Wave.prototype.init = function(trackName) {
@@ -11,8 +12,6 @@ Wave.prototype.init = function(trackName) {
     container: '#waveform-'+trackName,
     waveColor: 'gray',
     progressColor: 'gray',
-    maxCanvasWidth: 100,
-    pixelRatio: 1,
   });
 };
 
@@ -22,7 +21,8 @@ Wave.prototype.load = function(soundUrl) {
   wavesurfer.load(soundUrl);
   wavesurfer.on('ready', function() {
     var duration = wavesurfer.getDuration();
-    wavesurfer.addRegion({
+    wave.duration = duration;
+    wave.region = wavesurfer.addRegion({
       start: 0,
       end: duration,
       color: 'hsla(400, 100%, 30%, 0.1)',
@@ -34,4 +34,21 @@ Wave.prototype.load = function(soundUrl) {
       wave.endTime = obj.end;
     });
   });
+}
+
+Wave.prototype.setStart = function(startTime) {
+  this.startTime = startTime;
+  this.region.start = startTime;  
+  this.region.onResize(startTime, 'start');
+}
+
+Wave.prototype.setEnd = function(endTime) {
+  this.endTime = endTime;
+  this.region.end = endTime;  
+  this.region.onResize(endTime);
+}
+
+Wave.prototype.restartRegion = function () {
+  this.setStart(0);
+  this.setEnd(this.duration);
 }
