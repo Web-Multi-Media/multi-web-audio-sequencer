@@ -102,6 +102,7 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit('sendNewTrack', message);
     stateJson.pads[trackName] = new Map();
     stateJson.sounds[trackName] = soundUrl;
+    stateJson.waves[trackName] = [false, false];
   });
   
   // LOAD SOUND INTO A TRACK
