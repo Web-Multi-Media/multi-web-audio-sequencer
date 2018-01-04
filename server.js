@@ -115,6 +115,12 @@ io.sockets.on('connection', function (socket) {
     delete stateJson.sounds[trackName];
   });
   
+  // CHANGE WAVE REGION
+  socket.on('waveRegion', function(message) {
+    var trackName = message[0];
+    console.log('change wave region: ' + trackName);
+    socket.broadcast.emit('sendWaveRegion', message);
+  });
 });
 
 app.get('/', (req, res) => {
