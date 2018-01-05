@@ -101,7 +101,9 @@
     }
 
     $(function() {
-      socket = io.connect('http://localhost:8080');
+      var servername='<%= hostname %>';
+      console.log("connecting to ", servername);
+      socket = io.connect(servername);
 
       // on recieve sequencer state
       socket.on('SendCurrentState', function(json) {
