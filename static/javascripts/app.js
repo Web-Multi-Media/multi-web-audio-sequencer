@@ -123,7 +123,6 @@ function CheckAndTrigerPlayPause() {
 
 $(window).keypress(function (e) {
   if (e.charCode === 0 || e.charCode === 32) {
-    console.log(e.charCode);
     e.preventDefault();
     CheckAndTrigerPlayPause();
   }
@@ -400,9 +399,7 @@ function trackNameExist() {
   var instru = $('.instrument');
   var trackName = $('#newTrackName').val();
   var duplicate = false;
-  console.log(trackName);
   instru.each(function(index){
-    console.log($(this).attr('data-instrument'));
    if(trackName === $(this).attr('data-instrument')){
     duplicate = true;
    }
@@ -417,7 +414,7 @@ function addNewTrackEvent() {
 
     if (trackNameExist() === false) {
       addNewTrack(trackName, soundUrl);
-          // send to server
+      // send to server
       sendNewTrack(trackName, soundUrl);
     }
   });
