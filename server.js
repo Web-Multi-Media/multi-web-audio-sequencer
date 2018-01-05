@@ -120,14 +120,11 @@ io.sockets.on('connection', function (socket) {
 
 app.get('/', (req, res) => {
   console.log(process.env.MULT_WEB_SEQ_SERV);
-  if (typeof process.env.MULT_WEB_SEQ_SERV != 'undefined')
-  {      
-      hostname=process.env.MULT_WEB_SEQ_SERV;
+  if (typeof process.env.MULT_WEB_SEQ_SERV != 'undefined') {      
+    hostname=process.env.MULT_WEB_SEQ_SERV;
   }
   console.log('server is:', hostname);
-
   res.render('index.ejs', {hostname:hostname});
-
 })
 
 
