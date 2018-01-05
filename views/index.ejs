@@ -29,7 +29,7 @@
       <span id="increase-tempo" class="glyphicon glyphicon-plus btn btn-default tempo-btn"></span>
       </span>
     </div>
-    <div class="bs-calltoaction bs-calltoaction-primary">
+    <div id="instrument-section" class="bs-calltoaction bs-calltoaction-primary">
       <div class="row">
         <div class="instruments col-md-10">
           <div></div>
@@ -74,13 +74,20 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div id="waveform"></div>
+    </div>
   </div>
 
   <!-- Javascripts -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/wavesurfer.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/plugin/wavesurfer.regions.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/plugin/wavesurfer.timeline.min.js"></script>
   <script type="text/javascript" src="./assets/javascripts/freesound.js"></script>
+  <script type="text/javascript" src="./assets/javascripts/wave.js"></script>
   <script type="text/javascript" src="./assets/javascripts/kit.js"></script>
   <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
@@ -142,6 +149,16 @@
       // on delete track
       socket.on('sendDeleteTrack', function(message) {
         deleteTrack(message);
+      });
+      
+      // on change wave region
+      socket.on('sendWaveRegion', function(message) {
+        var trackName = message[0];
+        var startTime = message[1];
+        var endTime = message[2];
+        var waveName = trackName + 'Wave';
+        currentKit[waveName].setStart(startTime);
+        currentKit[waveName].setEnd(endTime);
       });
     })
   </script>

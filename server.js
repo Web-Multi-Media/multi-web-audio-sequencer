@@ -16,6 +16,11 @@ var stateJson = {
     'kick': 'http://localhost:8080/assets/sounds/drum-samples/TR808/kick.mp3',
     'snare': 'http://localhost:8080/assets/sounds/drum-samples/TR808/snare.mp3',
     'hihat': 'http://localhost:8080/assets/sounds/drum-samples/TR808/hihat.mp3'
+  },
+  waves: {
+    'kick': false,
+    'snare': false,
+    'hihat': false
   }
 };
 
@@ -43,8 +48,9 @@ io.on('connection', function (socket) {
   }
   var trackUrl = stateJson['sounds'];//Object.keys(stateJson['pads']);
   //var urlList = Object.values(stateJson['sounds']);
+  var trackWave = stateJson['waves'];
   console.log(state);
-  socket.emit('SendCurrentState', [state, trackUrl]);
+  socket.emit('SendCurrentState', [state, trackUrl, trackWave]);
 })
 
 io.sockets.on('connection', function (socket) {
@@ -96,6 +102,7 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit('sendNewTrack', message);
     stateJson.pads[trackName] = new Map();
     stateJson.sounds[trackName] = soundUrl;
+    stateJson.waves[trackName] = [false, false];
   });
   
   // LOAD SOUND INTO A TRACK
@@ -114,8 +121,16 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit('sendDeleteTrack', trackName);
     delete stateJson.pads[trackName];
     delete stateJson.sounds[trackName];
+    delete stateJson.waves[trackName];
   });
   
+  // CHANGE WAVE REGION
+  socket.on('waveRegion', function(message) {
+    var trackName = message[0];
+    console.log('change wave region: ' + trackName);
+    socket.broadcast.emit('sendWaveRegion', message);
+    stateJson.waves[trackName] = [message[1], message[2]];
+  });
 });
 
 app.get('/', (req, res) => {

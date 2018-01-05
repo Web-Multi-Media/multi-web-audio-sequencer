@@ -15,6 +15,7 @@ var timeoutId;
 var testBuffer = null;
 
 var currentKit = null;
+var wave = null;
 var reverbImpulseResponse = null;
 
 var tempo = 120;
@@ -141,8 +142,10 @@ function TranslateStateInActions(json) {
   // Add tracks and load buffers
   var trackUrl = json[1];
   var trackNameList = Object.keys(trackUrl);
+  var trackWave = json[2];
   for (var j = 0; j < trackNameList.length; j++) {
-    addNewTrack(trackNameList[j], trackUrl[trackNameList[j]]);
+    var trackName = trackNameList[j];
+    addNewTrack(trackName, trackUrl[trackName], trackWave[trackName][0], trackWave[trackName][1]);
   }
 
   // Activate pads
@@ -246,8 +249,7 @@ function initializeAudioNodes() {
 function loadKits() {
   //name must be same as path
   var kit = new Kit("TR808");
-  kit.load();
-
+  
   //TODO: figure out how to test if a kit is loaded
   currentKit = kit;
 }
@@ -287,10 +289,10 @@ function sequencePads() {
   });
 }
 
-function playNote(buffer, noteTime) {
+function playNote(buffer, noteTime, startTime, endTime) {
   var voice = context.createBufferSource();
   voice.buffer = buffer;
-
+  
   var currentLastNode = masterGainNode;
   if (lowPassFilterNode.active) {
     lowPassFilterNode.connect(currentLastNode);
@@ -303,7 +305,7 @@ function playNote(buffer, noteTime) {
   }
 
   voice.connect(currentLastNode);
-  voice.start(noteTime);
+  voice.start(noteTime, startTime, endTime-startTime);
 }
 
 function schedule() {
@@ -319,7 +321,9 @@ function schedule() {
       if ($(this).hasClass("selected")) {
         var instrumentName = $(this).parents().data("instrument");
         var bufferName = instrumentName + "Buffer";
-        playNote(currentKit[bufferName], contextPlayTime);
+        var waveName = instrumentName + "Wave";
+        var wave = currentKit[waveName];
+        playNote(currentKit[bufferName], contextPlayTime, wave.startTime, wave.endTime);
       }
     });
     if (noteTime != lastDrawTime) {
@@ -420,8 +424,7 @@ function addNewTrackEvent() {
   });
 }
 
-function addNewTrack(trackName, soundUrl) {
-
+function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
@@ -432,19 +435,42 @@ function addNewTrack(trackName, soundUrl) {
   
   var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
     trackName + '">' +
-    '<span class="instrument-label"><strong class="instrumentName">' +
+    '<a data-toggle="collapse" aria-expanded="false" aria-controls="edit-'+
     trackName +
-    '</strong></span>\n' +
+    '" href="#edit-'+
+    trackName +
+    '" class="instrument-label"><strong class="instrumentName">' +
+    trackName +
+    '</strong></a>\n' +
     padEl +
-    '<button class="deleteTrackButton btn btn-warning">delete</button></div>';
+    '<button class="deleteTrackButton btn btn-warning">delete</button><div id="edit-'+
+    trackName +
+    '" class="edit-zone collapse"><div id="waveform-'+
+    trackName +
+    '"></div><div id="waveform-timeline-'+
+    trackName +
+    '"></div><button class="refreshWaveRegionButton">refresh</button></div></div>';
 
   var prevTrack = $('.instruments').children().last();
   prevTrack.after(newTrack);
 
-  
+  // load wavesurfer visu
+  currentKit[trackName+'Wave'] = new Wave();
+  var wave = currentKit[trackName+'Wave'];
+  wave.init(trackName);
+  addRefreshRegionEvent(trackName);
+  // collaspe the edit region once to render the edit visu
+  $('#edit-'+trackName).on('shown.bs.collapse', function () {
+    if (!wave.loadedAfterCollapse) { wave.reload(); }
+  });
+
   // load buffer
   currentKit.loadSample(soundUrl, trackName);
-
+  if (startTime) {
+    wave.startTime = startTime;
+    wave.endTime = endTime;
+  }
+  
   // add click events
   addPadClickEvent(socket, trackName);
   addDeleteTrackClickEvent(trackName);
@@ -539,4 +565,15 @@ function drop(ev) {
   currentKit.loadSample(currentSoundUrl, trackName);
   sendLoadSound(trackName, currentSoundUrl);
   trackEl.removeClass("drop-over");
+}
+
+
+// Wave visu
+function addRefreshRegionEvent(trackName) {
+  var refreshButton = $('div[data-instrument="' + trackName + '"]').children(".edit-zone").children(".refreshWaveRegionButton")[0];
+  $(refreshButton).click(function () {
+    var waveName = trackName + "Wave";
+    currentKit[waveName].restartRegion();
+    currentKit[waveName].sendRegion();
+  });
 }

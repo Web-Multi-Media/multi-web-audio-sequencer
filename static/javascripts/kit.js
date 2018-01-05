@@ -44,6 +44,11 @@ Kit.prototype.loadSample = function(url, instrumentName) {
   var kit = this;
   var bufferName = instrumentName + "Buffer";
   
+  // load wavesurfer visu
+  var waveName = instrumentName + "Wave";
+  kit[waveName].clear();
+  kit[waveName].load(url);
+  
   request.onload = function () {
     context.decodeAudioData(
       request.response,
