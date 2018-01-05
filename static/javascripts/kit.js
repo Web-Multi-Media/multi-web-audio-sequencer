@@ -46,6 +46,7 @@ Kit.prototype.loadSample = function(url, instrumentName) {
   
   // load wavesurfer visu
   var waveName = instrumentName + "Wave";
+  kit[waveName].clear();
   kit[waveName].load(url);
   
   request.onload = function () {

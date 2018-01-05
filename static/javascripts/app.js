@@ -435,15 +435,21 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
   
   var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
     trackName + '">' +
-    '<span class="instrument-label"><strong class="instrumentName">' +
+    '<a data-toggle="collapse" aria-expanded="false" aria-controls="edit-'+
     trackName +
-    '</strong></span>\n' +
+    '" href="#edit-'+
+    trackName +
+    '" class="instrument-label"><strong class="instrumentName">' +
+    trackName +
+    '</strong></a>\n' +
     padEl +
-    '<button class="deleteTrackButton btn btn-warning">delete</button><div id="waveform-'+
+    '<button class="deleteTrackButton btn btn-warning">delete</button><div id="edit-'+
+    trackName +
+    '" class="edit-zone collapse"><div id="waveform-'+
     trackName +
     '"></div><div id="waveform-timeline-'+
     trackName +
-    '"></div><button class="refreshWaveRegionButton">refresh</button></div>';
+    '"></div><button class="refreshWaveRegionButton">refresh</button></div></div>';
 
   var prevTrack = $('.instruments').children().last();
   prevTrack.after(newTrack);
@@ -453,6 +459,10 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
   var wave = currentKit[trackName+'Wave'];
   wave.init(trackName);
   addRefreshRegionEvent(trackName);
+  // collaspe the edit region once to render the edit visu
+  $('#edit-'+trackName).on('shown.bs.collapse', function () {
+    if (!wave.loadedAfterCollapse) { wave.reload(); }
+  });
 
   // load buffer
   currentKit.loadSample(soundUrl, trackName);
@@ -560,9 +570,10 @@ function drop(ev) {
 
 // Wave visu
 function addRefreshRegionEvent(trackName) {
-  var refreshButton = $('div[data-instrument="' + trackName + '"]').children(".refreshWaveRegionButton")[0];
+  var refreshButton = $('div[data-instrument="' + trackName + '"]').children(".edit-zone").children(".refreshWaveRegionButton")[0];
   $(refreshButton).click(function () {
     var waveName = trackName + "Wave";
     currentKit[waveName].restartRegion();
+    currentKit[waveName].sendRegion();
   });
 }

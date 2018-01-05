@@ -5,6 +5,8 @@ function Wave() {
   this.endTime = null;
   this.duration = null;
   this.trackName = null;
+  this.soundUrl = null;
+  this.loadedAfterCollapse = false;
 }
 
 Wave.prototype.init = function(trackName) {
@@ -20,6 +22,7 @@ Wave.prototype.init = function(trackName) {
 Wave.prototype.load = function(soundUrl) {
   var wavesurfer = this.wavesurfer;
   var wave = this;
+  wave.soundUrl = soundUrl;
   wavesurfer.load(soundUrl);
   wavesurfer.on('ready', function() {
     if (wave.region) {
@@ -27,15 +30,13 @@ Wave.prototype.load = function(soundUrl) {
     }
     var duration = wavesurfer.getDuration();
     wave.duration = duration;
-    if (wave.startTime == null) {wave.startTime = 0;}
-    if (wave.endTime == null) {wave.endTime = duration;}
+    if (wave.startTime === null) {wave.startTime = 0;}
+    if (wave.endTime === null) {wave.endTime = duration;}
     wave.region = wavesurfer.addRegion({
       start: wave.startTime,
       end: wave.endTime,
       color: 'hsla(400, 100%, 30%, 0.1)',
     });
-    wave.startTime = 0;
-    wave.endTime = duration;
     wavesurfer.on('region-updated', function(obj) {
       wave.startTime = obj.start;
       wave.endTime = obj.end;
@@ -51,6 +52,18 @@ Wave.prototype.load = function(soundUrl) {
     });
   });
 };  
+
+Wave.prototype.reload = function() {
+  this.load(this.soundUrl);
+  this.loadedAfterCollapse = true;
+}
+
+Wave.prototype.clear = function() {
+  this.startTime = null;
+  this.endTime = null;
+  this.duration = null;
+  this.soundUrl = null;
+}
 
 Wave.prototype.setStart = function(startTime) {
   this.startTime = startTime;
