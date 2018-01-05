@@ -439,6 +439,7 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
     trackName +
     '</strong></span>\n' +
     padEl +
+<<<<<<< HEAD
     '<button class="deleteTrackButton btn btn-warning">delete</button><div id="waveform-'+
     trackName +
     '"></div><div id="waveform-timeline-'+
