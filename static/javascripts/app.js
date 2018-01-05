@@ -121,13 +121,14 @@ function CheckAndTrigerPlayPause() {
   }
 }
 
-
-$(window).keypress(function (e) {
-  if (e.charCode === 0 || e.charCode === 32) {
-    e.preventDefault();
-    CheckAndTrigerPlayPause();
-  }
-})
+// TODO: work on this space stuff
+// Currently many keys are mapped to the play/pause button, and it avoids using them in the text inputes (space, arrows, delete, ...)
+//$(window).keypress(function (e) {
+//  if (e.charCode === 0 || e.charCode === 32) {
+//    e.preventDefault();
+//    CheckAndTrigerPlayPause();
+//  }
+//})
 
 function playPauseListener() {
   $('#play-pause').click(function () {
