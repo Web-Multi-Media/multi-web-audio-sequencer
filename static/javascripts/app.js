@@ -122,7 +122,8 @@ function CheckAndTrigerPlayPause() {
 
 
 $(window).keypress(function (e) {
-  if (e.keyCode === 0 || e.keyCode === 32) {
+  if (e.charCode === 0 || e.charCode === 32) {
+    console.log(e.charCode);
     e.preventDefault();
     CheckAndTrigerPlayPause();
   }
