@@ -15,9 +15,9 @@
   <div class="container">
     <div class="row">
       <div class="jumbotron">
-      <h1>Multi Web Audio Sequencer</h1>
+        <h1>Multi Web Audio Sequencer</h1>
+      </div>
     </div>
-  </div>
     <div class="row">
       <button id="play-pause" type="button" class="btn btn-default btn-lg noselect">
         <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
@@ -34,47 +34,47 @@
         <div class="instruments col-md-10">
           <div></div>
         </div>
-  </div>
-  </div>
-  <div class="bs-calltoaction bs-calltoaction-success">
-    <div class="row">
-      <div class="col-md-6">
-      <input type="text" id="newTrackName" placeholder="New track name">
-      <input type="text" id="newTrackUrl" placeholder="Sound url">
-      <button type="button" id="addNewTrack" class="btn btn-primary">New track</button>
-    </div>
-    <br>
-    <div class="row" id="search-container">
-      <input type="text" id="search-query" placeholder="Enter query">
-      <button type="button" id="search-button" class="btn btn-primary">Search</button>
-      <div id="search-result-container"></div>
-      <div id="error" style="color:red"></div>
-    </div>
-  </div>
-    <div class="row">
-      <div class="col-md-6">
-      <div class="filter-controls col-md-4">
-        <div class="control">
-          <button id="lpf" class="btn btn-default btn-lg">Low Pass Filter</button>
-        </div>
-        <div class="control">
-          <label for="freq-slider">Cutoff Frequency</label>
-          <div id="freq-slider"></div>
-        </div>
-        <div class="control">
-          <label for="quality-slider">Quality</label>
-          <div id="quality-slider"></div>
-        </div>
-      </div>
-      <div class="effect-controls col-md-4">
-        <div class="control">
-          <button id="reverb" class="btn btn-default btn-lg">Reverb</button>
-        </div>
       </div>
     </div>
+    <div>
+      <div class="row">
+        <div class="col-md-6">
+          <input type="text" id="newTrackName" placeholder="New track name">
+          <input type="text" id="newTrackUrl" placeholder="Sound url">
+          <button type="button" id="addNewTrack" class="btn btn-primary">New track</button>
+        </div>
+        <br>
+        <div class="row" id="search-container">
+          <input type="text" id="search-query" placeholder="Enter query">
+          <button type="button" id="search-button" class="btn btn-primary">Search</button>
+          <div id="search-result-container"></div>
+          <div id="error" style="color:red"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="filter-controls col-md-4">
+            <div class="control">
+              <button id="lpf" class="btn btn-default btn-lg">Low Pass Filter</button>
+            </div>
+            <div class="control">
+              <label for="freq-slider">Cutoff Frequency</label>
+              <div id="freq-slider"></div>
+            </div>
+            <div class="control">
+              <label for="quality-slider">Quality</label>
+              <div id="quality-slider"></div>
+            </div>
+          </div>
+          <div class="effect-controls col-md-4">
+            <div class="control">
+              <button id="reverb" class="btn btn-default btn-lg">Reverb</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  </div>
-</div>
 
   <!-- Javascripts -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -99,14 +99,14 @@
       });
     }
 
-    function sendNewTrack(trackName, soundUrl=null) {
+    function sendNewTrack(trackName, soundUrl = null) {
       socket.emit('newTrack', [trackName, soundUrl]);
     }
-    
+
     function sendLoadSound(trackName, soundUrl) {
       socket.emit('loadSound', [trackName, soundUrl]);
     }
-    
+
     function sendDeleteTrack(trackName) {
       socket.emit('deleteTrack', trackName);
     }
@@ -131,12 +131,12 @@
         addNewTrack(message[0], message[1]);
         console.log('recieveNewTrack: ' + message);
       });
-      
+
       // on recieve load sound
       socket.on('sendLoadSound', function(message) {
         currentKit.loadSample(message[1], message[0]);
       });
-      
+
       // on delete track
       socket.on('sendDeleteTrack', function(message) {
         deleteTrack(message);
