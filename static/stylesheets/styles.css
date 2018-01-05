@@ -102,6 +102,10 @@ wave {
   height: 80px!important;  
 }
 
+timeline {
+  width: 600px!important;
+}
+
 .edit-zone {
   border-radius: 5px;
   background-color: #e1dede;
