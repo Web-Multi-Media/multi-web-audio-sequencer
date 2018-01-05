@@ -101,3 +101,8 @@ wave {
   width: 600px;
   height: 80px!important;  
 }
+
+.edit-zone {
+  border-radius: 5px;
+  background-color: #e1dede;
+}
