@@ -82,7 +82,7 @@
   padding-top: 7px;
 }
 
-.drop-over {
+.instrument.drop-over {
   /* border-width: 1px;*/
   border-style: groove;
   border-color: greenyellow;

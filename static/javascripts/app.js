@@ -395,18 +395,35 @@ function changeTempoListener() {
   });
 }
 
+function trackNameExist() {
+  var instru = $('.instrument');
+  var trackName = $('#newTrackName').val();
+  var duplicate = false;
+  console.log(trackName);
+  instru.each(function(index){
+    console.log($(this).attr('data-instrument'));
+   if(trackName === $(this).attr('data-instrument')){
+    duplicate = true;
+   }
+  });
+  return duplicate;
+}
+
 function addNewTrackEvent() {
   $('#addNewTrack').click(function () {
     var trackName = $('#newTrackName').val();
     var soundUrl = $('#newTrackUrl').val();
-    addNewTrack(trackName, soundUrl);
 
-    // send to server
-    sendNewTrack(trackName, soundUrl);
+    if (trackNameExist() === false) {
+      addNewTrack(trackName, soundUrl);
+          // send to server
+      sendNewTrack(trackName, soundUrl);
+    }
   });
 }
 
 function addNewTrack(trackName, soundUrl) {
+
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
@@ -414,17 +431,19 @@ function addNewTrack(trackName, soundUrl) {
     padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
   }
 
+  
   var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
     trackName + '">' +
     '<span class="instrument-label"><strong class="instrumentName">' +
     trackName +
     '</strong></span>\n' +
     padEl +
-    '<button class="deleteTrackButton">delete</button></div>';
+    '<button class="deleteTrackButton btn btn-warning">delete</button></div>';
 
   var prevTrack = $('.instruments').children().last();
   prevTrack.after(newTrack);
 
+  
   // load buffer
   currentKit.loadSample(soundUrl, trackName);
 
