@@ -500,7 +500,7 @@ function freesoundIframe(soundId) {
 }
 
 function searchFreesound(query, page=1) {
-  var filter = "duration:[0.3 TO 2.0]"
+  var filter = "duration:[0.0 TO 10.0]"
   var sort = "rating_desc"
   freesound.textSearch(query, {
       page: page,
@@ -510,10 +510,9 @@ function searchFreesound(query, page=1) {
     },
     function (sounds) {
       var msg = ""
-      //      msg = "<h3>Searching for: " + query + "</h3>"
-      //      msg += "With filter: " + filter + " and sorting: " + sort + "<br>"
-      //      msg += "Num results: " + sounds.count + "<br><ul>"
-      for (i = 0; i <= 10; i++) {
+      var numSounds = sounds.count;
+      var numPages = parseInt(numSounds/15);
+      for (i = 0; i <= Math.min(14, numSounds); i++) {
         var snd = sounds.getSound(i);
         msg += "<div>" + freesoundIframe(snd.id) + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" + snd.previews["preview-lq-mp3"] + "'>Drag</div></div>";
       }
