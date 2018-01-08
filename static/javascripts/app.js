@@ -440,9 +440,7 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
     trackName +
     '" href="#edit-'+
     trackName +
-    '" class="instrument-label" onclick="rotateButton()"><i id="chevron-' +
-    trackName +
-    '" class="glyphicon glyphicon-chevron-down" style="position:relative;"></i> <strong class="instrumentName">' +
+    '" class="instrument-label"><i class="glyphicon glyphicon-chevron-right"></i> <strong class="instrumentName">' +
     trackName +
     '</strong></a></div><div class="col-xs-9 col-lg-9">' +
     padEl +
@@ -480,6 +478,7 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
   // add click events
   addPadClickEvent(socket, trackName);
   addDeleteTrackClickEvent(trackName);
+  addRotateTriangleEvent(trackName);
 }
 
 function addDeleteTrackClickEvent(trackName) {
@@ -612,12 +611,8 @@ $('#search-query').keyup(function() {
   }
 });
 
-function rotateButton(){ 
-  //console.log(idButton);
-  $('.glyphicon-chevron-down').toggleClass('rotation');
-    //$(this).find('glyphicon-chevron-down').toggleClass('rotation');
-    //console.log($('#chevron-' + trackName) );
+function addRotateTriangleEvent(trackName) {
+  $(".instrument-label").click(function() {
+    $('div[data-instrument="' + trackName + '"]').children().children().children(".glyphicon").toggleClass('rotation');
+  });
 }
-
-
-

@@ -133,6 +133,12 @@ a {
   background-color:rgb(47, 96, 156);
 }
 
+
+/*Triangle dropdown*/
+.glyphicon-chevron-right {
+  position: relative;
+}
+
 .rotation {
-  transform: rotate(180deg);
+  transform: rotate(90deg);
 }
