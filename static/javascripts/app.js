@@ -499,8 +499,7 @@ function freesoundIframe(soundId) {
   return '<iframe frameborder="0" scrolling="no" src="https://freesound.org/embed/sound/iframe/' + soundId + '/simple/small/" width="375" height="30"></iframe>';
 }
 
-function searchFreesound(query) {
-  var page = 1
+function searchFreesound(query, page=1) {
   var filter = "duration:[0.3 TO 2.0]"
   var sort = "rating_desc"
   freesound.textSearch(query, {
@@ -530,7 +529,8 @@ function searchFreesound(query) {
 function addSearchButtonEvent() {
   $('#search-button').click(function () {
     var query = $('#search-query').val();
-    searchFreesound(query);
+    var page = $('#search-page').val();
+    searchFreesound(query, page);
   });
 }
 
