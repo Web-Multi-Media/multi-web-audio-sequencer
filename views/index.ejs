@@ -19,6 +19,7 @@
       </div>
     </div>
     <div class="row">
+      <div class="col-md-offset-4 col-md-4">
       <button id="play-pause" onclick="this.blur();" type="button" class="btn btn-default btn-lg">
         <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
       </button>
@@ -29,6 +30,7 @@
       <span id="increase-tempo" class="glyphicon glyphicon-plus btn btn-default tempo-btn"></span>
       </span>
     </div>
+  </div>
     <div id="instrument-section">
       <div class="row">
         <div class="instruments col-md-offset-1 col-md-10">
@@ -44,17 +46,17 @@
       </div>
       <br>
       <div class="row">
-          <div class="col-md-6 col-md-offset-3">
+          <div class="col-md-4 col-md-offset-4">
             <div id="trackDetails" hidden>
               <input type="text" id="newTrackName" placeholder="New track name">
-              <input type="text" id="newTrackUrl" placeholder="Sound url">
+              <input type="text" id="newTrackUrl" placeholder="Sound url" hidden>
               <button type="button" id="addNewTrack" class="btn btn-success">New track</button>
            </div>
         </div>
       </div>
         <br>
       <div class="row" id="search-container">
-          <div class="col-md-6 col-md-offset-3">
+          <div class="col-md-4 col-md-offset-4">
             <input type="text" id="search-query" placeholder="Enter query">
             <button type="button" id="search-button" class="btn btn-primary">Search</button>
             <div id="search-result-container"></div>

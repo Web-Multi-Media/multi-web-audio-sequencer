@@ -582,5 +582,9 @@ function addRefreshRegionEvent(trackName) {
 // show new track details
 function addNewTrackDetails() {
   $('#trackDetails').fadeIn('slow');
+  $('#addNewTrack').on('click', function() {
+    $('#trackDetails').fadeOut('slow');
+  }
+)
 }
 
