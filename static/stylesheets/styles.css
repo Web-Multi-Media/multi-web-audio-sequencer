@@ -47,10 +47,11 @@
   margin-right: 0.5em;
 }
 
-.instrument {
+.instruments {
   border-width: 1px;
   border-style: groove;
-  border-color: transparent;
+  border-color: blue;
+  background-color: rgb(44, 9, 77);
 }
 
 .tempo-container {

@@ -578,3 +578,9 @@ function addRefreshRegionEvent(trackName) {
     currentKit[waveName].sendRegion();
   });
 }
+
+// show new track details
+function addNewTrackDetails() {
+  $('#trackDetails').fadeIn('slow');
+}
+

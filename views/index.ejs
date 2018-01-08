@@ -29,27 +29,37 @@
       <span id="increase-tempo" class="glyphicon glyphicon-plus btn btn-default tempo-btn"></span>
       </span>
     </div>
-    <div id="instrument-section" class="bs-calltoaction bs-calltoaction-primary">
+    <div id="instrument-section">
       <div class="row">
-        <div class="instruments col-md-10">
+        <div class="instruments col-md-offset-1 col-md-10">
           <div></div>
         </div>
       </div>
-    </div>
     <div>
+    <br>
       <div class="row">
-        <div class="col-md-6">
-          <input type="text" id="newTrackName" placeholder="New track name">
-          <input type="text" id="newTrackUrl" placeholder="Sound url">
-          <button type="button" id="addNewTrack" class="btn btn-primary">New track</button>
+        <div class="col-md-10 col-md-offset-1">
+            <button type="button" class="btn btn-primary btn-lg col-md-10 col-md-offset-1" onclick="addNewTrackDetails()">Add Track</button>
         </div>
+      </div>
+      <br>
+      <div class="row">
+          <div class="col-md-6 col-md-offset-3">
+            <div id="trackDetails" hidden>
+              <input type="text" id="newTrackName" placeholder="New track name">
+              <input type="text" id="newTrackUrl" placeholder="Sound url">
+              <button type="button" id="addNewTrack" class="btn btn-success">New track</button>
+           </div>
+        </div>
+      </div>
         <br>
-        <div class="row" id="search-container">
-          <input type="text" id="search-query" placeholder="Enter query">
-          <button type="button" id="search-button" class="btn btn-primary">Search</button>
-          <div id="search-result-container"></div>
-          <div id="error" style="color:red"></div>
-        </div>
+      <div class="row" id="search-container">
+          <div class="col-md-6 col-md-offset-3">
+            <input type="text" id="search-query" placeholder="Enter query">
+            <button type="button" id="search-button" class="btn btn-primary">Search</button>
+            <div id="search-result-container"></div>
+            <div id="error" style="color:red"></div>
+          </div>
       </div>
       <div class="row">
         <div class="col-md-6">
