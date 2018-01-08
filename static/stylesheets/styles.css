@@ -132,7 +132,7 @@ a {
   color: black;
 }
 
-.details {
+#search-container {
   border-width: 1px;
   border-style: groove;
   border-radius: 10px;

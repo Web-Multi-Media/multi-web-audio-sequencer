@@ -452,8 +452,11 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
     trackName +
     '"></div><button class="refreshWaveRegionButton btn btn-success">refresh</button></div></div>';
 
-  var prevTrack = $('.instruments').children().last();
-  prevTrack.after(newTrack);
+  //var prevTrack = $('.instruments').children().last();
+ // prevTrack.after(newTrack);
+
+ var prevTrack = $('#newTrack');
+  prevTrack.before(newTrack);
 
   // load wavesurfer visu
   currentKit[trackName+'Wave'] = new Wave();
@@ -593,6 +596,15 @@ function addNewTrackDetails() {
       }
       else {
         $('#addNewTrack').attr('disabled', 'disabled')
+      }
+    });
+
+    $('#search-query').keyup(function() {
+      if($(this).val() != '') {
+        $('#search-button').removeAttr('disabled');
+      }
+      else {
+        $('#search-button').attr('disabled', 'disabled')
       }
     });
 }

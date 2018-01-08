@@ -10,7 +10,8 @@
 </head>
 
 <body>
-  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
   <div class="container">
     <div class="row">
@@ -20,79 +21,70 @@
     </div>
     <div class="row">
       <div class="col-md-offset-4 col-md-4">
-      <button id="play-pause" onclick="this.blur();" type="button" class="btn btn-default btn-lg">
-        <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-      </button>
-      <span class="tempo-container">
-        <label for="tempo-input" >Tempo </label>
-        <input id="tempo-input" type="number" disabled>
-        <span id="decrease-tempo" class="glyphicon glyphicon-minus btn btn-default tempo-btn"></span>
-      <span id="increase-tempo" class="glyphicon glyphicon-plus btn btn-default tempo-btn"></span>
-      </span>
+        <button id="play-pause" onclick="this.blur();" type="button" class="btn btn-default btn-lg">
+          <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+        </button>
+        <span class="tempo-container">
+          <label for="tempo-input">Tempo </label>
+          <input id="tempo-input" type="number" disabled>
+          <span id="decrease-tempo" class="glyphicon glyphicon-minus btn btn-default tempo-btn"></span>
+          <span id="increase-tempo" class="glyphicon glyphicon-plus btn btn-default tempo-btn"></span>
+        </span>
+      </div>
     </div>
-  </div>
     <div id="instrument-section">
       <div class="row">
         <div class="instruments col-md-12">
           <div></div>
+          <div class="row">
+            <div class="col-md-12">
+              <button id="newTrack" type="button" class="btn btn-success btn-lg" onclick="addNewTrackDetails()">Add Track</button>
+              <div id="trackDetails" hidden>
+                <input type="text" id="newTrackName" placeholder="New track name">
+                <input type="text" id="newTrackUrl" placeholder="Sound url" hidden>
+                <button type="button" id="addNewTrack" class="btn btn-success" disabled>New track</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
     <br>
-    <div class="details">
-      <div class="row">
-        <div class="col-md-12">
-            <br>
-            <button type="button" class="btn btn-primary btn-lg col-md-10 col-md-offset-1" onclick="addNewTrackDetails()">Add Track</button>
-        </div>
-      </div>
-      <br>
-      <div class="row">
-          <div class="col-md-4 col-md-offset-4">
-            <div id="trackDetails" hidden>
-              <input type="text" id="newTrackName" placeholder="New track name">
-              <input type="text" id="newTrackUrl" placeholder="Sound url" hidden>
-              <button type="button" id="addNewTrack" class="btn btn-success" disabled>New track</button>
-           </div>
-        </div>
-      </div>
-        <br>
-      <div class="row" id="search-container">
-          <div class="col-md-4 col-md-offset-4">
-            <input type="text" id="search-query" placeholder="Enter query">
-            <button type="button" id="search-button" class="btn btn-primary">Search</button>
-            <div id="search-result-container"></div>
-            <div id="error" style="color:red"></div>
-          </div>
-      </div>
-      <br>
-    </div>
-      <div class="row">
-        <div class="col-md-6">
-          <div class="filter-controls col-md-4">
-            <div class="control">
-              <button id="lpf" class="btn btn-default btn-lg">Low Pass Filter</button>
-            </div>
-            <div class="control">
-              <label for="freq-slider">Cutoff Frequency</label>
-              <div id="freq-slider"></div>
-            </div>
-            <div class="control">
-              <label for="quality-slider">Quality</label>
-              <div id="quality-slider"></div>
-            </div>
-          </div>
-          <div class="effect-controls col-md-4">
-            <div class="control">
-              <button id="reverb" class="btn btn-default btn-lg">Reverb</button>
-            </div>
-          </div>
-        </div>
+    <div class="row" id="search-container">
+      <div class="col-md-8">
+        <input type="text" id="search-query" placeholder="Enter query">
+        <button type="button" id="search-button" class="btn btn-success" disabled>Search</button>
+        <div id="search-result-container"></div>
+        <div id="error" style="color:red"></div>
       </div>
     </div>
+    <br>
     <div class="row">
-      <div id="waveform"></div>
+      <div class="col-md-6">
+        <div class="filter-controls col-md-4">
+          <div class="control">
+            <button id="lpf" class="btn btn-default btn-lg">Low Pass Filter</button>
+          </div>
+          <div class="control">
+            <label for="freq-slider">Cutoff Frequency</label>
+            <div id="freq-slider"></div>
+          </div>
+          <div class="control">
+            <label for="quality-slider">Quality</label>
+            <div id="quality-slider"></div>
+          </div>
+        </div>
+        <div class="effect-controls col-md-4">
+          <div class="control">
+            <button id="reverb" class="btn btn-default btn-lg">Reverb</button>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+  <div class="row">
+    <div id="waveform"></div>
+  </div>
   </div>
 
   <!-- Javascripts -->
@@ -116,7 +108,7 @@
         // if there is no instrument given, select all the pads
         var pads = $('.pad');
       }
-      pads.click(function() {
+      pads.click(function () {
         console.log($(this));
         socket.emit('pad', toggleSelectedListener($(this)));
       });
@@ -134,41 +126,41 @@
       socket.emit('deleteTrack', trackName);
     }
 
-    $(function() {
-      var servername='<%= hostname %>';
+    $(function () {
+      var servername = '<%= hostname %>';
       console.log("connecting to ", servername);
       socket = io.connect(servername);
 
       // on recieve sequencer state
-      socket.on('SendCurrentState', function(json) {
+      socket.on('SendCurrentState', function (json) {
         console.log("ReceiveCurrentSequencerState", json);
         TranslateStateInActions(json);
       })
 
       // on recieve pad change
-      socket.on('sendPad', function(event) {
+      socket.on('sendPad', function (event) {
         console.log('Valeur des pads reçues', event);
         toggleSelectedListenerSocket(event);
       });
 
       // on recieve new track
-      socket.on('sendNewTrack', function(message) {
+      socket.on('sendNewTrack', function (message) {
         addNewTrack(message[0], message[1]);
         console.log('recieveNewTrack: ' + message);
       });
 
       // on recieve load sound
-      socket.on('sendLoadSound', function(message) {
+      socket.on('sendLoadSound', function (message) {
         currentKit.loadSample(message[1], message[0]);
       });
 
       // on delete track
-      socket.on('sendDeleteTrack', function(message) {
+      socket.on('sendDeleteTrack', function (message) {
         deleteTrack(message);
       });
-      
+
       // on change wave region
-      socket.on('sendWaveRegion', function(message) {
+      socket.on('sendWaveRegion', function (message) {
         var trackName = message[0];
         var startTime = message[1];
         var endTime = message[2];
