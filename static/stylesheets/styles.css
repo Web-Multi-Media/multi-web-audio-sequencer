@@ -1,15 +1,16 @@
 .pad {
-  width: 3em;
-  height: 3em;
+  width: 3vw;
+  height: 3vh;
   margin: 2px;
   display: inline-block;
-  background: rgb(204, 113, 199);
-  box-shadow: rgba(27, 3, 27, 0.098) -6px 6px 0px 0px inset;
+  background: rgb(88, 88, 194);
+  /* box-shadow: rgba(19, 24, 65, 0.098) -6px 6px 0px 0px inset; */
+  border-radius: 4px;
   cursor: pointer;
 }
 
 .selected {
-  background: #00FF00;
+  background: rgb(76, 62, 112);
 }
 
 .playing {
@@ -52,7 +53,7 @@
   border-style: groove;
   border-radius: 10px;
   border-color: rgb(6, 69, 88);
-  background-color: rgb(79, 123, 218);
+  background-image:linear-gradient(100deg, white, black);
   font: black;
 }
 
@@ -61,7 +62,7 @@
   border-style: groove;
   border-radius: 10px;
   border-color: rgb(6, 69, 88);
-  background-color: rgb(79, 123, 218);
+  background-image:linear-gradient(100deg, white, black);
   font: black;
 }
 
@@ -137,7 +138,7 @@ a {
   border-style: groove;
   border-radius: 10px;
   border-color: rgb(6, 69, 88);
-  background-color: rgb(79, 123, 218);
+  background-image:linear-gradient(100deg, white, black);
   font: black;
 }
 
@@ -146,6 +147,24 @@ a {
   border-style: groove;
   border-radius: 10px;
   border-color: rgb(6, 69, 88);
-  background-color: rgb(79, 123, 218);
+  background-image:linear-gradient(100deg, white, black);
   font: black;
+}
+
+.jumbotron {
+  background-image:linear-gradient(100deg, white, black);
+}
+
+.tempoBorder {
+  border-width: 1px;
+  border-style: groove;
+  border-radius: 10px;
+  border-color: rgb(6, 69, 88);
+  background-image:linear-gradient(100deg, white, black);
+  font: black;
+}
+
+.btn-warning {
+  height: 3vh;
+  width: 3vw;
 }

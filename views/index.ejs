@@ -13,14 +13,16 @@
   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
     crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
-      <div class="jumbotron">
+      <div class="jumbotron" style="text-align: center;">
         <h1>Multi Web Audio Sequencer</h1>
       </div>
     </div>
+  </div>
+  <div class="container">
     <div class="row">
-      <div class="col-md-offset-4 col-md-4">
+      <div class="col-md-offset-4 col-md-4 tempoBorder">
         <button id="play-pause" onclick="this.blur();" type="button" class="btn btn-default btn-lg">
           <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
         </button>
@@ -32,6 +34,7 @@
         </span>
       </div>
     </div>
+    <br>
     <div id="instrument-section">
       <div class="row">
         <div class="instruments col-md-12">
@@ -102,7 +105,7 @@
     function addPadClickEvent(socket, instrument = null) {
       if (instrument) {
         // if an instrument is given, select the pads of it
-        var pads = $('div[data-instrument="' + instrument + '"]').children(".pad");
+        var pads = $('div[data-instrument="' + instrument + '"]').children().children(".pad");
       } else {
         // if there is no instrument given, select all the pads
         var pads = $('.pad');

@@ -320,7 +320,7 @@ function schedule() {
     var $currentPads = $(".column_" + rhythmIndex);
     $currentPads.each(function () {
       if ($(this).hasClass("selected")) {
-        var instrumentName = $(this).parents().data("instrument");
+        var instrumentName = $(this).parents().parents().data("instrument");
         var bufferName = instrumentName + "Buffer";
         var waveName = instrumentName + "Wave";
         var wave = currentKit[waveName];
@@ -435,22 +435,22 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
 
   
   var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
-    trackName + '"><div class="col-md-2">' +
+    trackName + '"><div class="col-xs-2">' +
     '<a data-toggle="collapse" aria-expanded="false" aria-controls="edit-'+
     trackName +
     '" href="#edit-'+
     trackName +
     '" class="instrument-label"><span class="glyphicon glyphicon-chevron-down"><strong class="instrumentName">' +
     trackName +
-    '</strong></span></a></div><div class="col-md-10">\n' +
+    '</strong></span></a></div><div class="col-xs-10">\n' +
     padEl +
-    '<button class="deleteTrackButton btn btn-warning">delete</button></div><div id="edit-'+
+    '<button class="deleteTrackButton btn btn-warning"><i class="glyphicon glyphicon-remove"></i></button></div><div id="edit-'+
     trackName +
     '" class="edit-zone collapse"><div id="waveform-'+
     trackName +
     '"></div><div id="waveform-timeline-'+
     trackName +
-    '"></div><button class="refreshWaveRegionButton btn btn-success">refresh</button></div></div>';
+    '"></div><button class="refreshWaveRegionButton btn btn-success"><span class="glyphicon glyphicon-refresh"></span></button></div></div>';
 
   //var prevTrack = $('.instruments').children().last();
  // prevTrack.after(newTrack);
@@ -481,7 +481,7 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
 }
 
 function addDeleteTrackClickEvent(trackName) {
-  var deleteButton = $('div[data-instrument="' + trackName + '"]').children(".deleteTrackButton")[0];
+  var deleteButton = $('div[data-instrument="' + trackName + '"]').children().children(".deleteTrackButton")[0];
   $(deleteButton).click(function () {
     deleteTrack(trackName);
 
