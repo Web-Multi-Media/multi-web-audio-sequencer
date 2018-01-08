@@ -435,16 +435,16 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
 
   
   var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
-    trackName + '">' +
+    trackName + '"><div class="col-md-2">' +
     '<a data-toggle="collapse" aria-expanded="false" aria-controls="edit-'+
     trackName +
     '" href="#edit-'+
     trackName +
-    '" class="instrument-label"><strong class="instrumentName">' +
+    '" class="instrument-label"><span class="glyphicon glyphicon-chevron-down"><strong class="instrumentName">' +
     trackName +
-    '</strong></a>\n' +
+    '</strong></span></a></div><div class="col-md-10">\n' +
     padEl +
-    '<button class="deleteTrackButton btn btn-warning">delete</button><div id="edit-'+
+    '<button class="deleteTrackButton btn btn-warning">delete</button></div><div id="edit-'+
     trackName +
     '" class="edit-zone collapse"><div id="waveform-'+
     trackName +
@@ -598,14 +598,18 @@ function addNewTrackDetails() {
         $('#addNewTrack').attr('disabled', 'disabled')
       }
     });
-
-    $('#search-query').keyup(function() {
-      if($(this).val() != '') {
-        $('#search-button').removeAttr('disabled');
-      }
-      else {
-        $('#search-button').attr('disabled', 'disabled')
-      }
-    });
 }
+
+// enable/disable search button
+$('#search-query').keyup(function() {
+  if($(this).val() != '') {
+    $('#search-button').removeAttr('disabled');
+  }
+  else {
+    $('#search-button').attr('disabled', 'disabled')
+  }
+});
+
+
+
 
