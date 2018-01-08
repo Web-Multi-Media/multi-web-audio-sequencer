@@ -1,9 +1,9 @@
 .pad {
-  width: 3vw;
+  width: 2vw;
   height: 3vh;
   margin: 2px;
   display: inline-block;
-  background: rgb(88, 88, 194);
+  background: rgb(182, 173, 56);
   /* box-shadow: rgba(19, 24, 65, 0.098) -6px 6px 0px 0px inset; */
   border-radius: 4px;
   cursor: pointer;
@@ -38,7 +38,7 @@
   margin: 10px 0;
 }
 
-.instrument-label {
+/* .instrument-label {
   display: inline-block;
   vertical-align: top;
   width: 4em;
@@ -46,23 +46,23 @@
   top: 1em;
   text-align: right;
   margin-right: 0.5em;
-}
+} */
 
 .instruments {
   border-width: 1px;
   border-style: groove;
   border-radius: 10px;
   border-color: rgb(6, 69, 88);
-  background-image:linear-gradient(100deg, white, black);
+  background-color:rgb(26, 87, 167);
   font: black;
 }
 
-.instrument {
+.instrument, .instruments, #search-container, .wave, .tempoBorder, .edit-zone, .wave {
   border-width: 1px;
   border-style: groove;
   border-radius: 10px;
-  border-color: rgb(6, 69, 88);
-  background-image:linear-gradient(100deg, white, black);
+  border-color: rgb(41, 35, 66);
+  background-color:rgb(47, 96, 156);
   font: black;
 }
 
@@ -102,22 +102,18 @@
 }
 
 .deleteTrackButton {
-  display: inline-block;
-  position: absolute;
-  width: 5em;
-  height: 3em;
-  margin: 2px;
-  margin-left: 20px;
+  /* display: inline-block; */
+  /* position: right; */
+  width: 2vw;
+  height: 3vh;
+  /* margin: 2px; */
+  /* margin-left: 20px; */
 }
 
 wave {
   width: 600px;
   height: 80px!important;  
   border-radius: 5px;
-  border-width: 1px;
-  border-style: groove;
-  border-color: rgb(45, 73, 85);
-  background-color: rgb(181, 227, 247);
 }
 
 timeline {
@@ -133,38 +129,10 @@ a {
   color: black;
 }
 
-#search-container {
-  border-width: 1px;
-  border-style: groove;
-  border-radius: 10px;
-  border-color: rgb(6, 69, 88);
-  background-image:linear-gradient(100deg, white, black);
-  font: black;
-}
-
-.edit-zone {
-  border-width: 1px;
-  border-style: groove;
-  border-radius: 10px;
-  border-color: rgb(6, 69, 88);
-  background-image:linear-gradient(100deg, white, black);
-  font: black;
-}
-
 .jumbotron {
-  background-image:linear-gradient(100deg, white, black);
+  background-color:rgb(47, 96, 156);
 }
 
-.tempoBorder {
-  border-width: 1px;
-  border-style: groove;
-  border-radius: 10px;
-  border-color: rgb(6, 69, 88);
-  background-image:linear-gradient(100deg, white, black);
-  font: black;
-}
-
-.btn-warning {
-  height: 3vh;
-  width: 3vw;
+.rotation {
+  transform: rotate(180deg);
 }

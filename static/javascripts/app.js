@@ -183,7 +183,7 @@ function toggleSelectedListenerSocket(msg) {
     var instrument = messages[messages.length - 1];
     var column = parseInt(messages[1].split("_")[1]);
     var activate = (messages[2] == "selected") ? true : false;
-    var pad_el = $('[data-instrument="' + instrument + '"]').children()[column + 1];
+    var pad_el = $('[data-instrument="' + instrument + '"]').children().children()[column + 1];
   }
   var current_state = (pad_el.getAttribute("class").split(" ")[2] == "selected") ? true : false;
   if (current_state) {
@@ -429,28 +429,30 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
-  for (var i = 1; i < 16; i++) {
+  for (var i = 1; i < 15; i++) {
     padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
   }
-
+  padEl = padEl + '<div class="pad column_15"></div>';
   
   var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
-    trackName + '"><div class="col-xs-2">' +
+    trackName + '"><div class="col-xs-2 col-lg-2">' +
     '<a data-toggle="collapse" aria-expanded="false" aria-controls="edit-'+
     trackName +
     '" href="#edit-'+
     trackName +
-    '" class="instrument-label"><span class="glyphicon glyphicon-chevron-down"><strong class="instrumentName">' +
+    '" class="instrument-label" onclick="rotateButton()"><i id="chevron-' +
     trackName +
-    '</strong></span></a></div><div class="col-xs-10">\n' +
+    '" class="glyphicon glyphicon-chevron-down" style="position:relative;"></i> <strong class="instrumentName">' +
+    trackName +
+    '</strong></a></div><div class="col-xs-9 col-lg-9">' +
     padEl +
-    '<button class="deleteTrackButton btn btn-warning"><i class="glyphicon glyphicon-remove"></i></button></div><div id="edit-'+
+    '</div><div class="col-xs-1 col-lg-1"><button class="deleteTrackButton glyphicon glyphicon-remove btn btn-warning"></button></div><div id="edit-'+
     trackName +
     '" class="edit-zone collapse"><div id="waveform-'+
     trackName +
     '"></div><div id="waveform-timeline-'+
     trackName +
-    '"></div><button class="refreshWaveRegionButton btn btn-success"><span class="glyphicon glyphicon-refresh"></span></button></div></div>';
+    '"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
 
   //var prevTrack = $('.instruments').children().last();
  // prevTrack.after(newTrack);
@@ -610,6 +612,12 @@ $('#search-query').keyup(function() {
   }
 });
 
+function rotateButton(){ 
+  //console.log(idButton);
+  $('.glyphicon-chevron-down').toggleClass('rotation');
+    //$(this).find('glyphicon-chevron-down').toggleClass('rotation');
+    //console.log($('#chevron-' + trackName) );
+}
 
 
 
