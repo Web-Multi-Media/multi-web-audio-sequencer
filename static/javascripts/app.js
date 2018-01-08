@@ -162,23 +162,16 @@ function TranslateStateInActions(json) {
 
 
 function toggleSelectedListener(padMessage) {
-
-  // $('.pad').click(function () {
   padMessage.toggleClass("selected");
   // SEND THIS TO SERVER WITH SOCKET
-  console.log(padMessage.attr('class'), padMessage.parent().attr("data-instrument"));
-  var instru = padMessage.parent().attr("data-instrument");
+  var instru = padMessage.parent().parent().attr("data-instrument");
   var pad = padMessage.attr('class');
-  //var tempo = $('#tempo-input').val();
-
   return pad + ' ' + instru;
-  //});
 }
 
 // CALL THIS FUNCTION WHEN RECIEVING SOCKET
 function toggleSelectedListenerSocket(msg) {
-  console.log(msg);
-  messages = msg.split(" ");
+  var messages = msg.split(" ");
   if (messages[0] == "pad") {
     var instrument = messages[messages.length - 1];
     var column = parseInt(messages[1].split("_")[1]);
