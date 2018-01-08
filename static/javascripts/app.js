@@ -450,7 +450,7 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
     trackName +
     '"></div><div id="waveform-timeline-'+
     trackName +
-    '"></div><button class="refreshWaveRegionButton">refresh</button></div></div>';
+    '"></div><button class="refreshWaveRegionButton btn btn-success">refresh</button></div></div>';
 
   var prevTrack = $('.instruments').children().last();
   prevTrack.after(newTrack);
@@ -582,9 +582,18 @@ function addRefreshRegionEvent(trackName) {
 // show new track details
 function addNewTrackDetails() {
   $('#trackDetails').fadeIn('slow');
+
   $('#addNewTrack').on('click', function() {
     $('#trackDetails').fadeOut('slow');
-  }
-)
+  });
+
+    $('#newTrackName').keyup(function() {
+      if($(this).val() != '') {
+        $('#addNewTrack').removeAttr('disabled');
+      }
+      else {
+        $('#addNewTrack').attr('disabled', 'disabled')
+      }
+    });
 }
 

@@ -33,14 +33,16 @@
   </div>
     <div id="instrument-section">
       <div class="row">
-        <div class="instruments col-md-offset-1 col-md-10">
+        <div class="instruments col-md-12">
           <div></div>
         </div>
       </div>
-    <div>
+    </div>
     <br>
+    <div class="details">
       <div class="row">
-        <div class="col-md-10 col-md-offset-1">
+        <div class="col-md-12">
+            <br>
             <button type="button" class="btn btn-primary btn-lg col-md-10 col-md-offset-1" onclick="addNewTrackDetails()">Add Track</button>
         </div>
       </div>
@@ -50,7 +52,7 @@
             <div id="trackDetails" hidden>
               <input type="text" id="newTrackName" placeholder="New track name">
               <input type="text" id="newTrackUrl" placeholder="Sound url" hidden>
-              <button type="button" id="addNewTrack" class="btn btn-success">New track</button>
+              <button type="button" id="addNewTrack" class="btn btn-success" disabled>New track</button>
            </div>
         </div>
       </div>
@@ -63,6 +65,8 @@
             <div id="error" style="color:red"></div>
           </div>
       </div>
+      <br>
+    </div>
       <div class="row">
         <div class="col-md-6">
           <div class="filter-controls col-md-4">

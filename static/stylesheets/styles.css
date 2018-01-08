@@ -3,8 +3,8 @@
   height: 3em;
   margin: 2px;
   display: inline-block;
-  background: #DADADA;
-  box-shadow: rgba(0, 0, 0, 0.0980392) -6px 6px 0px 0px inset;
+  background: rgb(204, 113, 199);
+  box-shadow: rgba(27, 3, 27, 0.098) -6px 6px 0px 0px inset;
   cursor: pointer;
 }
 
@@ -50,8 +50,19 @@
 .instruments {
   border-width: 1px;
   border-style: groove;
-  border-color: blue;
-  background-color: rgb(44, 9, 77);
+  border-radius: 10px;
+  border-color: rgb(6, 69, 88);
+  background-color: rgb(79, 123, 218);
+  font: black;
+}
+
+.instrument {
+  border-width: 1px;
+  border-style: groove;
+  border-radius: 10px;
+  border-color: rgb(6, 69, 88);
+  background-color: rgb(79, 123, 218);
+  font: black;
 }
 
 .tempo-container {
@@ -101,6 +112,11 @@
 wave {
   width: 600px;
   height: 80px!important;  
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: groove;
+  border-color: rgb(45, 73, 85);
+  background-color: rgb(181, 227, 247);
 }
 
 timeline {
@@ -110,4 +126,26 @@ timeline {
 .edit-zone {
   border-radius: 5px;
   background-color: #e1dede;
+}
+
+a {
+  color: black;
+}
+
+.details {
+  border-width: 1px;
+  border-style: groove;
+  border-radius: 10px;
+  border-color: rgb(6, 69, 88);
+  background-color: rgb(79, 123, 218);
+  font: black;
+}
+
+.edit-zone {
+  border-width: 1px;
+  border-style: groove;
+  border-radius: 10px;
+  border-color: rgb(6, 69, 88);
+  background-color: rgb(79, 123, 218);
+  font: black;
 }
