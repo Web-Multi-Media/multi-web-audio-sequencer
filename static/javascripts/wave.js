@@ -63,6 +63,7 @@ Wave.prototype.clear = function() {
   this.endTime = null;
   this.duration = null;
   this.soundUrl = null;
+  this.loadedAfterCollapse = false;
 }
 
 Wave.prototype.setStart = function(startTime) {
