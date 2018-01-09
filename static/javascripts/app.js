@@ -531,8 +531,9 @@ Search.prototype.searchFreesound = function(query, page=1) {
     function (sounds) {
       var msg = ""
       self.numSounds = sounds.count;
-      self.numPages = parseInt(self.numSounds/15);
-      for (i = 0; i <= Math.min(14, self.numSounds); i++) {
+      self.numPages = Math.ceil(self.numSounds/15);
+      var numSoundCurrentPage = sounds.results.length;
+      for (i = 0; i < numSoundCurrentPage; i++) {
         var snd = sounds.getSound(i);
         msg += "<div>" + self.freesoundIframe(snd.id) + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" + snd.previews["preview-lq-mp3"] + "'>Drag</div></div>";
       }
@@ -542,9 +543,13 @@ Search.prototype.searchFreesound = function(query, page=1) {
       $('#next').removeAttr('disabled');
       if (self.page >= self.numPages) {
         $('#next').attr('disabled', 'disabled');
+      } else {
+        $('#next').removeAttr('disabled');
       }
       if (self.page === 1) {
         $('#previous').attr('disabled', 'disabled');
+      } else {
+        $('#previous').removeAttr('disabled');
       }
       document.getElementById('error').innerHTML = "";
     },
