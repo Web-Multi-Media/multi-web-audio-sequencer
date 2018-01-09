@@ -36,16 +36,6 @@
   margin: 10px 0;
 }
 
-/* .instrument-label {
-  display: inline-block;
-  vertical-align: top;
-  width: 4em;
-  position: relative;
-  top: 1em;
-  text-align: right;
-  margin-right: 0.5em;
-} */
-
 .instruments {
   border-width: 1px;
   border-style: groove;
