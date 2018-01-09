@@ -13,8 +13,8 @@ Wave.prototype.init = function(trackName) {
   this.wavesurfer = WaveSurfer.create({
     cursorWidth: 0,
     container: '#waveform-'+trackName,
-    waveColor: 'gray',
-    progressColor: 'gray',
+    waveColor: 'black',
+    progressColor: 'black',
   });
   this.trackName = trackName;
 };
@@ -35,7 +35,7 @@ Wave.prototype.load = function(soundUrl) {
     wave.region = wavesurfer.addRegion({
       start: wave.startTime,
       end: wave.endTime,
-      color: 'hsla(400, 100%, 30%, 0.1)',
+      color: 'hsla(400, 100%, 30%, 0.3)',
     });
     wavesurfer.on('region-updated', function(obj) {
       wave.startTime = obj.start;

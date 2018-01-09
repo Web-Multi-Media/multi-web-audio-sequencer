@@ -437,7 +437,7 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
     trackName +
     '</strong></a></div><div class="col-xs-9 col-lg-9">' +
     padEl +
-    '</div><div class="col-xs-1 col-lg-1"><button class="deleteTrackButton glyphicon glyphicon-remove btn btn-warning"></button></div><div id="edit-'+
+    '</div><div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-'+
     trackName +
     '" class="edit-zone collapse"><div id="waveform-'+
     trackName +

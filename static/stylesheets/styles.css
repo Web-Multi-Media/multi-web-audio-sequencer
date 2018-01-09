@@ -1,11 +1,9 @@
 .pad {
-  width: 2vw;
-  height: 3vh;
-  margin: 0.4%;
+  width: 2.4vw;
+  height: 4vh;
   display: inline-block;
   background: rgb(182, 173, 56);
-  /* box-shadow: rgba(19, 24, 65, 0.098) -6px 6px 0px 0px inset; */
-  border-radius: 4px;
+  border-radius: 2px;
   cursor: pointer;
 }
 
@@ -57,13 +55,22 @@
   font: black;
 }
 
-.instrument, .instruments, #search-container, .wave, .tempoBorder, .edit-zone, .wave {
+.instrument, .instruments, #search-container, .wave, .tempoBorder, .wave {
   border-width: 1px;
   border-style: groove;
   border-radius: 10px;
   border-color: rgb(41, 35, 66);
   background-color:rgb(47, 96, 156);
   font: black;
+}
+
+.instrument {
+  padding: 2px;
+  margin: 2px;
+}
+
+.section {
+  padding: 10px; 
 }
 
 .tempo-container {
@@ -104,25 +111,20 @@
 .deleteTrackButton {
   /* display: inline-block; */
   /* position: right; */
-  width: 2vw;
-  height: 3vh;
+  width: 2.4vw;
+  height: 4vh;
   /* margin: 2px; */
   /* margin-left: 20px; */
 }
 
 wave {
-  width: 600px;
+  width: 100%;
   height: 80px!important;  
   border-radius: 5px;
 }
 
 timeline {
-  width: 600px!important;
-}
-
-.edit-zone {
-  border-radius: 5px;
-  background-color: #e1dede;
+    width: 100%;!important;
 }
 
 a {
