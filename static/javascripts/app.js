@@ -559,9 +559,12 @@ Search.prototype.searchFreesound = function(query, page=1) {
 Search.prototype.addButtonEvents = function() {
   var self = this;
   $('#search-button').click(function () {
-    self.query = $('#search-query').val();
-    self.searchFreesound(self.query);
+    self.searchEvent();
+  });  
+  $('#search-form').submit(function () {
+    self.searchEvent();
   });
+  
 
   $('#previous').click(function () {
     self.page -= 1;
@@ -574,6 +577,10 @@ Search.prototype.addButtonEvents = function() {
   });
 };
 
+Search.prototype.searchEvent = function() {
+    this.query = $('#search-query').val();
+    this.searchFreesound(this.query);
+};
 
 // Drag and drop sounds
 function allowDrop(ev) {
