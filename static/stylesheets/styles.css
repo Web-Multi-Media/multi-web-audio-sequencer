@@ -108,13 +108,7 @@
 }
 
 wave {
-  width: 100%;
-  height: 80px!important;  
-  border-radius: 5px;
-}
-
-timeline {
-    width: 100%;!important;
+  width: 101%;
 }
 
 a {

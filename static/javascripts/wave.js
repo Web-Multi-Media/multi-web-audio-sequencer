@@ -15,6 +15,7 @@ Wave.prototype.init = function(trackName) {
     container: '#waveform-'+trackName,
     waveColor: 'black',
     progressColor: 'black',
+    height: 50
   });
   this.trackName = trackName;
 };
