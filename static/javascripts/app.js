@@ -31,18 +31,15 @@ if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudio
 }
 
 $(function () {
-
   init();
   addNewTrackEvent();
-  //toggleSelectedListener();
   playPauseListener();
   lowPassFilterListener();
   reverbListener();
   createLowPassFilterSliders();
   initializeTempo();
   changeTempoListener();
-  addSearchButtonEvent();
-
+  search = initSearch();
 });
 
 function createLowPassFilterSliders() {
@@ -495,16 +492,36 @@ function deleteTrack(trackName) {
   delete currentKit[trackName + "Buffer"];
 }
 
-// FREESOUND
-freesound.setToken("bs5DQrWNL9d8zrQl0ApCvcQqwg0gg8ytGE60qg5o");
 
-function freesoundIframe(soundId) {
+// FREESOUND SEARCH
+function initSearch() {
+  var search = new Search();
+  search.setToken();
+  search.addButtonEvents();
+  return search;
+}
+
+function Search() {
+  var query = null;
+  var page = null;
+  var numPages = null;
+  var numSounds = null;
+}
+
+Search.prototype.setToken = function() {
+  freesound.setToken("bs5DQrWNL9d8zrQl0ApCvcQqwg0gg8ytGE60qg5o");
+};
+
+Search.prototype.freesoundIframe = function(soundId) {
   return '<iframe frameborder="0" scrolling="no" src="https://freesound.org/embed/sound/iframe/' + soundId + '/simple/small/" width="375" height="30"></iframe>';
 }
 
-function searchFreesound(query, page=1) {
-  var filter = "duration:[0.0 TO 10.0]"
-  var sort = "rating_desc"
+Search.prototype.searchFreesound = function(query, page=1) {
+  var self = this;
+  self.query = query;
+  self.page = page;
+  var filter = "duration:[0.0 TO 10.0]";
+  var sort = "rating_desc";
   freesound.textSearch(query, {
       page: page,
       filter: filter,
@@ -513,63 +530,47 @@ function searchFreesound(query, page=1) {
     },
     function (sounds) {
       var msg = ""
-      var numSounds = sounds.count;
-      numPages = parseInt(numSounds/15);
-      for (i = 0; i <= Math.min(14, numSounds); i++) {
+      self.numSounds = sounds.count;
+      self.numPages = parseInt(self.numSounds/15);
+      for (i = 0; i <= Math.min(14, self.numSounds); i++) {
         var snd = sounds.getSound(i);
-        msg += "<div>" + freesoundIframe(snd.id) + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" + snd.previews["preview-lq-mp3"] + "'>Drag</div></div>";
+        msg += "<div>" + self.freesoundIframe(snd.id) + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" + snd.previews["preview-lq-mp3"] + "'>Drag</div></div>";
       }
       msg += "</ul>"
       document.getElementById("search-result-container").innerHTML = msg;
+      $('#page').html(self.page+'/' + self.numPages);
+      $('#next').removeAttr('disabled');
+      if (self.page >= self.numPages) {
+        $('#next').attr('disabled', 'disabled');
+      }
+      if (self.page === 1) {
+        $('#previous').attr('disabled', 'disabled');
+      }
+      document.getElementById('error').innerHTML = "";
     },
     function () {
       document.getElementById('error').innerHTML = "Error while searching...";
     }
   );
-}
+};
 
-function addSearchButtonEvent() {
-  var query = $('#search-query').val();
-  var page = $('#search-page').val();
-
+Search.prototype.addButtonEvents = function() {
+  var self = this;
   $('#search-button').click(function () {
-    if (page === '') {
-      searchFreesound(query, page = 1);
-      $('#page').html('1/' + numPages);
-      $('#next').removeAttr('disabled');
-    } else {
-      page = $('#search-page').val();
-      searchFreesound(query, page);
-      $('#page').html(page + '/' + numPages);
-      $('#next').removeAttr('disabled');
-      $('#previous').removeAttr('disabled');
+    self.query = $('#search-query').val();
+    self.searchFreesound(self.query);
+  });
 
-      if (page >= numPages){
-        $('#next').attr('disabled', 'disabled');
-      }
-    }
-   });
+  $('#previous').click(function () {
+    self.page -= 1;
+    self.searchFreesound(self.query, self.page);
+  });
 
-    $('#previous').click(function(){
-      page--;
-      if(page === 1){
-        $('#previous').attr('disabled', 'disabled');
-      }
-      searchFreesound(query, page);
-      $('#page').html(page + '/' + numPages);
-      $('#next').removeAttr('disabled');
-    })
-  
-    $('#next').click(function(){
-      page++;
-      if (page >= numPages){
-        $('#next').attr('disabled', 'disabled');
-      }
-      $('#previous').removeAttr('disabled');
-      searchFreesound(query, page);
-      $('#page').html(page + '/' + numPages);
-    });
-}
+  $('#next').click(function () {
+    self.page += 1;
+    self.searchFreesound(self.query, self.page);
+  });
+};
 
 
 // Drag and drop sounds

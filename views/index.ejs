@@ -53,26 +53,26 @@
     <br>
     <div class="row" id="search-container">
       <div class="col-md-8">
-        <input type="text" id="search-query" placeholder="Enter query">
+        <input type="text" id="search-query" placeholder="Enter query" class="my-box">
         <button type="button" id="search-button" class="btn btn-success" disabled>Search</button>
-        <input type="text" id="search-page" placeholder="Page number">
+        &emsp;
+        <nav aria-label="Page navigation" style="display: inline-block;">
+          <ul class="pagination">
+            <li>
+              <button class="btn btn-success" type="button" id="previous" aria-label="Previous" disabled>
+                Previous
+              </button>
+            </li>
+            <span class="my-box" id="page"> -/- </span>
+            <li>
+              <button class="btn btn-success" type="button" id="next" aria-label="Next" disabled>
+                Next
+             </button>
+            </li>
+          </ul>
+        </nav>
         <div id="search-result-container"></div>
         <div id="error" style="color:red"></div>
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-              <li>
-                <button class="btn btn-success" type="button" id="previous" aria-label="Previous" disabled>
-                  <span aria-hidden="true">&laquo;</span>
-                </button>
-              </li>
-              <span id="page"></span>
-              <li>
-                <button class="btn btn-success" type="button" id="next" aria-label="Next" disabled>
-                  <span aria-hidden="true">&raquo;</span>
-               </button>
-              </li>
-            </ul>
-          </nav>
       </div>
     </div>
     <br>
@@ -99,10 +99,7 @@
       </div>
     </div>
   </div>
-  <div class="row">
-    <div id="waveform"></div>
-  </div>
-  </div>
+  
   <!-- Javascripts -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
