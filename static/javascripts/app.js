@@ -445,9 +445,6 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
     trackName +
     '"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
 
-  //var prevTrack = $('.instruments').children().last();
- // prevTrack.after(newTrack);
-
  var prevTrack = $('#newTrack');
   prevTrack.before(newTrack);
 
@@ -514,7 +511,7 @@ Search.prototype.setToken = function() {
 
 Search.prototype.freesoundIframe = function(soundId) {
   return '<iframe frameborder="0" scrolling="no" src="https://freesound.org/embed/sound/iframe/' + soundId + '/simple/small/" width="375" height="30"></iframe>';
-}
+};
 
 Search.prototype.searchFreesound = function(query, page=1) {
   var self = this;
@@ -652,11 +649,3 @@ function addRotateTriangleEvent(trackName) {
     $('div[data-instrument="' + trackName + '"]').children().children().children(".glyphicon").toggleClass('rotation');
   });
 }
-
-// // change page when searching on freesound
-// function changeFreesoundPage() {
-//   var query = $('#search-query').val();
-//   var page = $('#search-page').val();
-
-  
-// }
