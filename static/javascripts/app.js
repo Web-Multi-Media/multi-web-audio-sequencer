@@ -533,7 +533,6 @@ function addSearchButtonEvent() {
   var page = $('#search-page').val();
 
   $('#search-button').click(function () {
-
     if (page === '') {
       searchFreesound(query, page = 1);
       $('#page').html('1/' + numPages);
@@ -550,11 +549,6 @@ function addSearchButtonEvent() {
       }
     }
    });
-
-
-   var page = $('#search-page').val();
-   searchFreesound(query, page);
-
 
     $('#previous').click(function(){
       page--;
@@ -575,8 +569,6 @@ function addSearchButtonEvent() {
       searchFreesound(query, page);
       $('#page').html(page + '/' + numPages);
     });
-
-    
 }
 
 
