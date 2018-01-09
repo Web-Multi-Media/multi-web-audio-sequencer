@@ -36,7 +36,7 @@ Wave.prototype.load = function(soundUrl) {
     wave.region = wavesurfer.addRegion({
       start: wave.startTime,
       end: wave.endTime,
-      color: 'hsla(400, 100%, 30%, 0.3)',
+      color: 'hsla(400, 100%, 30%, 0.2)',
     });
     wavesurfer.on('region-updated', function(obj) {
       wave.startTime = obj.start;
