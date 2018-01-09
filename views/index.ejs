@@ -58,6 +58,21 @@
         <input type="text" id="search-page" placeholder="Page number">
         <div id="search-result-container"></div>
         <div id="error" style="color:red"></div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+              <li>
+                <button type="button" id="previous" aria-label="Previous" disabled>
+                  <span aria-hidden="true">&laquo;</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" id="next" aria-label="Next" disabled>
+                  <span aria-hidden="true">&raquo;</span>
+               </button>
+              </li>
+            </ul>
+          </nav>
+          <p id="page"></p>
       </div>
     </div>
     <br>

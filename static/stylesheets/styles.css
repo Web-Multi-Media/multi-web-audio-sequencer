@@ -1,7 +1,7 @@
 .pad {
   width: 2vw;
   height: 3vh;
-  margin: 2px;
+  margin: 0.4%;
   display: inline-block;
   background: rgb(182, 173, 56);
   /* box-shadow: rgba(19, 24, 65, 0.098) -6px 6px 0px 0px inset; */

@@ -23,6 +23,9 @@ var TEMPO_MAX = 200;
 var TEMPO_MIN = 40;
 var TEMPO_STEP = 4;
 
+
+var numPages;
+
 if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudioContext')) {
   window.webkitAudioContext = AudioContext;
 }
@@ -511,7 +514,7 @@ function searchFreesound(query, page=1) {
     function (sounds) {
       var msg = ""
       var numSounds = sounds.count;
-      var numPages = parseInt(numSounds/15);
+      numPages = parseInt(numSounds/15);
       for (i = 0; i <= Math.min(14, numSounds); i++) {
         var snd = sounds.getSound(i);
         msg += "<div>" + freesoundIframe(snd.id) + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" + snd.previews["preview-lq-mp3"] + "'>Drag</div></div>";
@@ -526,11 +529,54 @@ function searchFreesound(query, page=1) {
 }
 
 function addSearchButtonEvent() {
+  var query = $('#search-query').val();
+  var page = $('#search-page').val();
+
   $('#search-button').click(function () {
-    var query = $('#search-query').val();
-    var page = $('#search-page').val();
-    searchFreesound(query, page);
-  });
+
+    if (page === '') {
+      searchFreesound(query, page = 1);
+      $('#page').html('1/' + numPages);
+      $('#next').removeAttr('disabled');
+    } else {
+      page = $('#search-page').val();
+      searchFreesound(query, page);
+      $('#page').html(page + '/' + numPages);
+      $('#next').removeAttr('disabled');
+      $('#previous').removeAttr('disabled');
+
+      if (page >= numPages){
+        $('#next').attr('disabled', 'disabled');
+      }
+    }
+   });
+
+
+   var page = $('#search-page').val();
+   searchFreesound(query, page);
+
+
+    $('#previous').click(function(){
+      page--;
+      if(page === 1){
+        $('#previous').attr('disabled', 'disabled');
+      }
+      searchFreesound(query, page);
+      $('#page').html(page + '/' + numPages);
+      $('#next').removeAttr('disabled');
+    })
+  
+    $('#next').click(function(){
+      page++;
+      if (page >= numPages){
+        $('#next').attr('disabled', 'disabled');
+      }
+      $('#previous').removeAttr('disabled');
+      searchFreesound(query, page);
+      $('#page').html(page + '/' + numPages);
+    });
+
+    
 }
 
 
@@ -608,3 +654,11 @@ function addRotateTriangleEvent(trackName) {
     $('div[data-instrument="' + trackName + '"]').children().children().children(".glyphicon").toggleClass('rotation');
   });
 }
+
+// // change page when searching on freesound
+// function changeFreesoundPage() {
+//   var query = $('#search-query').val();
+//   var page = $('#search-page').val();
+
+  
+// }
