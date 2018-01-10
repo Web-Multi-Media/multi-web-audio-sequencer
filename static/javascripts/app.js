@@ -150,16 +150,13 @@ function TranslateStateInActions(sequencerState) {
   }
 
   // Activate pads
-  var jsonState = json[0];
   for (var i = 0; i < trackNames.length; i++) {
-    var tabJson = JSON.parse(jsonState[i]);
-    var trackTabs = tabs[i];
+    var trackTabs = pads[i];
     for (var j = 0; j < trackTabs.length; j++) {
-      toggleSelectedListenerSocket(trackTabs[j]);
+      toggleSelectedListenerSocket(i, j, trackTabs[j]);
     }
   }
 }
-
 
 function toggleSelectedListener(padMessage) {
   padMessage.toggleClass("selected");
@@ -169,23 +166,16 @@ function toggleSelectedListener(padMessage) {
   return pad + ' ' + instru;
 }
 
-// CALL THIS FUNCTION WHEN RECIEVING SOCKET
-function toggleSelectedListenerSocket(msg) {
-  var messages = msg.split(" ");
-  if (messages[0] == "pad") {
-    var instrument = messages[messages.length - 1];
-    var column = parseInt(messages[1].split("_")[1]);
-    var activate = (messages[2] == "selected") ? true : false;
-    var pad_el = $('[data-instrument="' + instrument + '"]').children().children()[column + 1];
-  }
-  var current_state = (pad_el.getAttribute("class").split(" ")[2] == "selected") ? true : false;
-  if (current_state) {
-    if (activate == false) {
-      pad_el.classList.remove("selected")
+function toggleSelectedListenerSocket(trackId, padId, padState) {
+  pad_el = $('.instrument').eq(trackId).children().children().eq(padId + 1);
+  currentState = pad_el.hasClass("selected");
+  if (currentState) {
+    if (padState == 0) {
+      pad_el.removeClass("selected");
     }
   } else {
-    if (activate) {
-      pad_el.classList.add("selected")
+    if (padState == 1) {
+      pad_el.addClass("selected");
     }
   }
 }

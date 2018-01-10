@@ -14,9 +14,9 @@ console.log('server is:', fullservername);
 var sequencerState = {
   trackNames: ['kick', 'snare', 'hihat'],
   pads: {
-    '0': [],
-    '1': [],
-    '2': []
+    '0': [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    '1': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    '2': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   },
   sounds: {
     '0': 'http://'+fullservername+'/assets/sounds/drum-samples/TR808/kick.mp3',
