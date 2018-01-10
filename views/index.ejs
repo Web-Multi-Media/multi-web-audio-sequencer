@@ -159,8 +159,8 @@
 
       // on recieve new track
       socket.on('sendNewTrack', function (message) {
-        addNewTrack(message[0], message[1]);
         console.log('recieveNewTrack: ' + message);
+        addNewTrack(message[0], message[1]);
       });
 
       // on recieve load sound

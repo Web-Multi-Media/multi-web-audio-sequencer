@@ -63,10 +63,11 @@ io.sockets.on('connection', function (socket) {
   // NEW TRACK
   socket.on('newTrack', function(message) {
     console.log('receive new track: ' + message);
-    socket.broadcast.emit('sendNewTrack', message);
     var trackName = message[0];
     var soundUrl = message[1];
     var trackId = sequencerState.trackNames.length;
+    message.unshift(trackId);
+    socket.broadcast.emit('sendNewTrack', message);
     sequencerState.trackNames[trackId] = trackName;
     sequencerState.pads[trackId] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     sequencerState.sounds[trackId] = soundUrl;
