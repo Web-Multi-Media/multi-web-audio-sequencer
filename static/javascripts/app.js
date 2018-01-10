@@ -400,9 +400,9 @@ function addNewTrackEvent() {
   $('#addNewTrack').click(function () {
     var trackName = $('#newTrackName').val();
     var soundUrl = $('#newTrackUrl').val();
-
+    var trackId = $('.intrument').lengh;
     if (trackNameExist() === false) {
-      addNewTrack(trackName, soundUrl);
+      addNewTrack(trackId, trackName, soundUrl);
       // send to server
       sendNewTrack(trackName, soundUrl);
     }

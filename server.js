@@ -52,24 +52,25 @@ io.sockets.on('connection', function (socket) {
 
   // PAD RECEPTION VIA THE CLIENT
   socket.on('pad', function (message) {
-    console.log('recieve pad change :' + message);
+    console.log('receive pad change: ' + message);
     socket.broadcast.emit('sendPad', message);
     var trackId = message[0];
     var padId = message[1];
     var padState = message[2];
-    
     sequencerState['pads'][trackId][padId] = padState;
   });
   
   // NEW TRACK
   socket.on('newTrack', function(message) {
+    console.log('receive new track: ' + message);
+    socket.broadcast.emit('sendNewTrack', message);
     var trackName = message[0];
     var soundUrl = message[1];
-    console.log('new track: ' + message);
-    socket.broadcast.emit('sendNewTrack', message);
-    sequencerState.pads[trackName] = new Map();
-    sequencerState.sounds[trackName] = soundUrl;
-    sequencerState.waves[trackName] = [false, false];
+    var trackId = sequencerState.trackNames.length;
+    sequencerState.trackNames[trackId] = trackName;
+    sequencerState.pads[trackId] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    sequencerState.sounds[trackId] = soundUrl;
+    sequencerState.waves[trackId] = [false, false];
   });
   
   // LOAD SOUND INTO A TRACK
