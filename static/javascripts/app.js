@@ -578,3 +578,4 @@ function addRefreshRegionEvent(trackName) {
     currentKit[waveName].sendRegion();
   });
 }
+
