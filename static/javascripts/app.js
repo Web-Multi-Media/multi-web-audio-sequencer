@@ -23,23 +23,23 @@ var TEMPO_MAX = 200;
 var TEMPO_MIN = 40;
 var TEMPO_STEP = 4;
 
+
+var numPages;
+
 if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudioContext')) {
   window.webkitAudioContext = AudioContext;
 }
 
 $(function () {
-
   init();
   addNewTrackEvent();
-  //toggleSelectedListener();
   playPauseListener();
   lowPassFilterListener();
   reverbListener();
   createLowPassFilterSliders();
   initializeTempo();
   changeTempoListener();
-  addSearchButtonEvent();
-
+  search = initSearch();
 });
 
 function createLowPassFilterSliders() {
@@ -162,28 +162,21 @@ function TranslateStateInActions(json) {
 
 
 function toggleSelectedListener(padMessage) {
-
-  // $('.pad').click(function () {
   padMessage.toggleClass("selected");
   // SEND THIS TO SERVER WITH SOCKET
-  console.log(padMessage.attr('class'), padMessage.parent().attr("data-instrument"));
-  var instru = padMessage.parent().attr("data-instrument");
+  var instru = padMessage.parent().parent().attr("data-instrument");
   var pad = padMessage.attr('class');
-  //var tempo = $('#tempo-input').val();
-
   return pad + ' ' + instru;
-  //});
 }
 
 // CALL THIS FUNCTION WHEN RECIEVING SOCKET
 function toggleSelectedListenerSocket(msg) {
-  console.log(msg);
-  messages = msg.split(" ");
+  var messages = msg.split(" ");
   if (messages[0] == "pad") {
     var instrument = messages[messages.length - 1];
     var column = parseInt(messages[1].split("_")[1]);
     var activate = (messages[2] == "selected") ? true : false;
-    var pad_el = $('[data-instrument="' + instrument + '"]').children()[column + 1];
+    var pad_el = $('[data-instrument="' + instrument + '"]').children().children()[column + 1];
   }
   var current_state = (pad_el.getAttribute("class").split(" ")[2] == "selected") ? true : false;
   if (current_state) {
@@ -320,7 +313,7 @@ function schedule() {
     var $currentPads = $(".column_" + rhythmIndex);
     $currentPads.each(function () {
       if ($(this).hasClass("selected")) {
-        var instrumentName = $(this).parents().data("instrument");
+        var instrumentName = $(this).parents().parents().data("instrument");
         var bufferName = instrumentName + "Buffer";
         var waveName = instrumentName + "Wave";
         var wave = currentKit[waveName];
@@ -429,31 +422,31 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
-  for (var i = 1; i < 16; i++) {
+  for (var i = 1; i < 15; i++) {
     padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
   }
-
+  padEl = padEl + '<div class="pad column_15"></div>';
   
   var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
-    trackName + '">' +
+    trackName + '"><div class="col-xs-2 col-lg-2">' +
     '<a data-toggle="collapse" aria-expanded="false" aria-controls="edit-'+
     trackName +
     '" href="#edit-'+
     trackName +
-    '" class="instrument-label"><strong class="instrumentName">' +
+    '" class="instrument-label"><i class="glyphicon glyphicon-chevron-right"></i> <strong class="instrumentName">' +
     trackName +
-    '</strong></a>\n' +
+    '</strong></a></div><div class="col-xs-9 col-lg-9">' +
     padEl +
-    '<button class="deleteTrackButton btn btn-warning">delete</button><div id="edit-'+
+    '</div><div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-'+
     trackName +
     '" class="edit-zone collapse"><div id="waveform-'+
     trackName +
     '"></div><div id="waveform-timeline-'+
     trackName +
-    '"></div><button class="refreshWaveRegionButton">refresh</button></div></div>';
+    '"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
 
-  var prevTrack = $('.instruments').children().last();
-  prevTrack.after(newTrack);
+ var prevTrack = $('#newTrack');
+  prevTrack.before(newTrack);
 
   // load wavesurfer visu
   currentKit[trackName+'Wave'] = new Wave();
@@ -475,10 +468,11 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
   // add click events
   addPadClickEvent(socket, trackName);
   addDeleteTrackClickEvent(trackName);
+  addRotateTriangleEvent(trackName);
 }
 
 function addDeleteTrackClickEvent(trackName) {
-  var deleteButton = $('div[data-instrument="' + trackName + '"]').children(".deleteTrackButton")[0];
+  var deleteButton = $('div[data-instrument="' + trackName + '"]').children().children(".deleteTrackButton")[0];
   $(deleteButton).click(function () {
     deleteTrack(trackName);
 
@@ -495,17 +489,36 @@ function deleteTrack(trackName) {
   delete currentKit[trackName + "Buffer"];
 }
 
-// FREESOUND
-freesound.setToken("bs5DQrWNL9d8zrQl0ApCvcQqwg0gg8ytGE60qg5o");
 
-function freesoundIframe(soundId) {
-  return '<iframe frameborder="0" scrolling="no" src="https://freesound.org/embed/sound/iframe/' + soundId + '/simple/small/" width="375" height="30"></iframe>';
+// FREESOUND SEARCH
+function initSearch() {
+  var search = new Search();
+  search.setToken();
+  search.addButtonEvents();
+  return search;
 }
 
-function searchFreesound(query) {
-  var page = 1
-  var filter = "duration:[0.3 TO 2.0]"
-  var sort = "rating_desc"
+function Search() {
+  var query = null;
+  var page = null;
+  var numPages = null;
+  var numSounds = null;
+}
+
+Search.prototype.setToken = function() {
+  freesound.setToken("bs5DQrWNL9d8zrQl0ApCvcQqwg0gg8ytGE60qg5o");
+};
+
+Search.prototype.freesoundIframe = function(soundId) {
+  return '<iframe frameborder="0" scrolling="no" src="https://freesound.org/embed/sound/iframe/' + soundId + '/simple/small/" width="375" height="30"></iframe>';
+};
+
+Search.prototype.searchFreesound = function(query, page=1) {
+  var self = this;
+  self.query = query;
+  self.page = page;
+  var filter = "duration:[0.0 TO 10.0]";
+  var sort = "rating_desc";
   freesound.textSearch(query, {
       page: page,
       filter: filter,
@@ -514,29 +527,60 @@ function searchFreesound(query) {
     },
     function (sounds) {
       var msg = ""
-      //      msg = "<h3>Searching for: " + query + "</h3>"
-      //      msg += "With filter: " + filter + " and sorting: " + sort + "<br>"
-      //      msg += "Num results: " + sounds.count + "<br><ul>"
-      for (i = 0; i <= 10; i++) {
+      self.numSounds = sounds.count;
+      self.numPages = Math.ceil(self.numSounds/15);
+      var numSoundCurrentPage = sounds.results.length;
+      for (i = 0; i < numSoundCurrentPage; i++) {
         var snd = sounds.getSound(i);
-        msg += "<div>" + freesoundIframe(snd.id) + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" + snd.previews["preview-lq-mp3"] + "'>Drag</div></div>";
+        msg += "<div>" + self.freesoundIframe(snd.id) + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" + snd.previews["preview-lq-mp3"] + "'>Drag</div></div>";
       }
       msg += "</ul>"
       document.getElementById("search-result-container").innerHTML = msg;
+      $('#page').html(self.page+'/' + self.numPages);
+      $('#next').removeAttr('disabled');
+      if (self.page >= self.numPages) {
+        $('#next').attr('disabled', 'disabled');
+      } else {
+        $('#next').removeAttr('disabled');
+      }
+      if (self.page === 1) {
+        $('#previous').attr('disabled', 'disabled');
+      } else {
+        $('#previous').removeAttr('disabled');
+      }
+      document.getElementById('error').innerHTML = "";
     },
     function () {
       document.getElementById('error').innerHTML = "Error while searching...";
     }
   );
-}
+};
 
-function addSearchButtonEvent() {
+Search.prototype.addButtonEvents = function() {
+  var self = this;
   $('#search-button').click(function () {
-    var query = $('#search-query').val();
-    searchFreesound(query);
+    self.searchEvent();
+  });  
+  $('#search-form').submit(function () {
+    self.searchEvent();
   });
-}
+  
 
+  $('#previous').click(function () {
+    self.page -= 1;
+    self.searchFreesound(self.query, self.page);
+  });
+
+  $('#next').click(function () {
+    self.page += 1;
+    self.searchFreesound(self.query, self.page);
+  });
+};
+
+Search.prototype.searchEvent = function() {
+    this.query = $('#search-query').val();
+    this.searchFreesound(this.query);
+};
 
 // Drag and drop sounds
 function allowDrop(ev) {
@@ -576,5 +620,39 @@ function addRefreshRegionEvent(trackName) {
     var waveName = trackName + "Wave";
     currentKit[waveName].restartRegion();
     currentKit[waveName].sendRegion();
+  });
+}
+
+// show new track details
+function addNewTrackDetails() {
+  $('#trackDetails').fadeIn('slow');
+
+  $('#addNewTrack').on('click', function() {
+    $('#trackDetails').fadeOut('slow');
+  });
+
+    $('#newTrackName').keyup(function() {
+      if($(this).val() != '') {
+        $('#addNewTrack').removeAttr('disabled');
+      }
+      else {
+        $('#addNewTrack').attr('disabled', 'disabled')
+      }
+    });
+}
+
+// enable/disable search button
+$('#search-query').keyup(function() {
+  if($(this).val() != '') {
+    $('#search-button').removeAttr('disabled');
+  }
+  else {
+    $('#search-button').attr('disabled', 'disabled')
+  }
+});
+
+function addRotateTriangleEvent(trackName) {
+  $(".instrument-label").click(function() {
+    $('div[data-instrument="' + trackName + '"]').children().children().children(".glyphicon").toggleClass('rotation');
   });
 }

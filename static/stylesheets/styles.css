@@ -1,15 +1,14 @@
 .pad {
-  width: 3em;
-  height: 3em;
-  margin: 2px;
+  width: 2.4vw;
+  height: 4vh;
   display: inline-block;
-  background: #DADADA;
-  box-shadow: rgba(0, 0, 0, 0.0980392) -6px 6px 0px 0px inset;
+  background: rgb(182, 173, 56);
+  border-radius: 2px;
   cursor: pointer;
 }
 
 .selected {
-  background: #00FF00;
+  background: rgb(76, 62, 112);
 }
 
 .playing {
@@ -37,20 +36,31 @@
   margin: 10px 0;
 }
 
-.instrument-label {
-  display: inline-block;
-  vertical-align: top;
-  width: 4em;
-  position: relative;
-  top: 1em;
-  text-align: right;
-  margin-right: 0.5em;
+.instruments {
+  border-width: 1px;
+  border-style: groove;
+  border-radius: 10px;
+  border-color: rgb(6, 69, 88);
+  background-color:rgb(26, 87, 167);
+  font: black;
+}
+
+.instrument, .instruments, #search-container, .wave, .tempoBorder, .wave {
+  border-width: 1px;
+  border-style: groove;
+  border-radius: 10px;
+  border-color: rgb(41, 35, 66);
+  background-color:rgb(47, 96, 156);
+  font: black;
 }
 
 .instrument {
-  border-width: 1px;
-  border-style: groove;
-  border-color: transparent;
+  padding: 2px;
+  margin: 2px;
+}
+
+.section {
+  padding: 10px; 
 }
 
 .tempo-container {
@@ -89,24 +99,63 @@
 }
 
 .deleteTrackButton {
-  display: inline-block;
-  position: absolute;
-  width: 5em;
-  height: 3em;
-  margin: 2px;
-  margin-left: 20px;
+  /* display: inline-block; */
+  /* position: right; */
+  width: 2.4vw;
+  height: 4vh;
+  /* margin: 2px; */
+  /* margin-left: 20px; */
 }
 
 wave {
-  width: 600px;
-  height: 80px!important;  
+  width: 101%;
 }
 
-timeline {
-  width: 600px!important;
+a {
+  color: black;
 }
 
-.edit-zone {
-  border-radius: 5px;
-  background-color: #e1dede;
+.jumbotron {
+  background-color:rgb(47, 96, 156);
 }
+
+
+/*Triangle dropdown*/
+.glyphicon-chevron-right {
+  position: relative;
+}
+
+.rotation {
+  transform: rotate(90deg);
+}
+
+.my-box-white {
+  border-radius: 4px;
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border: 1px solid transparent;
+}
+
+.my-box {
+  color: #fff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+  border-radius: 4px;
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border: 1px solid transparent;
+  }

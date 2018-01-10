@@ -13,8 +13,9 @@ Wave.prototype.init = function(trackName) {
   this.wavesurfer = WaveSurfer.create({
     cursorWidth: 0,
     container: '#waveform-'+trackName,
-    waveColor: 'gray',
-    progressColor: 'gray',
+    waveColor: 'black',
+    progressColor: 'black',
+    height: 50
   });
   this.trackName = trackName;
 };
@@ -35,7 +36,7 @@ Wave.prototype.load = function(soundUrl) {
     wave.region = wavesurfer.addRegion({
       start: wave.startTime,
       end: wave.endTime,
-      color: 'hsla(400, 100%, 30%, 0.1)',
+      color: 'hsla(400, 100%, 30%, 0.2)',
     });
     wavesurfer.on('region-updated', function(obj) {
       wave.startTime = obj.start;
@@ -63,6 +64,7 @@ Wave.prototype.clear = function() {
   this.endTime = null;
   this.duration = null;
   this.soundUrl = null;
+  this.loadedAfterCollapse = false;
 }
 
 Wave.prototype.setStart = function(startTime) {
