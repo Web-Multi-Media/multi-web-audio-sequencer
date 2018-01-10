@@ -23,7 +23,8 @@ var stateJson = {
     'hihat': false
   }
 };
-var roomNumber;
+var roomId;
+var listSequencerState = [];
 // middleware des websockets
 
 //moteur de template
@@ -41,7 +42,7 @@ app.use('/assets', express.static(__dirname + '/static'));
 io.on('connection', function (socket) {
 
      //Send this event to everyone in the room.
-     io.sockets.in(roomNumber).emit('connectToRoom', "You are in room no. " + roomNumber);
+     io.sockets.in(listSequencerState[roomId]).emit('connectToRoom', "You are in room no. " + listSequencerState[roomId]);
 
   console.log('A user just connected, Send him current state', stateJson.pads);
   var state = [];
@@ -56,19 +57,19 @@ io.on('connection', function (socket) {
   var trackWave = stateJson['waves'];
   //var roomNumber = stateJson['room'];
   console.log(state);
-  socket.join(roomNumber);
-  io.sockets.in(roomNumber).emit('SendCurrentState', [state, trackUrl, trackWave]);
+  socket.join(listSequencerState.roomId);
+  io.sockets.in(listSequencerState[roomId]).emit('SendCurrentState', [state, trackUrl, trackWave]);
 })
 
 io.sockets.on('connection', function (socket) {
-  socket.in(roomNumber).emit('message', 'vous venez de vous connecter au salon ' + roomNumber);
+  socket.in(listSequencerState[roomId]).emit('message', 'vous venez de vous connecter au salon ' + listSequencerState[roomId]);
 
 
   // PAD RECEPTION VIA THE CLIENT
   socket.on('pad', function (message) {
     console.log('Réception des pads :' + message);
 
-    socket.broadcast.in(roomNumber).emit('sendPad', message);
+    socket.broadcast.in(listSequencerState[roomId]).emit('sendPad', message);
     console.log(message);
     var msg = message.split(' ');
     console.log(msg);
@@ -107,7 +108,7 @@ io.sockets.on('connection', function (socket) {
     var trackName = message[0];
     var soundUrl = message[1];
     console.log('new track: ' + message);
-    socket.broadcast.in(roomNumber).emit('sendNewTrack', message);
+    socket.broadcast.in(listSequencerState[roomId]).emit('sendNewTrack', message);
     stateJson.pads[trackName] = new Map();
     stateJson.sounds[trackName] = soundUrl;
     stateJson.waves[trackName] = [false, false];
@@ -118,7 +119,7 @@ io.sockets.on('connection', function (socket) {
     var trackName = message[0];
     var soundUrl = message[1];
     console.log('load sound: ' + message);
-    socket.broadcast.in(roomNumber).emit('sendLoadSound', message);
+    socket.broadcast.in(listSequencerState[roomId]).emit('sendLoadSound', message);
     stateJson.sounds[trackName] = soundUrl;
   });
   
@@ -126,7 +127,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('deleteTrack', function(message) {
     var trackName = message;
     console.log('delete track: ' + trackName);
-    socket.broadcast.in(roomNumber).emit('sendDeleteTrack', trackName);
+    socket.broadcast.in(listSequencerState[roomId]).emit('sendDeleteTrack', trackName);
     delete stateJson.pads[trackName];
     delete stateJson.sounds[trackName];
     delete stateJson.waves[trackName];
@@ -136,13 +137,15 @@ io.sockets.on('connection', function (socket) {
   socket.on('waveRegion', function(message) {
     var trackName = message[0];
     console.log('change wave region: ' + trackName);
-    socket.broadcast.in(roomNumber).emit('sendWaveRegion', message);
+    socket.broadcast.in(listSequencerState[roomId]).emit('sendWaveRegion', message);
     stateJson.waves[trackName] = [message[1], message[2]];
   });
 
   socket.on('roomNumber', function(data){
-    roomNumber = data;
-    console.log('Room chosen : ' + roomNumber); 
+    roomId = data;
+    listSequencerState.push(roomId);
+    console.log('Room chosen : ' + roomId); 
+    console.log('Rooms : ' + listSequencerState); 
   })
 });
 

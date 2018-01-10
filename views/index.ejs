@@ -24,6 +24,7 @@
     <div class="row">
       <input type="text" placeholder="Type in a room number" id="roomNumber">
       <input type="submit" value="Change Room" id="roomNumberSubmit">
+      <p id="roomNo"></p>
     </div>
     <div class="row">
       <button id="play-pause" onclick="this.blur();" type="button" class="btn btn-default btn-lg">
@@ -141,6 +142,7 @@
     //function changeRoom() {
       $('#roomNumberSubmit').click(function(){
         var roomNumber = $('#roomNumber').val();
+        $('#roomNo').text('You\'re in room number : ' + roomNumber);
         socket.emit('roomNumber', roomNumber);
         console.log(roomNumber);
       });
