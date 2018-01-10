@@ -137,25 +137,25 @@ function playPauseListener() {
 }
 
 
-function TranslateStateInActions(json) {
-  console.log(json);
-
+function TranslateStateInActions(sequencerState) {
+  console.log(sequencerState);
+  var trackNames = sequencerState['trackNames'];
+  var pads = sequencerState['pads'];
+  var soundUrls = sequencerState['sounds'];
+  var waves = sequencerState['waves'];
+  
   // Add tracks and load buffers
-  var trackUrl = json[1];
-  var trackNameList = Object.keys(trackUrl);
-  var trackWave = json[2];
-  for (var j = 0; j < trackNameList.length; j++) {
-    var trackName = trackNameList[j];
-    addNewTrack(trackName, trackUrl[trackName], trackWave[trackName][0], trackWave[trackName][1]);
+  for (var j = 0; j < trackNames.length; j++) {
+    addNewTrack(trackNames[j], soundUrls[j], waves[j][0], waves[j][1]);
   }
 
   // Activate pads
   var jsonState = json[0];
-  for (var i = 0; i < jsonState.length; i++) {
+  for (var i = 0; i < trackNames.length; i++) {
     var tabJson = JSON.parse(jsonState[i]);
-    for (var j = 0; j < tabJson.length; j++) {
-      toggleSelectedListenerSocket(tabJson[j][1]);
-      console.log(jsonState[j]);
+    var trackTabs = tabs[i];
+    for (var j = 0; j < trackTabs.length; j++) {
+      toggleSelectedListenerSocket(trackTabs[j]);
     }
   }
 }

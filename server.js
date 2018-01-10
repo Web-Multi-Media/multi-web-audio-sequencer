@@ -11,24 +11,24 @@ var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
 var fullservername=hostname+':'+hostnamePort;
 console.log('server is:', fullservername);
 
-var stateJson = {
+var sequencerState = {
+  trackNames: ['kick', 'snare', 'hihat'],
   pads: {
-    'kick': new Map(),
-    'snare': new Map(),
-    'hihat': new Map()
+    '0': [],
+    '1': [],
+    '2': []
   },
   sounds: {
-    'kick': 'http://'+fullservername+'/assets/sounds/drum-samples/TR808/kick.mp3',
-    'snare': 'http://'+fullservername+'/assets/sounds/drum-samples/TR808/snare.mp3',
-    'hihat': 'http://'+fullservername+'/assets/sounds/drum-samples/TR808/hihat.mp3'
+    '0': 'http://'+fullservername+'/assets/sounds/drum-samples/TR808/kick.mp3',
+    '1': 'http://'+fullservername+'/assets/sounds/drum-samples/TR808/snare.mp3',
+    '2': 'http://'+fullservername+'/assets/sounds/drum-samples/TR808/hihat.mp3'
   },
   waves: {
-    'kick': false,
-    'snare': false,
-    'hihat': false
+    '0': [false, false],
+    '1': [false, false],
+    '2': [false, false]
   }
 };
-
 // middleware des websockets
 
 //moteur de template
@@ -43,19 +43,8 @@ app.use('/assets', express.static(__dirname + '/static'));
 
 // ON CONNECTION SEND STATE TO CLIENT
 io.on('connection', function (socket) {
-  console.log('A user just connected, Send him current state', stateJson.pads);
-  var state = [];
-  for (var key in stateJson.pads) {
-    if (stateJson.pads.hasOwnProperty(key)) {
-      state.push(JSON.stringify([...stateJson.pads[key]]));
-      console.log(key + " -> " + stateJson.pads[key]);
-    }
-  }
-  var trackUrl = stateJson['sounds'];//Object.keys(stateJson['pads']);
-  //var urlList = Object.values(stateJson['sounds']);
-  var trackWave = stateJson['waves'];
-  console.log(state);
-  socket.emit('SendCurrentState', [state, trackUrl, trackWave]);
+  console.log('A user just connected, Send him current state', sequencerState);
+  socket.emit('SendCurrentState', sequencerState);
 })
 
 io.sockets.on('connection', function (socket) {
@@ -75,28 +64,28 @@ io.sockets.on('connection', function (socket) {
     console.log('instrument selected : ' + instru);
     // console.log(tempo);
     console.log('pad selected :' + pad);
-    console.log('json pads : ', stateJson.pads[instru]);
+    console.log('json pads : ', sequencerState.pads[instru]);
     //padsJson.tempo = tempo;
-    console.log(stateJson.pads.instrument);
+    console.log(sequencerState.pads.instrument);
     var padsFill = {};
-    if (stateJson.pads[instru] === undefined) {
+    if (sequencerState.pads[instru] === undefined) {
       padsFill = new Map().set(pad, message)
 
-      stateJson.pads[instru] = padsFill;
-      console.log('valeur du message json si map non crée', stateJson.pads);
+      sequencerState.pads[instru] = padsFill;
+      console.log('valeur du message json si map non crée', sequencerState.pads);
     } else if (message.indexOf('selected') !== -1) {
-      stateJson.pads[instru].set(pad, message);
-      console.log('valeur du message json si map crée', stateJson.pads.instru);
+      sequencerState.pads[instru].set(pad, message);
+      console.log('valeur du message json si map crée', sequencerState.pads.instru);
 
-      // console.log(JSON.stringify([...stateJson.pads]));
-      //  stateJson.pads[instru].set(pad, message);
-    } else if (stateJson.pads[instru].has(pad)) {
-      stateJson.pads[instru].delete(pad);
+      // console.log(JSON.stringify([...sequencerState.pads]));
+      //  sequencerState.pads[instru].set(pad, message);
+    } else if (sequencerState.pads[instru].has(pad)) {
+      sequencerState.pads[instru].delete(pad);
     }
 
-    console.log('valeur du tableau JSON : ', stateJson);
+    console.log('valeur du tableau JSON : ', sequencerState);
 
-    // console.log('Valeur du JSON : ' , JSON.stringify([...stateJson.pads[instru]]));
+    // console.log('Valeur du JSON : ' , JSON.stringify([...sequencerState.pads[instru]]));
   });
   
   // NEW TRACK
@@ -105,9 +94,9 @@ io.sockets.on('connection', function (socket) {
     var soundUrl = message[1];
     console.log('new track: ' + message);
     socket.broadcast.emit('sendNewTrack', message);
-    stateJson.pads[trackName] = new Map();
-    stateJson.sounds[trackName] = soundUrl;
-    stateJson.waves[trackName] = [false, false];
+    sequencerState.pads[trackName] = new Map();
+    sequencerState.sounds[trackName] = soundUrl;
+    sequencerState.waves[trackName] = [false, false];
   });
   
   // LOAD SOUND INTO A TRACK
@@ -116,7 +105,7 @@ io.sockets.on('connection', function (socket) {
     var soundUrl = message[1];
     console.log('load sound: ' + message);
     socket.broadcast.emit('sendLoadSound', message);
-    stateJson.sounds[trackName] = soundUrl;
+    sequencerState.sounds[trackName] = soundUrl;
   });
   
   // DELETE TRACK
@@ -124,9 +113,9 @@ io.sockets.on('connection', function (socket) {
     var trackName = message;
     console.log('delete track: ' + trackName);
     socket.broadcast.emit('sendDeleteTrack', trackName);
-    delete stateJson.pads[trackName];
-    delete stateJson.sounds[trackName];
-    delete stateJson.waves[trackName];
+    delete sequencerState.pads[trackName];
+    delete sequencerState.sounds[trackName];
+    delete sequencerState.waves[trackName];
   });
   
   // CHANGE WAVE REGION
@@ -134,7 +123,7 @@ io.sockets.on('connection', function (socket) {
     var trackName = message[0];
     console.log('change wave region: ' + trackName);
     socket.broadcast.emit('sendWaveRegion', message);
-    stateJson.waves[trackName] = [message[1], message[2]];
+    sequencerState.waves[trackName] = [message[1], message[2]];
   });
 });
 
