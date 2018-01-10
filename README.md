@@ -16,6 +16,7 @@ Windows:
 
 DEPLOY
 -------------------
-* The server is looking for the environment variable MULT_WEB_SEQ_SERV. If Undefined, it is set to localhost.
+* The server is looking for the environment variable MULT_WEB_SEQ_SERV and MULT_WEB_SEQ_SERV_P. If Undefined, it is set to localhost:8080.
 
-> export MULT_WEB_SEQ_SERV=myserver:8080
+> export MULT_WEB_SEQ_SERV=myserver.com
+> export MULT_WEB_SEQ_SERV_P=9050

@@ -5,7 +5,19 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 var eventEmitter = require('events').EventEmitter
-var hostname = '127.0.0.1:8080';
+var hostname = 'localhost';
+var hostnamePort = '8080';
+
+if (typeof process.env.MULT_WEB_SEQ_SERV != 'undefined') {      
+  hostname=process.env.MULT_WEB_SEQ_SERV;
+}
+if (typeof process.env.MULT_WEB_SEQ_SERV_P != 'undefined') {      
+  hostnamePort=process.env.MULT_WEB_SEQ_SERV_P;
+}
+
+var fullservername=hostname+':'+hostnamePort;
+console.log('server is:', fullservername);
+
 var stateJson = {
   pads: {
     'kick': new Map(),
@@ -13,9 +25,9 @@ var stateJson = {
     'hihat': new Map()
   },
   sounds: {
-    'kick': 'http://localhost:8080/assets/sounds/drum-samples/TR808/kick.mp3',
-    'snare': 'http://localhost:8080/assets/sounds/drum-samples/TR808/snare.mp3',
-    'hihat': 'http://localhost:8080/assets/sounds/drum-samples/TR808/hihat.mp3'
+    'kick': 'http://'+fullservername+'/assets/sounds/drum-samples/TR808/kick.mp3',
+    'snare': 'http://'+fullservername+'/assets/sounds/drum-samples/TR808/snare.mp3',
+    'hihat': 'http://'+fullservername+'/assets/sounds/drum-samples/TR808/hihat.mp3'
   },
   waves: {
     'kick': false,
@@ -134,15 +146,10 @@ io.sockets.on('connection', function (socket) {
 });
 
 app.get('/', (req, res) => {
-  console.log(process.env.MULT_WEB_SEQ_SERV);
-  if (typeof process.env.MULT_WEB_SEQ_SERV != 'undefined') {      
-    hostname=process.env.MULT_WEB_SEQ_SERV;
-  }
-  console.log('server is:', hostname);
-  res.render('index.ejs', {hostname:hostname});
+  res.render('index.ejs', {fullservername:fullservername});
 })
 
 
-http.listen(8080, function () {
-  console.log('connecté sur le 8080');
+http.listen(hostnamePort, function () {
+  console.log('connecté sur le', hostnamePort);
 });
