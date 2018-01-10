@@ -13,21 +13,21 @@ console.log('server is:', fullservername);
 
 var sequencerState = {
   trackNames: ['kick', 'snare', 'hihat'],
-  pads: {
-    '0': [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    '1': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    '2': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-  },
-  sounds: {
-    '0': 'http://'+fullservername+'/assets/sounds/drum-samples/TR808/kick.mp3',
-    '1': 'http://'+fullservername+'/assets/sounds/drum-samples/TR808/snare.mp3',
-    '2': 'http://'+fullservername+'/assets/sounds/drum-samples/TR808/hihat.mp3'
-  },
-  waves: {
-    '0': [false, false],
-    '1': [false, false],
-    '2': [false, false]
-  }
+  pads: [
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  ],
+  sounds: [
+    'http://'+fullservername+'/assets/sounds/drum-samples/TR808/kick.mp3',
+    'http://'+fullservername+'/assets/sounds/drum-samples/TR808/snare.mp3',
+    'http://'+fullservername+'/assets/sounds/drum-samples/TR808/hihat.mp3'
+  ],
+  waves: [
+    [false, false],
+    [false, false],
+    [false, false]
+  ]
 };
 // middleware des websockets
 
@@ -85,20 +85,21 @@ io.sockets.on('connection', function (socket) {
   
   // DELETE TRACK
   socket.on('deleteTrack', function(message) {
-    var trackName = message;
-    console.log('delete track: ' + trackName);
-    socket.broadcast.emit('sendDeleteTrack', trackName);
-    delete sequencerState.pads[trackName];
-    delete sequencerState.sounds[trackName];
-    delete sequencerState.waves[trackName];
+    console.log('receive delete track: ' + message);
+    socket.broadcast.emit('sendDeleteTrack', message);
+    var trackId = message;
+    sequencerState.trackNames.splice(trackId);
+    sequencerState.sounds.splice(trackId);
+    sequencerState.pads.splice(trackId);
+    sequencerState.waves.splice(trackId);
   });
   
   // CHANGE WAVE REGION
   socket.on('waveRegion', function(message) {
-    var trackName = message[0];
-    console.log('change wave region: ' + trackName);
+    var trackId = message[0];
+    console.log('receive change wave region: ' + trackId);
     socket.broadcast.emit('sendWaveRegion', message);
-    sequencerState.waves[trackName] = [message[1], message[2]];
+    sequencerState.waves[trackId] = [message[1], message[2]];
   });
 });
 

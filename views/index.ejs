@@ -115,10 +115,10 @@
   <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
   <script>
-    function addPadClickEvent(socket, instrument = null) {
-      if (instrument) {
+    function addPadClickEvent(socket, trackId = null) {
+      if (trackId) {
         // if an instrument is given, select the pads of it
-        var pads = $('div[data-instrument="' + instrument + '"]').children().children(".pad");
+        var pads = $('.instrument').eq(trackId).children().children(".pad");
       } else {
         // if there is no instrument given, select all the pads
         var pads = $('.pad');

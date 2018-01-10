@@ -159,7 +159,7 @@ function TranslateStateInActions(sequencerState) {
 
 function toggleSelectedListener(padEl) {
   padEl.toggleClass("selected");
-  var trackId = padEl.parent().parent().attr("track-id");
+  var trackId = padEl.parent().parent().index();
   var padClass = padEl.attr('class');
   var padId = padClass.split(' ')[1].split('_')[1];
   var padState = (padEl.hasClass("selected")) ? 1 : 0;
@@ -304,7 +304,7 @@ function schedule() {
     $currentPads.each(function () {
       if ($(this).hasClass("selected")) {
         var instrumentName = $(this).parents().parents().data("instrument");
-        var trackId = $(this).parents().parents().attr("track-id");
+        var trackId = $(this).parents().parents().index();
         var bufferName = instrumentName + "Buffer";
         var waveName = instrumentName + "Wave";
         var wave = currentKit.waves[trackId];
@@ -418,11 +418,9 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
   }
   padEl = padEl + '<div class="pad column_15"></div>';
   
-  var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" track-id="' +
-    trackId  + 
-    '" data-instrument="' +
-    trackName + '"><div class="col-xs-2 col-lg-2">' +
-    '<a data-toggle="collapse" aria-expanded="false" aria-controls="edit-'+
+  var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
+    trackName + 
+    '"><div class="col-xs-2 col-lg-2"> <a data-toggle="collapse" aria-expanded="false" aria-controls="edit-' +
     trackName +
     '" href="#edit-'+
     trackName +
@@ -459,27 +457,30 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
   }
   
   // add click events
-  addPadClickEvent(socket, trackName);
-  addDeleteTrackClickEvent(trackName);
-  addRotateTriangleEvent(trackName);
+  addPadClickEvent(socket, trackId);
+  addDeleteTrackClickEvent(trackId);
+  addRotateTriangleEvent(trackId);
 }
 
-function addDeleteTrackClickEvent(trackName) {
-  var deleteButton = $('div[data-instrument="' + trackName + '"]').children().children(".deleteTrackButton")[0];
+function addDeleteTrackClickEvent(trackId) {
+  var deleteButton = $('.instrument').eq(trackId).children().children(".deleteTrackButton")[0];
   $(deleteButton).click(function () {
-    deleteTrack(trackName);
+    deleteTrack(trackId);
 
     // send to serveur
-    sendDeleteTrack(trackName);
+    sendDeleteTrack(trackId);
   });
 }
 
-function deleteTrack(trackName) {
+function deleteTrack(trackId) {
   // delete html
-  $(".row[data-instrument='" + trackName + "']").remove();
+  $('.instrument').eq(trackId).remove();
 
   // delete buffer
-  delete currentKit.buffers[trackId];
+  currentKit.buffers.splice(trackId);
+  
+  // delete wave
+  currentKit.waves.splice(trackId);
 }
 
 
@@ -599,7 +600,7 @@ function drop(ev) {
   ev.preventDefault();
   var target = ev.target;
   var trackEl = $(target).hasClass('row') ? $(target) : $(target).parents('.row');
-  var trackId = trackEl.attr("track-id");
+  var trackId = trackEl.index();
   currentKit.loadSample(currentSoundUrl, trackId);
   sendLoadSound(trackId, currentSoundUrl);
   trackEl.removeClass("drop-over");
@@ -608,7 +609,7 @@ function drop(ev) {
 
 // Wave visu
 function addRefreshRegionEvent(trackId) {
-  var refreshButton = $('div[track-id="' + trackId + '"]').children(".edit-zone").children(".refreshWaveRegionButton")[0];
+  var refreshButton = $('.instrument').eq(trackId).children(".edit-zone").children(".refreshWaveRegionButton")[0];
   $(refreshButton).click(function () {
     currentKit.waves[trackId].restartRegion();
     currentKit.waves[trackId].sendRegion();
@@ -643,8 +644,8 @@ $('#search-query').keyup(function() {
   }
 });
 
-function addRotateTriangleEvent(trackName) {
+function addRotateTriangleEvent(trackId) {
   $(".instrument-label").click(function() {
-    $('div[data-instrument="' + trackName + '"]').children().children().children(".glyphicon").toggleClass('rotation');
+    $('.instrument').eq(trackId).children().children().children(".glyphicon").toggleClass('rotation');
   });
 }
