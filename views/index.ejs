@@ -132,8 +132,8 @@
       socket.emit('newTrack', [trackName, soundUrl]);
     }
 
-    function sendLoadSound(trackName, soundUrl) {
-      socket.emit('loadSound', [trackName, soundUrl]);
+    function sendLoadSound(trackId, soundUrl) {
+      socket.emit('loadSound', [trackId, soundUrl]);
     }
 
     function sendDeleteTrack(trackName) {
@@ -165,6 +165,7 @@
 
       // on recieve load sound
       socket.on('sendLoadSound', function (message) {
+        console.log('receive new load sound: ' + message);
         currentKit.loadSample(message[1], message[0]);
       });
 

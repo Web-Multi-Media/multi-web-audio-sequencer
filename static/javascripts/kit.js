@@ -53,7 +53,7 @@ Kit.prototype.loadSample = function(url, trackId) {
         kit.instrumentLoadCount++;
       },
       function(buffer) {
-        console.log("Error decoding drum samples for track" + trackId);
+        console.log("Error decoding drum samples for track " + trackId);
       }
     );
   }

@@ -75,8 +75,8 @@ io.sockets.on('connection', function (socket) {
   });
   
   // LOAD SOUND INTO A TRACK
-  socket.on('receive loadSound', function(message) {
-    console.log('load sound: ' + message);
+  socket.on('loadSound', function(message) {
+    console.log('receive load sound: ' + message);
     socket.broadcast.emit('sendLoadSound', message);
     var trackId = message[0];
     var soundUrl = message[1];

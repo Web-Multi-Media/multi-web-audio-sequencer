@@ -138,7 +138,6 @@ function playPauseListener() {
 
 
 function TranslateStateInActions(sequencerState) {
-  console.log(sequencerState);
   var trackNames = sequencerState['trackNames'];
   var pads = sequencerState['pads'];
   var soundUrls = sequencerState['sounds'];
