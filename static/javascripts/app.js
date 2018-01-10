@@ -39,7 +39,6 @@ $(function () {
   initializeTempo();
   changeTempoListener();
   addSearchButtonEvent();
-
 });
 
 function createLowPassFilterSliders() {
@@ -440,7 +439,9 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
     trackName +
     '" href="#edit-'+
     trackName +
-    '" class="instrument-label"><strong class="instrumentName">' +
+    '" class="instrument-label" onclick="rotateButton(' + trackName + ')"><i id="chevron-' +
+    trackName +
+    '" class="glyphicon glyphicon-chevron-right" style="position:relative;"></i> <strong class="instrumentName">' +
     trackName +
     '</strong></a>\n' +
     padEl +
@@ -578,4 +579,41 @@ function addRefreshRegionEvent(trackName) {
     currentKit[waveName].sendRegion();
   });
 }
+
+// show new track details
+function addNewTrackDetails() {
+  $('#trackDetails').fadeIn('slow');
+
+  $('#addNewTrack').on('click', function() {
+    $('#trackDetails').fadeOut('slow');
+  });
+
+    $('#newTrackName').keyup(function() {
+      if($(this).val() != '') {
+        $('#addNewTrack').removeAttr('disabled');
+      }
+      else {
+        $('#addNewTrack').attr('disabled', 'disabled')
+      }
+    });
+}
+
+// enable/disable search button
+$('#search-query').keyup(function() {
+  if($(this).val() != '') {
+    $('#search-button').removeAttr('disabled');
+  }
+  else {
+    $('#search-button').attr('disabled', 'disabled')
+  }
+});
+
+function rotateButton(idButton){ 
+  //console.log(idButton);
+  $('#chevron-' + idButton).toggleClass('rotation');
+    //$(this).find('glyphicon-chevron-down').toggleClass('rotation');
+    console.log($('#chevron-' + idButton));
+}
+
+
 
