@@ -52,40 +52,13 @@ io.sockets.on('connection', function (socket) {
 
   // PAD RECEPTION VIA THE CLIENT
   socket.on('pad', function (message) {
-    console.log('Réception des pads :' + message);
-
+    console.log('recieve pad change :' + message);
     socket.broadcast.emit('sendPad', message);
-    console.log(message);
-    var msg = message.split(' ');
-    console.log(msg);
-    var instru = msg[msg.length - 1];
-    //var tempo = msg[msg.length -1];
-    var pad = message.split('_')[1].substring(0, 2);
-    console.log('instrument selected : ' + instru);
-    // console.log(tempo);
-    console.log('pad selected :' + pad);
-    console.log('json pads : ', sequencerState.pads[instru]);
-    //padsJson.tempo = tempo;
-    console.log(sequencerState.pads.instrument);
-    var padsFill = {};
-    if (sequencerState.pads[instru] === undefined) {
-      padsFill = new Map().set(pad, message)
-
-      sequencerState.pads[instru] = padsFill;
-      console.log('valeur du message json si map non crée', sequencerState.pads);
-    } else if (message.indexOf('selected') !== -1) {
-      sequencerState.pads[instru].set(pad, message);
-      console.log('valeur du message json si map crée', sequencerState.pads.instru);
-
-      // console.log(JSON.stringify([...sequencerState.pads]));
-      //  sequencerState.pads[instru].set(pad, message);
-    } else if (sequencerState.pads[instru].has(pad)) {
-      sequencerState.pads[instru].delete(pad);
-    }
-
-    console.log('valeur du tableau JSON : ', sequencerState);
-
-    // console.log('Valeur du JSON : ' , JSON.stringify([...sequencerState.pads[instru]]));
+    var trackId = message[0];
+    var padId = message[1];
+    var padState = message[2];
+    
+    sequencerState['pads'][trackId][padId] = padState;
   });
   
   // NEW TRACK

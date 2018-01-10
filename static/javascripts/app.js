@@ -146,7 +146,7 @@ function TranslateStateInActions(sequencerState) {
   
   // Add tracks and load buffers
   for (var j = 0; j < trackNames.length; j++) {
-    addNewTrack(trackNames[j], soundUrls[j], waves[j][0], waves[j][1]);
+    addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1]);
   }
 
   // Activate pads
@@ -158,24 +158,25 @@ function TranslateStateInActions(sequencerState) {
   }
 }
 
-function toggleSelectedListener(padMessage) {
-  padMessage.toggleClass("selected");
-  // SEND THIS TO SERVER WITH SOCKET
-  var instru = padMessage.parent().parent().attr("data-instrument");
-  var pad = padMessage.attr('class');
-  return pad + ' ' + instru;
+function toggleSelectedListener(padEl) {
+  padEl.toggleClass("selected");
+  var trackId = padEl.parent().parent().attr("track-id");
+  var padClass = padEl.attr('class');
+  var padId = padClass.split(' ')[1].split('_')[1];
+  var padState = (padEl.hasClass("selected")) ? 1 : 0;
+  return [trackId, padId, padState]
 }
 
 function toggleSelectedListenerSocket(trackId, padId, padState) {
-  pad_el = $('.instrument').eq(trackId).children().children().eq(padId + 1);
-  currentState = pad_el.hasClass("selected");
+  var padEl = $('.instrument').eq(trackId).children().children().eq(padId + 1);
+  var currentState = padEl.hasClass("selected");
   if (currentState) {
     if (padState == 0) {
-      pad_el.removeClass("selected");
+      padEl.removeClass("selected");
     }
   } else {
     if (padState == 1) {
-      pad_el.addClass("selected");
+      padEl.addClass("selected");
     }
   }
 }
@@ -408,7 +409,7 @@ function addNewTrackEvent() {
   });
 }
 
-function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
+function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null) {
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
@@ -417,7 +418,9 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
   }
   padEl = padEl + '<div class="pad column_15"></div>';
   
-  var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
+  var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" track-id="' +
+    trackId  + 
+    '" data-instrument="' +
     trackName + '"><div class="col-xs-2 col-lg-2">' +
     '<a data-toggle="collapse" aria-expanded="false" aria-controls="edit-'+
     trackName +
