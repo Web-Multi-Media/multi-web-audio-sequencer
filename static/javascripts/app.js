@@ -305,10 +305,11 @@ function schedule() {
     $currentPads.each(function () {
       if ($(this).hasClass("selected")) {
         var instrumentName = $(this).parents().parents().data("instrument");
+        var trackId = $(this).parents().parents().attr("track-id");
         var bufferName = instrumentName + "Buffer";
         var waveName = instrumentName + "Wave";
-        var wave = currentKit[waveName];
-        playNote(currentKit[bufferName], contextPlayTime, wave.startTime, wave.endTime);
+        var wave = currentKit.waves[trackId];
+        playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime);
       }
     });
     if (noteTime != lastDrawTime) {
@@ -442,17 +443,17 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
   prevTrack.before(newTrack);
 
   // load wavesurfer visu
-  currentKit[trackName+'Wave'] = new Wave();
-  var wave = currentKit[trackName+'Wave'];
+  currentKit.waves[trackId] = new Wave();
+  var wave = currentKit.waves[trackId];
   wave.init(trackName);
-  addRefreshRegionEvent(trackName);
+  addRefreshRegionEvent(trackId);
   // collaspe the edit region once to render the edit visu
   $('#edit-'+trackName).on('shown.bs.collapse', function () {
     if (!wave.loadedAfterCollapse) { wave.reload(); }
   });
 
   // load buffer
-  currentKit.loadSample(soundUrl, trackName);
+  currentKit.loadSample(soundUrl, trackId);
   if (startTime) {
     wave.startTime = startTime;
     wave.endTime = endTime;
@@ -479,7 +480,7 @@ function deleteTrack(trackName) {
   $(".row[data-instrument='" + trackName + "']").remove();
 
   // delete buffer
-  delete currentKit[trackName + "Buffer"];
+  delete currentKit.buffers[trackId];
 }
 
 
@@ -599,20 +600,19 @@ function drop(ev) {
   ev.preventDefault();
   var target = ev.target;
   var trackEl = $(target).hasClass('row') ? $(target) : $(target).parents('.row');
-  var trackName = trackEl.attr("data-instrument");
-  currentKit.loadSample(currentSoundUrl, trackName);
-  sendLoadSound(trackName, currentSoundUrl);
+  var trackId = trackEl.attr("track-id");
+  currentKit.loadSample(currentSoundUrl, trackId);
+  sendLoadSound(trackId, currentSoundUrl);
   trackEl.removeClass("drop-over");
 }
 
 
 // Wave visu
-function addRefreshRegionEvent(trackName) {
-  var refreshButton = $('div[data-instrument="' + trackName + '"]').children(".edit-zone").children(".refreshWaveRegionButton")[0];
+function addRefreshRegionEvent(trackId) {
+  var refreshButton = $('div[track-id="' + trackId + '"]').children(".edit-zone").children(".refreshWaveRegionButton")[0];
   $(refreshButton).click(function () {
-    var waveName = trackName + "Wave";
-    currentKit[waveName].restartRegion();
-    currentKit[waveName].sendRegion();
+    currentKit.waves[trackId].restartRegion();
+    currentKit.waves[trackId].sendRegion();
   });
 }
 

@@ -75,12 +75,12 @@ io.sockets.on('connection', function (socket) {
   });
   
   // LOAD SOUND INTO A TRACK
-  socket.on('loadSound', function(message) {
-    var trackName = message[0];
-    var soundUrl = message[1];
+  socket.on('receive loadSound', function(message) {
     console.log('load sound: ' + message);
     socket.broadcast.emit('sendLoadSound', message);
-    sequencerState.sounds[trackName] = soundUrl;
+    var trackId = message[0];
+    var soundUrl = message[1];
+    sequencerState.sounds[trackId] = soundUrl;
   });
   
   // DELETE TRACK
