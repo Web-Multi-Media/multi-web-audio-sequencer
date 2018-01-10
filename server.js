@@ -5,15 +5,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 var eventEmitter = require('events').EventEmitter
-var hostname = 'localhost';
-var hostnamePort = '8080';
-
-if (typeof process.env.MULT_WEB_SEQ_SERV != 'undefined') {      
-  hostname=process.env.MULT_WEB_SEQ_SERV;
-}
-if (typeof process.env.MULT_WEB_SEQ_SERV_P != 'undefined') {      
-  hostnamePort=process.env.MULT_WEB_SEQ_SERV_P;
-}
+var hostname = process.env.MULT_WEB_SEQ_SERV || 'localhost';
+var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
 
 var fullservername=hostname+':'+hostnamePort;
 console.log('server is:', fullservername);
