@@ -168,7 +168,7 @@ function toggleSelectedListener(padEl) {
 }
 
 function toggleSelectedListenerSocket(trackId, padId, padState) {
-  var padEl = $('.instrument').eq(trackId).children().children().eq(padId + 1);
+  var padEl = $('.instrument').eq(trackId).children().children().eq(parseInt(padId) + 1);
   var currentState = padEl.hasClass("selected");
   if (currentState) {
     if (padState == 0) {

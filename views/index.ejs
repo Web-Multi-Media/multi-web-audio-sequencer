@@ -152,9 +152,9 @@
       })
 
       // on recieve pad change
-      socket.on('sendPad', function (event) {
-        console.log('Valeur des pads reçues', event);
-        toggleSelectedListenerSocket(event);
+      socket.on('sendPad', function (message) {
+        console.log('Valeur des pads reçues', message);
+        toggleSelectedListenerSocket(message[0], message[1], message[2]);
       });
 
       // on recieve new track
