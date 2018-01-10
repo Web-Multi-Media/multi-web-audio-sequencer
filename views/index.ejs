@@ -100,6 +100,11 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-offset-4 col-md-4 chat">
+          Here will the chat be.
+      </div>
+    </div>
   </div>
   
   <!-- Javascripts -->
@@ -115,6 +120,7 @@
   <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
   <script>
+    var servername = '<%= hostname %>';
     function addPadClickEvent(socket, instrument = null) {
       if (instrument) {
         // if an instrument is given, select the pads of it
@@ -142,7 +148,6 @@
     }
 
     $(function () {
-      var servername = '<%= hostname %>';
       console.log("connecting to ", servername);
       socket = io.connect(servername);
 
