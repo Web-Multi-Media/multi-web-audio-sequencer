@@ -432,7 +432,7 @@ function addNewTrack(trackName, soundUrl, startTime=null, endTime=null) {
     '<a data-toggle="collapse" aria-expanded="false" aria-controls="edit-'+
     trackName +
     '" href="#edit-'+
-    trackName +
+    uniqueTrackId +
     '" class="instrument-label"><i class="glyphicon glyphicon-chevron-right"></i> <strong class="instrumentName">' +
     trackName +
     '</strong></a></div><div class="col-xs-9 col-lg-9">' +

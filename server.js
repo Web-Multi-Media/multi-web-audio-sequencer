@@ -5,7 +5,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 var eventEmitter = require('events').EventEmitter
-var hostname = '127.0.0.1:8080';
+var hostname = process.env.MULT_WEB_SEQ_SERV || 'localhost';
+var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
 var stateJson = {
   pads: {
     'kick': new Map(),
@@ -35,7 +36,6 @@ app.use(session({
   secret: 'azaezaedzadzea'
 }));
 app.use('/assets', express.static(__dirname + '/static'));
-
 
 
 // ON CONNECTION SEND STATE TO CLIENT
@@ -159,6 +159,6 @@ app.get('/', (req, res) => {
 })
 
 
-http.listen(8080, function () {
-  console.log('connecté sur le 8080');
+http.listen(hostnamePort, function () {
+  console.log('connecté sur le', hostnamePort);
 });
