@@ -67,7 +67,7 @@ io.sockets.on('connection', function (socket) {
     var soundUrl = message[1];
     var trackId = sequencerState.trackNames.length;
     message.unshift(trackId);
-    socket.broadcast.emit('sendNewTrack', message);
+    io.sockets.emit('sendNewTrack', message);
     sequencerState.trackNames[trackId] = trackName;
     sequencerState.pads[trackId] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     sequencerState.sounds[trackId] = soundUrl;
@@ -86,7 +86,7 @@ io.sockets.on('connection', function (socket) {
   // DELETE TRACK
   socket.on('deleteTrack', function(message) {
     console.log('receive delete track: ' + message);
-    socket.broadcast.emit('sendDeleteTrack', message);
+    io.sockets.emit('sendDeleteTrack', message);
     var trackId = message;
     sequencerState.trackNames.splice(trackId, 1);
     sequencerState.sounds.splice(trackId, 1);

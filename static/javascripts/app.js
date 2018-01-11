@@ -398,11 +398,11 @@ function addNewTrackEvent() {
     var trackName = $('#newTrackName').val();
     var soundUrl = $('#newTrackUrl').val();
     var trackId = $('.instrument').length;
-    if (trackNameExist() === false) {
-      addNewTrack(trackId, trackName, soundUrl);
-      // send to server
-      sendNewTrack(trackName, soundUrl);
-    }
+    // this action needs to be call in the same order in all clients in order to keep same order of tracks
+    //addNewTrack(trackId, trackName, soundUrl);
+    // send to server
+    sendNewTrack(trackName, soundUrl);
+
   });
 }
 
@@ -465,7 +465,8 @@ function addDeleteTrackClickEvent(trackId) {
   var deleteButton = $('.instrument').eq(trackId).children().children(".deleteTrackButton")[0];
   $(deleteButton).click(function () {
     var trackId = $(this).parents('.instrument').index();
-    deleteTrack(trackId);
+    // this action needs to be call in the same order in all clients in order to keep same order of tracks
+    //deleteTrack(trackId);
     // send to serveur
     sendDeleteTrack(trackId);
   });
