@@ -103,9 +103,20 @@ io.sockets.on('connection', function (socket) {
   });
 });
 
+
+// VIEWS
 app.get('/', (req, res) => {
-  res.render('index.ejs', {fullservername:fullservername});
+  var room = req.query.room;
+  if (room) {
+    res.render('index.ejs', {fullservername:fullservername});
+  } else {
+    res.render('home.ejs', {fullservername:fullservername});
+  }
 })
+
+//app.get('/', (req, res) => {
+//  res.render('home.ejs', {fullservername:fullservername});
+//})
 
 
 http.listen(hostnamePort, function () {
