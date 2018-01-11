@@ -4,20 +4,22 @@ function Wave() {
   this.startTime = null;
   this.endTime = null;
   this.duration = null;
-  this.trackName = null;
+  this.trackEl = null;
   this.soundUrl = null;
   this.loadedAfterCollapse = false;
+  this.container = null;
 }
 
-Wave.prototype.init = function(trackName) {
+Wave.prototype.init = function(trackEl, container) {
   this.wavesurfer = WaveSurfer.create({
     cursorWidth: 0,
-    container: '#waveform-'+trackName,
+    container: container,
     waveColor: 'black',
     progressColor: 'black',
     height: 50
   });
-  this.trackName = trackName;
+  this.trackEl = trackEl;
+  this.container = container;
 };
 
 Wave.prototype.load = function(soundUrl) {
@@ -47,9 +49,11 @@ Wave.prototype.load = function(soundUrl) {
     });
     
     var timeline = Object.create(WaveSurfer.Timeline);
+    var waveContainer = $(wave.container);
+    var timelineContainer = waveContainer.parents().children(".waveform-timeline")[0];
     timeline.init({
       wavesurfer: wavesurfer,
-      container: '#waveform-timeline-'+wave.trackName,
+      container: timelineContainer
     });
   });
 };  
@@ -85,6 +89,7 @@ Wave.prototype.restartRegion = function () {
 };
 
 Wave.prototype.sendRegion = function () {
-  socket.emit('waveRegion', [this.trackName, this.startTime, this.endTime]);
+  var trackId = this.trackEl.index();
+  socket.emit('waveRegion', [trackId, this.startTime, this.endTime]);
   console.log('send wave region');
 };
