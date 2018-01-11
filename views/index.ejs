@@ -125,6 +125,8 @@
   <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
   <script>
+    
+    
     function addPadClickEvent(socket, trackId = null) {
       if (trackId) {
         // if an instrument is given, select the pads of it
@@ -137,16 +139,6 @@
         socket.emit('pad', toggleSelectedListener($(this)));
       });
     }
-
-    //function changeRoom() {
-      $('#roomNumberSubmit').click(function(){
-        var roomNumber = $('#roomNumber').val();
-        $('#roomNo').text('You\'re in room number : ' + roomNumber);
-        socket.emit('roomNumber', roomNumber);
-       // console.log(roomNumber);
-      });
-  // }
-
 
     function sendNewTrack(trackName, soundUrl = null) {
       socket.emit('newTrack', [trackName, soundUrl]);
@@ -161,14 +153,35 @@
     }
 
     $(function () {
+      var roomId;
+      var listSequencerState = [];
       var servername = '<%= fullservername %>';
       console.log("connecting to ", servername);
       socket = io.connect(servername);
 
-      socket.on('connectToRoom', function(data) {
-         console.log('conncted to room' + data);
-         $('.container').append('<p>Connected to room ' + data + '<p>');
+            $('#roomNumberSubmit').click(function(){
+              
+              roomId = $('#roomNumber').val();
+              $('#roomNo').text('You\'re in room number : ' + roomId);
+              //socket.emit('roomNumber', roomNumber);
+              console.log('RoomID selected : ',roomId);
+              
+              listSequencerState.push(roomId);
+
+              console.log('ListSequencerState before emit', listSequencerState);
+            });
+
+      // Room connection
+      socket.on('connect', function() {
+        var roomChosen;
+        var i = listSequencerState.indexOf(roomId);
+        if(i != -1) {
+          roomChosen = listSequencerState.splice(i, 1);
+        }
+        console.log('ListSequencerState after emit', roomChosen);
+        socket.emit('connectToRoom', roomChosen);
       });
+          
       // on recieve sequencer state
       socket.on('SendCurrentState', function (json) {
         console.log("ReceiveCurrentSequencerState", json);

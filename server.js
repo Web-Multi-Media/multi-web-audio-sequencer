@@ -11,6 +11,9 @@ var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
 var fullservername=hostname+':'+hostnamePort;
 console.log('server is:', fullservername);
 
+var room = '';
+
+
 var sequencerState = {
   trackNames: ['kick', 'snare', 'hihat'],
   pads: [
@@ -41,20 +44,54 @@ app.use(session({
 app.use('/assets', express.static(__dirname + '/static'));
 
 
-// ON CONNECTION SEND STATE TO CLIENT
-io.on('connection', function (socket) {
-  console.log('A user just connected, Send him current state', sequencerState);
-  socket.emit('SendCurrentState', sequencerState);
-})
+   // GET ROOM NUMBER
+  
+  //  io.on('roomNumber', function(data){
+  //   // roomId = data;
+  //   if (listSequencerState[roomId] === undefined){
+  //     listSequencerState.push(roomId);
+  //   }
+  //   // 
+  //   // listSequencerState[roomId] = 2;
+  //   roomId = data;
+
+  //   console.log('Room chosen : ' + roomId); 
+  //   console.log('Rooms : ' + listSequencerState[roomId]); 
+  //   socket.emit('connectToRoom', listSequencerState[roomId])
+  // });
+
+  // io.on('connection', function (socket) {
+    
+ 
+  // });
+
+
+  // ON CONNECTION SEND STATE TO CLIENT
+    io.on('connection', function (socket) {
+      console.log('A user just connected, Send him current state', sequencerState);
+      socket.emit('SendCurrentState', sequencerState);
+    });
+
+ 
+
+
+
+ 
 
 io.sockets.on('connection', function (socket) {
-  socket.in(listSequencerState[roomId]).emit('message', 'vous venez de vous connecter au salon ' + listSequencerState[roomId]);
+
+// ROOM CONNECTION
+  socket.on('connectToRoom', function(room){
+    room = room;
+    console.log('Room chosen : ' + room); 
+    socket.join(room);
+});
 
 
   // PAD RECEPTION VIA THE CLIENT
   socket.on('pad', function (message) {
     console.log('receive pad change: ' + message);
-    socket.broadcast.emit('sendPad', message);
+    socket.broadcast.in(room).emit('sendPad', message);
     var trackId = message[0];
     var padId = message[1];
     var padState = message[2];
@@ -68,7 +105,7 @@ io.sockets.on('connection', function (socket) {
     var soundUrl = message[1];
     var trackId = sequencerState.trackNames.length;
     message.unshift(trackId);
-    io.sockets.emit('sendNewTrack', message);
+    io.sockets.in(room).emit('sendNewTrack', message);
     sequencerState.trackNames[trackId] = trackName;
     sequencerState.pads[trackId] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     sequencerState.sounds[trackId] = soundUrl;
@@ -78,7 +115,7 @@ io.sockets.on('connection', function (socket) {
   // LOAD SOUND INTO A TRACK
   socket.on('loadSound', function(message) {
     console.log('receive load sound: ' + message);
-    socket.broadcast.emit('sendLoadSound', message);
+    socket.broadcast.in(room).emit('sendLoadSound', message);
     var trackId = message[0];
     var soundUrl = message[1];
     sequencerState.sounds[trackId] = soundUrl;
@@ -87,7 +124,7 @@ io.sockets.on('connection', function (socket) {
   // DELETE TRACK
   socket.on('deleteTrack', function(message) {
     console.log('receive delete track: ' + message);
-    io.sockets.emit('sendDeleteTrack', message);
+    io.sockets.in(room).emit('sendDeleteTrack', message);
     var trackId = message;
     sequencerState.trackNames.splice(trackId, 1);
     sequencerState.sounds.splice(trackId, 1);
@@ -99,16 +136,9 @@ io.sockets.on('connection', function (socket) {
   socket.on('waveRegion', function(message) {
     var trackId = message[0];
     console.log('receive change wave region: ' + trackId);
-    socket.broadcast.emit('sendWaveRegion', message);
+    socket.broadcast.in(room).emit('sendWaveRegion', message);
     sequencerState.waves[trackId] = [message[1], message[2]];
   });
-
-  socket.on('roomNumber', function(data){
-    roomId = data;
-    listSequencerState.push(roomId);
-    console.log('Room chosen : ' + roomId); 
-    console.log('Rooms : ' + listSequencerState); 
-  })
 });
 
 app.get('/', (req, res) => {
