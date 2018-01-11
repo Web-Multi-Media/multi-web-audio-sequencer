@@ -143,16 +143,25 @@ function TranslateStateInActions(sequencerState) {
   var soundUrls = sequencerState['sounds'];
   var waves = sequencerState['waves'];
   
-  // Add tracks and load buffers
-  for (var j = 0; j < trackNames.length; j++) {
-    addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1]);
-  }
+  // check if the tracks are already loaded
+  if (sequencerState.trackNames.length != $('.instrument').length) {
+    // Delete all existing tracks
+    var numLocalTracks = $('.instrument').length;
+    for (var i = numLocalTracks-1; i >= 0; i--) {
+      deleteTrack(i);
+    }
+    
+    // Add tracks and load buffers
+    for (var j = 0; j < trackNames.length; j++) {
+      addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1]);
+    }
 
-  // Activate pads
-  for (var i = 0; i < trackNames.length; i++) {
-    var trackTabs = pads[i];
-    for (var j = 0; j < trackTabs.length; j++) {
-      toggleSelectedListenerSocket(i, j, trackTabs[j]);
+    // Activate pads
+    for (var i = 0; i < trackNames.length; i++) {
+      var trackTabs = pads[i];
+      for (var j = 0; j < trackTabs.length; j++) {
+        toggleSelectedListenerSocket(i, j, trackTabs[j]);
+      }
     }
   }
 }
