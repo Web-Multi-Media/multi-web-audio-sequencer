@@ -410,6 +410,7 @@ function addNewTrackEvent() {
 }
 
 function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null) {
+  var uniqueTrackId = Date.now();
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
@@ -421,15 +422,15 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
   var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
     trackName + 
     '"><div class="col-xs-2 col-lg-2"> <a data-toggle="collapse" aria-expanded="false" aria-controls="edit-' +
-    trackName +
+    uniqueTrackId +
     '" href="#edit-'+
-    trackName +
+    uniqueTrackId +
     '" class="instrument-label"><i class="glyphicon glyphicon-chevron-right"></i> <strong class="instrumentName">' +
     trackName +
     '</strong></a></div><div class="col-xs-9 col-lg-9">' +
     padEl +
     '</div><div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-'+
-    trackName +
+    uniqueTrackId +
     '" class="edit-zone collapse"><div class="waveform-container"></div><div class="waveform-timeline"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
 
   var prevTrack = $('#newTrack');
