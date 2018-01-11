@@ -176,12 +176,11 @@
 
       // on change wave region
       socket.on('sendWaveRegion', function (message) {
-        var trackName = message[0];
+        var trackId = message[0];
         var startTime = message[1];
         var endTime = message[2];
-        var waveName = trackName + 'Wave';
-        currentKit[waveName].setStart(startTime);
-        currentKit[waveName].setEnd(endTime);
+        currentKit.waves[trackId].setStart(startTime);
+        currentKit.waves[trackId].setEnd(endTime);
       });
     })
   </script>
