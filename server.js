@@ -88,10 +88,10 @@ io.sockets.on('connection', function (socket) {
     console.log('receive delete track: ' + message);
     socket.broadcast.emit('sendDeleteTrack', message);
     var trackId = message;
-    sequencerState.trackNames.splice(trackId);
-    sequencerState.sounds.splice(trackId);
-    sequencerState.pads.splice(trackId);
-    sequencerState.waves.splice(trackId);
+    sequencerState.trackNames.splice(trackId, 1);
+    sequencerState.sounds.splice(trackId, 1);
+    sequencerState.pads.splice(trackId, 1);
+    sequencerState.waves.splice(trackId, 1);
   });
   
   // CHANGE WAVE REGION

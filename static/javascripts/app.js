@@ -400,7 +400,7 @@ function addNewTrackEvent() {
   $('#addNewTrack').click(function () {
     var trackName = $('#newTrackName').val();
     var soundUrl = $('#newTrackUrl').val();
-    var trackId = $('.intrument').lengh;
+    var trackId = $('.instrument').length;
     if (trackNameExist() === false) {
       addNewTrack(trackId, trackName, soundUrl);
       // send to server
@@ -430,25 +430,29 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
     padEl +
     '</div><div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-'+
     trackName +
-    '" class="edit-zone collapse"><div id="waveform-'+
+    '" class="edit-zone collapse"><div class="waveform-container" id="waveform-'+
     trackName +
-    '"></div><div id="waveform-timeline-'+
+    '"></div><div class="waveform-timeline" id="waveform-timeline-'+
     trackName +
     '"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
 
- var prevTrack = $('#newTrack');
+  var prevTrack = $('#newTrack');
   prevTrack.before(newTrack);
-
+  
+  var thisTrack = $('.instrument').eq(trackId);
+  
   // load wavesurfer visu
   currentKit.waves[trackId] = new Wave();
   var wave = currentKit.waves[trackId];
-  wave.init(trackName);
+  var waveContainer = thisTrack.children().children('.waveform-container')[0];
+  wave.init(thisTrack, waveContainer);
   addRefreshRegionEvent(trackId);
-  // collaspe the edit region once to render the edit visu
+
+  // load the edit visu on the first collapse
   $('#edit-'+trackName).on('shown.bs.collapse', function () {
     if (!wave.loadedAfterCollapse) { wave.reload(); }
   });
-
+  
   // load buffer
   currentKit.loadSample(soundUrl, trackId);
   if (startTime) {
@@ -465,8 +469,8 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
 function addDeleteTrackClickEvent(trackId) {
   var deleteButton = $('.instrument').eq(trackId).children().children(".deleteTrackButton")[0];
   $(deleteButton).click(function () {
+    var trackId = $(this).parents('.instrument').index();
     deleteTrack(trackId);
-
     // send to serveur
     sendDeleteTrack(trackId);
   });
@@ -477,10 +481,10 @@ function deleteTrack(trackId) {
   $('.instrument').eq(trackId).remove();
 
   // delete buffer
-  currentKit.buffers.splice(trackId);
+  currentKit.buffers.splice(trackId, 1);
   
   // delete wave
-  currentKit.waves.splice(trackId);
+  currentKit.waves.splice(trackId, 1);
 }
 
 
