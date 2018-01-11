@@ -303,10 +303,7 @@ function schedule() {
     var $currentPads = $(".column_" + rhythmIndex);
     $currentPads.each(function () {
       if ($(this).hasClass("selected")) {
-        var instrumentName = $(this).parents().parents().data("instrument");
-        var trackId = $(this).parents().parents().index();
-        var bufferName = instrumentName + "Buffer";
-        var waveName = instrumentName + "Wave";
+        var trackId = $(this).parents('.instrument').index();
         var wave = currentKit.waves[trackId];
         playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime);
       }
@@ -411,6 +408,7 @@ function addNewTrackEvent() {
 
 function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null) {
   var uniqueTrackId = Date.now();
+  
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
@@ -612,6 +610,7 @@ function drop(ev) {
 function addRefreshRegionEvent(trackId) {
   var refreshButton = $('.instrument').eq(trackId).children(".edit-zone").children(".refreshWaveRegionButton")[0];
   $(refreshButton).click(function () {
+    var trackId = $(this).parents('.instrument').index();
     currentKit.waves[trackId].restartRegion();
     currentKit.waves[trackId].sendRegion();
   });
