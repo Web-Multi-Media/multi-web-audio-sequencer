@@ -430,16 +430,12 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
     padEl +
     '</div><div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-'+
     trackName +
-    '" class="edit-zone collapse"><div class="waveform-container" id="waveform-'+
-    trackName +
-    '"></div><div class="waveform-timeline" id="waveform-timeline-'+
-    trackName +
-    '"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
+    '" class="edit-zone collapse"><div class="waveform-container"></div><div class="waveform-timeline"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
 
   var prevTrack = $('#newTrack');
   prevTrack.before(newTrack);
   
-  var thisTrack = $('.instrument').eq(trackId);
+  thisTrack = $('.instrument').eq(trackId);
   
   // load wavesurfer visu
   currentKit.waves[trackId] = new Wave();
@@ -449,7 +445,7 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
   addRefreshRegionEvent(trackId);
 
   // load the edit visu on the first collapse
-  $('#edit-'+trackName).on('shown.bs.collapse', function () {
+  thisTrack.children('.edit-zone').on('shown.bs.collapse', function () {
     if (!wave.loadedAfterCollapse) { wave.reload(); }
   });
   
