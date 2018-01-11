@@ -4,9 +4,8 @@ function Kit(name) {
   this.SAMPLE_BASE_PATH = "assets/sounds/drum-samples/";
   this.name = name;
 
-  this.kickBuffer = null;
-  this.snareBuffer = null;
-  this.hihatBuffer = null;
+  this.buffers = [];
+  this.waves = [];
 
   this.startedLoading = false;
   this.isLoaded = false;
@@ -30,34 +29,31 @@ Kit.prototype.load = function() {
   var snarePath = pathName + "snare.mp3";
   var hihatPath = pathName + "hihat.mp3";
 
-  this.loadSample(kickPath, "kick");
-  this.loadSample(snarePath, "snare");
-  this.loadSample(hihatPath, "hihat");
+  this.loadSample(kickPath, 0);
+  this.loadSample(snarePath, 1);
+  this.loadSample(hihatPath, 2);
   
 };
 
-Kit.prototype.loadSample = function(url, instrumentName) {
+Kit.prototype.loadSample = function(url, trackId) {
   var request = new XMLHttpRequest();
   request.open("GET", url, true);
   request.responseType = "arraybuffer";
-  
   var kit = this;
-  var bufferName = instrumentName + "Buffer";
   
   // load wavesurfer visu
-  var waveName = instrumentName + "Wave";
-  kit[waveName].clear();
-  kit[waveName].load(url);
+  kit.waves[trackId].clear();
+  kit.waves[trackId].load(url);
   
   request.onload = function () {
     context.decodeAudioData(
       request.response,
       function(buffer) {
-        kit[bufferName] = buffer;
+        kit.buffers[trackId] = buffer;
         kit.instrumentLoadCount++;
       },
       function(buffer) {
-        console.log("Error decoding drum samples " + instrumentName);
+        console.log("Error decoding drum samples for track " + trackId);
       }
     );
   }

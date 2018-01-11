@@ -120,17 +120,16 @@
   <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
   <script>
-    var servername = '<%= hostname %>';
-    function addPadClickEvent(socket, instrument = null) {
-      if (instrument) {
+    var servername = '<%= fullservername %>';
+    function addPadClickEvent(socket, trackId = null) {
+      if (trackId) {
         // if an instrument is given, select the pads of it
-        var pads = $('div[data-instrument="' + instrument + '"]').children().children(".pad");
+        var pads = $('.instrument').eq(trackId).children().children(".pad");
       } else {
         // if there is no instrument given, select all the pads
         var pads = $('.pad');
       }
       pads.click(function () {
-        console.log($(this));
         socket.emit('pad', toggleSelectedListener($(this)));
       });
     }
@@ -139,8 +138,8 @@
       socket.emit('newTrack', [trackName, soundUrl]);
     }
 
-    function sendLoadSound(trackName, soundUrl) {
-      socket.emit('loadSound', [trackName, soundUrl]);
+    function sendLoadSound(trackId, soundUrl) {
+      socket.emit('loadSound', [trackId, soundUrl]);
     }
 
     function sendDeleteTrack(trackName) {
@@ -158,19 +157,20 @@
       })
 
       // on recieve pad change
-      socket.on('sendPad', function (event) {
-        console.log('Valeur des pads reçues', event);
-        toggleSelectedListenerSocket(event);
+      socket.on('sendPad', function (message) {
+        console.log('Valeur des pads reçues', message);
+        toggleSelectedListenerSocket(message[0], message[1], message[2]);
       });
 
       // on recieve new track
       socket.on('sendNewTrack', function (message) {
-        addNewTrack(message[0], message[1]);
         console.log('recieveNewTrack: ' + message);
+        addNewTrack(message[0], message[1]);
       });
 
       // on recieve load sound
       socket.on('sendLoadSound', function (message) {
+        console.log('receive new load sound: ' + message);
         currentKit.loadSample(message[1], message[0]);
       });
 
@@ -181,12 +181,11 @@
 
       // on change wave region
       socket.on('sendWaveRegion', function (message) {
-        var trackName = message[0];
+        var trackId = message[0];
         var startTime = message[1];
         var endTime = message[2];
-        var waveName = trackName + 'Wave';
-        currentKit[waveName].setStart(startTime);
-        currentKit[waveName].setEnd(endTime);
+        currentKit.waves[trackId].setStart(startTime);
+        currentKit.waves[trackId].setEnd(endTime);
       });
     })
   </script>
