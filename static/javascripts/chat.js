@@ -1,14 +1,8 @@
 var room;
-var socket;
 
 function setRoomForChat(room_input) {
   console.log("[Chat] Room will be", room_input);
   room=room_input;    
-}
-
-function setSocketForChat(socket) {
-  console.log("[Chat] Setting Socket for chat");
-  socket=socket;    
 }
 
 $(function() {
@@ -36,7 +30,7 @@ $(function() {
   var lastTypingTime;
   var $currentInput = $usernameInput.focus();
 
-  //var socket = io();
+  var socket = io();
 
   function addParticipantsMessage (data) {
     var message = '';
