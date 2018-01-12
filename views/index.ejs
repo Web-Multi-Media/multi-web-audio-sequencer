@@ -142,9 +142,10 @@
 
     $(function () {
       var servername = '<%= fullservername %>';
-      console.log("connecting to ", servername);
+      console.log("connecting to " + servername + "room" + <%= room %>);
       socket = io.connect(servername);
-
+      socket.emit('room', '<%= room %>');
+      
       // on recieve sequencer state
       socket.on('SendCurrentState', function (json) {
         console.log("ReceiveCurrentSequencerState", json);
