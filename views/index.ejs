@@ -110,6 +110,25 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-offset-4 col-md-4 chat">
+        <ul class="pages">
+        <li class="chat page">
+        <div class="chatArea">
+           <ul class="messages"></ul>
+        </div>
+        <input class="inputMessage" placeholder="Type here..."/>
+        </li>
+        <li class="login page">
+        <div class="form">
+          <h3 class="title">What's your nickname?</h3>
+          <input class="usernameInput" type="text" maxlength="14" />
+        </div>
+      </li>
+      </ul>
+      </div>
+    </div>
+
   </div>
   
   <!-- Javascripts -->
@@ -124,9 +143,9 @@
   <script type="text/javascript" src="./assets/javascripts/kit.js"></script>
   <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
+  <script type="text/javascript" src="./assets/javascripts/chat.js"></script>
   <script>
-    
-    
+    var servername = '<%= fullservername %>';
     function addPadClickEvent(socket, trackId = null) {
       if (trackId) {
         // if an instrument is given, select the pads of it
@@ -156,32 +175,11 @@
       var roomId;
       var listSequencerState = [];
       var servername = '<%= fullservername %>';
-      console.log("connecting to ", servername);
+      console.log("connecting to " + servername + "room" + <%= room %>);
       socket = io.connect(servername);
-
-            $('#roomNumberSubmit').click(function(){
-              
-              roomId = $('#roomNumber').val();
-              $('#roomNo').text('You\'re in room number : ' + roomId);
-              //socket.emit('roomNumber', roomNumber);
-              console.log('RoomID selected : ',roomId);
-              
-              listSequencerState.push(roomId);
-
-              console.log('ListSequencerState before emit', listSequencerState);
-            });
-
-      // Room connection
-      socket.on('connect', function() {
-        var roomChosen;
-        var i = listSequencerState.indexOf(roomId);
-        if(i != -1) {
-          roomChosen = listSequencerState.splice(i, 1);
-        }
-        console.log('ListSequencerState after emit', roomChosen);
-        socket.emit('connectToRoom', roomChosen);
-      });
-          
+      socket.emit('room', '<%= room %>');
+      setRoomForChat('<%= room %>');      
+      
       // on recieve sequencer state
       socket.on('SendCurrentState', function (json) {
         console.log("ReceiveCurrentSequencerState", json);
