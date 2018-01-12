@@ -50,6 +50,7 @@ var numUsers = 0;
 // ON CONNECTION CONNECT TO ROOM AND SEND STATE TO CLIENT 
 io.sockets.on('connection', function (socket) {
   socket.on('room', function(room) {
+    var addedUser = false;
     room--;
     socket.join(room);
     io.sockets.in(room).emit('SendCurrentState', sequencerStates[room]);
