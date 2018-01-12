@@ -69,7 +69,7 @@ io.sockets.on('connection', function (socket) {
       var soundUrl = message[1];
       var trackId = sequencerStates[room].trackNames.length;
       message.unshift(trackId);
-      io.sockets.emit('sendNewTrack', message);
+      io.sockets.in(room).emit('sendNewTrack', message);
       sequencerStates[room].trackNames[trackId] = trackName;
       sequencerStates[room].pads[trackId] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
       sequencerStates[room].sounds[trackId] = soundUrl;
@@ -79,7 +79,7 @@ io.sockets.on('connection', function (socket) {
     // LOAD SOUND INTO A TRACK
     socket.on('loadSound', function(message) {
       console.log('receive load sound: ' + message);
-      socket.broadcast.emit('sendLoadSound', message);
+      socket.in(room).broadcast.emit('sendLoadSound', message);
       var trackId = message[0];
       var soundUrl = message[1];
       sequencerStates[room].sounds[trackId] = soundUrl;
@@ -88,7 +88,7 @@ io.sockets.on('connection', function (socket) {
     // DELETE TRACK
     socket.on('deleteTrack', function(message) {
       console.log('receive delete track: ' + message);
-      io.sockets.emit('sendDeleteTrack', message);
+      io.sockets.in(room).emit('sendDeleteTrack', message);
       var trackId = message;
       sequencerStates[room].trackNames.splice(trackId, 1);
       sequencerStates[room].sounds.splice(trackId, 1);
@@ -100,7 +100,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('waveRegion', function(message) {
       var trackId = message[0];
       console.log('receive change wave region: ' + trackId);
-      socket.broadcast.emit('sendWaveRegion', message);
+      socket.in(room).broadcast.emit('sendWaveRegion', message);
       sequencerStates[room].waves[trackId] = [message[1], message[2]];
     });
   });
