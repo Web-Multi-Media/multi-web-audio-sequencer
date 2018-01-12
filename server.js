@@ -53,7 +53,6 @@ io.sockets.on('connection', function (socket) {
   console.log("New client connected");
   socket.on('room', function(room) {
     var addedUser = false;
-    console.log("In room", room);
     room--;
     socket.join(room);
     io.sockets.in(room).emit('SendCurrentState', sequencerStates[room]);

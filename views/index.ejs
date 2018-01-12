@@ -165,8 +165,10 @@
       var servername = '<%= fullservername %>';
       console.log("connecting to " + servername + "room" + <%= room %>);
       socket = io.connect(servername);
-      setRoomForChat('<%= room %>');
       socket.emit('room', '<%= room %>');
+      setRoomForChat('<%= room %>');
+      setSocketForChat(socket);
+      
       
       // on recieve sequencer state
       socket.on('SendCurrentState', function (json) {
