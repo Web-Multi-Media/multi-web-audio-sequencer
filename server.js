@@ -46,7 +46,7 @@ app.use(session({
 app.use('/assets', express.static(__dirname + '/static'));
 
 
-// ON CONNECTION SEND STATE TO CLIENT
+// ON CONNECTION CONNECT TO ROOM AND SEND STATE TO CLIENT 
 io.sockets.on('connection', function (socket) {
   socket.on('room', function(room) {
     socket.join(room);
@@ -106,6 +106,7 @@ io.sockets.on('connection', function (socket) {
   });
 });
 
+
 // VIEWS
 app.get('/', (req, res) => {
   var room = req.query.room;
@@ -115,12 +116,7 @@ app.get('/', (req, res) => {
   } else {
     res.render('home.ejs', {fullservername: fullservername});
   }
-})
-
-//app.get('/', (req, res) => {
-//  res.render('home.ejs', {fullservername:fullservername});
-//})
-
+});
 
 http.listen(hostnamePort, function () {
   console.log('connecté sur le', hostnamePort);
