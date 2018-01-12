@@ -49,6 +49,7 @@ app.use('/assets', express.static(__dirname + '/static'));
 // ON CONNECTION CONNECT TO ROOM AND SEND STATE TO CLIENT 
 io.sockets.on('connection', function (socket) {
   socket.on('room', function(room) {
+    room--;
     socket.join(room);
     io.sockets.in(room).emit('SendCurrentState', sequencerStates[room]);
 
