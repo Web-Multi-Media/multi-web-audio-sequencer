@@ -53,6 +53,8 @@ $(function() {
       $loginPage.off('click');
       $currentInput = $inputMessage.focus();
 
+      socket.emit('room', room);
+
       // Tell the server your username
       socket.emit('add user', username);
     }
@@ -60,6 +62,7 @@ $(function() {
 
   // Sends a chat message
   function sendMessage () {
+    console.log("Send Message");
     var message = $inputMessage.val();
     // Prevent markup from being injected into the message
     message = cleanInput(message);

@@ -49,7 +49,11 @@ var numUsers = 0;
 
 // ON CONNECTION CONNECT TO ROOM AND SEND STATE TO CLIENT 
 io.sockets.on('connection', function (socket) {
+  
+  console.log("New client connected");
   socket.on('room', function(room) {
+    var addedUser = false;
+    console.log("In room", room);
     room--;
     socket.join(room);
     io.sockets.in(room).emit('SendCurrentState', sequencerStates[room]);
@@ -108,6 +112,7 @@ io.sockets.on('connection', function (socket) {
 
     // when the client emits 'new message', this listens and executes
     socket.on('new message', function (data) {
+   
       // we tell the client to execute 'new message'
       socket.in(room).broadcast.emit('new message', {
         username: socket.username,
@@ -117,6 +122,7 @@ io.sockets.on('connection', function (socket) {
 
     // when the client emits 'add user', this listens and executes
     socket.on('add user', function (username) {
+      console.log("Add user in chat");
       if (addedUser) return;
 
       // we store the username in the socket session for this client
