@@ -10,8 +10,7 @@
 </head>
 
 <body>
-  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-    crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
   <div class="container-fluid">
     <div class="row">
@@ -27,39 +26,34 @@
       <p id="roomNo"></p>
     </div>
     <div class="row">
-      <button id="play-pause" onclick="this.blur();" type="button" class="btn btn-default btn-lg">
-        <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-      </button>
-      <span class="tempo-container">
-        <label for="tempo-input" >Tempo </label>
-        <input id="tempo-input" type="number" disabled>
-        <span id="decrease-tempo" class="glyphicon glyphicon-minus btn btn-default tempo-btn"></span>
-      <span id="increase-tempo" class="glyphicon glyphicon-plus btn btn-default tempo-btn"></span>
-      </span>
-    </div>
-    <div id="instrument-section" class="bs-calltoaction bs-calltoaction-primary">
-      <div class="row">
-        <div class="instruments col-md-10">
-          <div></div>
-        </div>
+      <div class="col-md-offset-4 col-md-4 tempoBorder">
+        <button id="play-pause" onclick="this.blur();" type="button" class="btn btn-success">
+          <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+        </button>
+        <span class="tempo-container">
+          <label >Tempo </label>
+          <input id="tempo-input" disabled>
+          <span id="decrease-tempo" class="glyphicon glyphicon-minus btn btn-success tempo-btn"></span>
+        <span id="increase-tempo" class="glyphicon glyphicon-plus btn btn-success tempo-btn"></span>
+        </span>
       </div>
     </div>
     <br>
     <div class="row">
       <div class="instruments col-sm-12" id="instrument-section">
-      <div class="row"></div>
-      <div class="row section">
-         <div class="col-xs-12">
-             <button id="newTrack" type="button" class="btn btn-success" onclick="addNewTrackDetails()">Add Track</button>
-               <div id="trackDetails" hidden>
-                  <input type="text" id="newTrackName" placeholder="New track name">
-                  <input type="text" id="newTrackUrl" placeholder="Sound url" hidden>
-                  <button type="button" id="addNewTrack" class="btn btn-success" disabled>New track</button>
-                </div>
-              </div>
-         </div>
-   </div>
-   </div>
+        <div class="row"></div>
+        <div class="row section">
+          <div class="col-xs-12">
+            <button id="newTrack" type="button" class="btn btn-success" onclick="addNewTrackDetails()">Add Track</button>
+            <div id="trackDetails" hidden>
+              <input type="text" id="newTrackName" placeholder="New track name">
+              <input type="text" id="newTrackUrl" placeholder="Sound url" hidden>
+              <button type="button" id="addNewTrack" class="btn btn-success" disabled>New track</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <br>
     <div class="row" id="search-container">
       <div class="col-md-8">
@@ -110,28 +104,29 @@
         </div>
       </div>
     </div>
-    <div class="row">
-        <div class="col-md-offset-4 col-md-4 chat">
-          <ul class="pages">
-          <li class="chat page">
+  </div>
+  <div class="row">
+    <div class="col-md-offset-4 col-md-4 chat">
+      <ul class="pages">
+        <li class="chat page">
           <div class="chatArea">
-             <ul class="messages"></ul>
+            <ul class="messages"></ul>
           </div>
-          </li>
-          <input class="inputMessage" placeholder="Type here..."/>
-          <li class="login page">
-              <div class="form">
-                <h3 class="title">What's your nickname?</h3>
-                <input class="usernameInput" type="text" maxlength="14" />
-                <input class="btn btn-success" type="submit" id="nicknameSubmit" value="Submit">
-              </div>
-          </li>
-        </ul>
-        </div>
-      </div>
+        </li>
+        <input class="inputMessage" placeholder="Type here..." />
+        <li class="login page">
+          <div class="form">
+            <h3 class="title">What's your nickname?</h3>
+            <input class="usernameInput" type="text" maxlength="14" />
+            <input class="btn btn-success" type="submit" id="nicknameSubmit" value="Submit">
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
 
   </div>
-  
+
   <!-- Javascripts -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
@@ -154,7 +149,7 @@
         // if there is no instrument given, select all the pads
         var pads = $('.pad');
       }
-      pads.click(function () {
+      pads.click(function() {
         socket.emit('pad', toggleSelectedListener($(this)));
       });
     }
@@ -171,46 +166,46 @@
       socket.emit('deleteTrack', trackName);
     }
 
-    $(function () {
-      
+    $(function() {
+
       var servername = '<%= fullservername %>';
       console.log("connecting to " + servername + " room " + '<%= room %>');
       socket = io.connect(servername);
-      
-      socket.emit('room', '<%= room %>', );
-          setRoomForChat('<%= room %>');  
+
+      socket.emit('room', '<%= room %>');
+      setRoomForChat('<%= room %>');
 
       // on recieve sequencer state
-      socket.on('SendCurrentState', function (json) {
+      socket.on('SendCurrentState', function(json) {
         console.log("ReceiveCurrentSequencerState", json);
         TranslateStateInActions(json);
       })
 
       // on recieve pad change
-      socket.on('sendPad', function (message) {
+      socket.on('sendPad', function(message) {
         console.log('Valeur des pads reçues', message);
         toggleSelectedListenerSocket(message[0], message[1], message[2]);
       });
 
       // on recieve new track
-      socket.on('sendNewTrack', function (message) {
+      socket.on('sendNewTrack', function(message) {
         console.log('recieveNewTrack: ' + message);
         addNewTrack(message[0], message[1]);
       });
 
       // on recieve load sound
-      socket.on('sendLoadSound', function (message) {
+      socket.on('sendLoadSound', function(message) {
         console.log('receive new load sound: ' + message);
         currentKit.loadSample(message[1], message[0]);
       });
 
       // on delete track
-      socket.on('sendDeleteTrack', function (message) {
+      socket.on('sendDeleteTrack', function(message) {
         deleteTrack(message);
       });
 
       // on change wave region
-      socket.on('sendWaveRegion', function (message) {
+      socket.on('sendWaveRegion', function(message) {
         var trackId = message[0];
         var startTime = message[1];
         var endTime = message[2];
@@ -219,9 +214,9 @@
       });
 
       //get username
-    //   socket.on('add user', function(username){
-    //       var username = username;
-    //  });
+      //   socket.on('add user', function(username){
+      //       var username = username;
+      //  });
     })
   </script>
 </body>
