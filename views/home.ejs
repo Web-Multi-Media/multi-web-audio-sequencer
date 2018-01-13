@@ -12,6 +12,8 @@
   <body>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
     crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./assets/javascripts/chat.js"></script>
     <div class="container-fluid">
       <div class="row">
         <div class="jumbotron" style="text-align: center;">
@@ -36,11 +38,30 @@
             <a class="thumbnail room-button" href="/?room=4">Room 4</a>
           </div>
       </div>
+      <div>
+      <ul class="messages">
+        <li class="login page">
+            <div class="form">
+              <h3 class="title">What's your nickname?</h3>
+              <input class="usernameInput" type="text" maxlength="14" />
+              <input class="btn btn-success" type="submit" id="nicknameSubmit" value="Submit">
+            </div>
+        </li>
+      </ul>
+    </div>
+    </ul>
+    </div>
     </div>
         
     <script>
-      
-    
+        $(function () {
+          var servername = '<%= fullservername %>';
+         // console.log("connecting to " + servername + "room" + <%= room %>);
+          socket = io.connect(servername);
+          
+          socket.emit('room', '<%= room %>', );
+          setRoomForChat('<%= room %>');  
+        });
     </script>
   </body>
 </html>

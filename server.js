@@ -11,9 +11,6 @@ var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
 var fullservername=hostname+':'+hostnamePort;
 var rooms = ["1", "2", "3", "4"];
 
-var room = '';
-
-
 var sequencerState = {
   trackNames: ['kick', 'snare', 'hihat'],
   pads: [
@@ -177,13 +174,15 @@ io.sockets.on('connection', function (socket) {
 // VIEWS
 app.get('/', (req, res) => {
   var room = req.query.room;
+ // var username = req.query.username;
   if (room) {
     res.render('index.ejs', {fullservername: fullservername,
                              room: room});
   } else {
-    res.render('home.ejs', {fullservername: fullservername});
+    res.render('home.ejs', {fullservername: fullservername,  room: room});
   }
 });
+
 
 http.listen(hostnamePort, function () {
   console.log('connecté sur le', hostnamePort);

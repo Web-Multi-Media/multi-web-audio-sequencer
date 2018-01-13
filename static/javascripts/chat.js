@@ -42,9 +42,16 @@ $(function() {
     log(message);
   }
 
+  //validate username
+  function submitUserName(){
+    $('#nicknameSubmit').click(function(){
+      setUsername();
+    })
+  }
+
   // Sets the client's username
   function setUsername () {
-    username = cleanInput($usernameInput.val().trim());
+    username = cleanInput($usernameInput.val().trim()).concat(' says   ');
 
     // If the username is valid
     if (username) {
@@ -94,10 +101,10 @@ $(function() {
       $typingMessages.remove();
     }
 
-    var $usernameDiv = $('<span class="username"/>')
+    var $usernameDiv = $('<span class="username"/>&nbsp;')
       .text(data.username)
       .css('color', getUsernameColor(data.username));
-    var $messageBodyDiv = $('<span class="messageBody">')
+    var $messageBodyDiv = $(' <span class="messageBody">')
       .text(data.message);
 
     var typingClass = data.typing ? 'typing' : '';

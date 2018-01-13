@@ -111,23 +111,24 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-offset-4 col-md-4 chat">
-        <ul class="pages">
-        <li class="chat page">
-        <div class="chatArea">
-           <ul class="messages"></ul>
+        <div class="col-md-offset-4 col-md-4 chat">
+          <ul class="pages">
+          <li class="chat page">
+          <div class="chatArea">
+             <ul class="messages"></ul>
+          </div>
+          </li>
+          <input class="inputMessage" placeholder="Type here..."/>
+          <li class="login page">
+              <div class="form">
+                <h3 class="title">What's your nickname?</h3>
+                <input class="usernameInput" type="text" maxlength="14" />
+                <input class="btn btn-success" type="submit" id="nicknameSubmit" value="Submit">
+              </div>
+          </li>
+        </ul>
         </div>
-        <input class="inputMessage" placeholder="Type here..."/>
-        </li>
-        <li class="login page">
-        <div class="form">
-          <h3 class="title">What's your nickname?</h3>
-          <input class="usernameInput" type="text" maxlength="14" />
-        </div>
-      </li>
-      </ul>
       </div>
-    </div>
 
   </div>
   
@@ -145,7 +146,6 @@
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
   <script type="text/javascript" src="./assets/javascripts/chat.js"></script>
   <script>
-    var servername = '<%= fullservername %>';
     function addPadClickEvent(socket, trackId = null) {
       if (trackId) {
         // if an instrument is given, select the pads of it
@@ -172,14 +172,14 @@
     }
 
     $(function () {
-      var roomId;
-      var listSequencerState = [];
-      var servername = '<%= fullservername %>';
-      console.log("connecting to " + servername + "room" + <%= room %>);
-      socket = io.connect(servername);
-      socket.emit('room', '<%= room %>');
-      setRoomForChat('<%= room %>');      
       
+      var servername = '<%= fullservername %>';
+      console.log("connecting to " + servername + " room " + '<%= room %>');
+      socket = io.connect(servername);
+      
+      socket.emit('room', '<%= room %>', );
+          setRoomForChat('<%= room %>');  
+
       // on recieve sequencer state
       socket.on('SendCurrentState', function (json) {
         console.log("ReceiveCurrentSequencerState", json);
@@ -217,6 +217,11 @@
         currentKit.waves[trackId].setStart(startTime);
         currentKit.waves[trackId].setEnd(endTime);
       });
+
+      //get username
+    //   socket.on('add user', function(username){
+    //       var username = username;
+    //  });
     })
   </script>
 </body>

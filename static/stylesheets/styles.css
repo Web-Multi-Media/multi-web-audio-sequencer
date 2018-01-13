@@ -170,3 +170,9 @@ a {
   border-radius: 20px;
   background-color: rgb(26, 87, 167);
 }
+
+.chatArea, login page {
+  /* width: 500px; */
+  height: 175px;
+  overflow: auto
+}
