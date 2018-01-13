@@ -8,8 +8,9 @@ var eventEmitter = require('events').EventEmitter
 var hostname = process.env.MULT_WEB_SEQ_SERV || 'localhost';
 var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
 
-var fullservername=hostname+':'+hostnamePort;
+var fullservername = hostname + ':' + hostnamePort;
 var rooms = ["1", "2", "3", "4"];
+var roomUsers = [[], [], [], []];
 
 var sequencerState = {
   trackNames: ['kick', 'snare', 'hihat'],
@@ -19,9 +20,9 @@ var sequencerState = {
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
   ],
   sounds: [
-    'http://'+fullservername+'/assets/sounds/drum-samples/TR808/kick.mp3',
-    'http://'+fullservername+'/assets/sounds/drum-samples/TR808/snare.mp3',
-    'http://'+fullservername+'/assets/sounds/drum-samples/TR808/hihat.mp3'
+    'http://' + fullservername + '/assets/sounds/drum-samples/TR808/kick.mp3',
+    'http://' + fullservername + '/assets/sounds/drum-samples/TR808/snare.mp3',
+    'http://' + fullservername + '/assets/sounds/drum-samples/TR808/hihat.mp3'
   ],
   waves: [
     [false, false],
@@ -45,16 +46,14 @@ app.use(session({
 }));
 app.use('/assets', express.static(__dirname + '/static'));
 
-var numUsers = 0;
-
 // ON CONNECTION CONNECT TO ROOM AND SEND STATE TO CLIENT 
 io.sockets.on('connection', function (socket) {
-  
-  console.log("New client connected");
-  socket.on('room', function(room) {
-    var addedUser = false;
+  socket.on('room', function (room) {
+    console.log("New client connected to room: " + room);
     room--;
     socket.join(room);
+
+    // send state
     io.sockets.in(room).emit('SendCurrentState', sequencerStates[room]);
 
     // PAD RECEPTION VIA THE CLIENT
@@ -68,7 +67,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     // NEW TRACK
-    socket.on('newTrack', function(message) {
+    socket.on('newTrack', function (message) {
       console.log('receive new track: ' + message);
       var trackName = message[0];
       var soundUrl = message[1];
@@ -82,7 +81,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     // LOAD SOUND INTO A TRACK
-    socket.on('loadSound', function(message) {
+    socket.on('loadSound', function (message) {
       console.log('receive load sound: ' + message);
       socket.in(room).broadcast.emit('sendLoadSound', message);
       var trackId = message[0];
@@ -91,7 +90,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     // DELETE TRACK
-    socket.on('deleteTrack', function(message) {
+    socket.on('deleteTrack', function (message) {
       console.log('receive delete track: ' + message);
       io.sockets.in(room).emit('sendDeleteTrack', message);
       var trackId = message;
@@ -102,16 +101,17 @@ io.sockets.on('connection', function (socket) {
     });
 
     // CHANGE WAVE REGION
-    socket.on('waveRegion', function(message) {
+    socket.on('waveRegion', function (message) {
       var trackId = message[0];
       console.log('receive change wave region: ' + trackId);
       socket.in(room).broadcast.emit('sendWaveRegion', message);
       sequencerStates[room].waves[trackId] = [message[1], message[2]];
     });
 
+    // CHAT
     // when the client emits 'new message', this listens and executes
     socket.on('new message', function (data) {
-   
+
       // we tell the client to execute 'new message'
       socket.in(room).broadcast.emit('new message', {
         username: socket.username,
@@ -121,20 +121,17 @@ io.sockets.on('connection', function (socket) {
 
     // when the client emits 'add user', this listens and executes
     socket.on('add user', function (username) {
-      console.log("Add user in chat");
-      if (addedUser) return;
-
+      roomUsers[room].push(username);
+      console.log(roomUsers)
       // we store the username in the socket session for this client
       socket.username = username;
-      ++numUsers;
-      addedUser = true;
       socket.emit('login', {
-        numUsers: numUsers
+        numUsers: roomUsers[room].length
       });
       // echo globally (all clients) that a person has connected
       socket.in(room).broadcast.emit('user joined', {
         username: socket.username,
-        numUsers: numUsers
+        numUsers: roomUsers[room].length
       });
     });
 
@@ -154,32 +151,34 @@ io.sockets.on('connection', function (socket) {
 
     // when the user disconnects.. perform this
     socket.on('disconnect', function () {
-      if (addedUser) {
-        --numUsers;
-
-        // echo globally that this client has left
-        socket.in(room).broadcast.emit('user left', {
-          username: socket.username,
-          numUsers: numUsers
-        });
+      var index = roomUsers[room].indexOf(socket.username);
+      if (index > -1) {
+        roomUsers[room].splice(index, 1);
       }
+      // echo globally that this client has left
+      socket.in(room).broadcast.emit('user left', {
+        username: socket.username,
+        numUsers: roomUsers[room].length
+      });
     });
-
   });
-
-
 });
 
 
 // VIEWS
 app.get('/', (req, res) => {
   var room = req.query.room;
- // var username = req.query.username;
+  // var username = req.query.username;
   if (room) {
-    res.render('index.ejs', {fullservername: fullservername,
-                             room: room});
+    res.render('index.ejs', {
+      fullservername: fullservername,
+      room: room
+    });
   } else {
-    res.render('home.ejs', {fullservername: fullservername,  room: room});
+    res.render('home.ejs', {
+      fullservername: fullservername,
+      room: room
+    });
   }
 });
 

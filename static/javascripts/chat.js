@@ -72,7 +72,6 @@ $(function() {
 
   // Sends a chat message
   function sendMessage () {
-    console.log("Send Message");
     var message = $inputMessage.val();
     // Prevent markup from being injected into the message
     message = cleanInput(message);
@@ -80,11 +79,11 @@ $(function() {
     if (message && connected) {
       $inputMessage.val('');
       addChatMessage({
-        username: username.concat(' says   '),
+        username: username.concat(': '),
         message: message
       });
       // tell server to execute 'new message' and send along one parameter
-      socket.emit('new message', message);
+      socket.emit('new message', message.concat(': '));
     }
   }
 

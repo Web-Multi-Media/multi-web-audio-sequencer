@@ -160,7 +160,6 @@
   <script type="text/javascript" src="./assets/javascripts/kit.js"></script>
   <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/chat.js"></script>
   <script>
     function addPadClickEvent(socket, trackId = null) {
       if (trackId) {
@@ -233,13 +232,9 @@
         currentKit.waves[trackId].setStart(startTime);
         currentKit.waves[trackId].setEnd(endTime);
       });
-
-      //get username
-      //   socket.on('add user', function(username){
-      //       var username = username;
-      //  });
     })
   </script>
+  <script type="text/javascript" src="./assets/javascripts/chat.js"></script>
 </body>
 
 </html>

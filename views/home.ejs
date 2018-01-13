@@ -55,9 +55,6 @@
       var servername = '<%= fullservername %>';
       console.log("connecting to " + servername + "room" + <%= room %>);
       socket = io.connect(servername);
-
-      socket.emit('room', '<%= room %>', );
-      setRoomForChat('<%= room %>');
     });
   </script>
 </body>
