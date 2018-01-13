@@ -29,7 +29,7 @@ $(function() {
   var typing = false;
   var lastTypingTime;
   var $currentInput = $usernameInput.focus();
-
+  
   var socket = io();
 
   function addParticipantsMessage (data) {
@@ -43,14 +43,30 @@ $(function() {
   }
 
   //validate username 
-  $(function () {
+    $('.usernameInput').addClass("red");
+    $('.usernameInput').css("border-color", "red");
+    redFormInterval = setInterval(function(){ 
+      if ($('.usernameInput').hasClass("red")) {
+        $('.usernameInput').css("border-color", "transparent"); 
+        $('.usernameInput').removeClass("red");
+      } else {
+        $('.usernameInput').css("border-color", "red"); 
+        $('.usernameInput').addClass("red");
+      }
+    }, 800);
     $('#change-nickname').click(function () {
       setUsername();
+      $('#change-nickname').prop("disabled", true);
+      clearInterval(redFormInterval);
+      $('.usernameInput').css("border-color", "transparent");  
     });
     $('#nickname-form').submit(function () {
       setUsername();
+      $('#change-nickname').prop("disabled", true);
+      clearInterval(redFormInterval);
+      $('.usernameInput').css("border-color", "transparent");
     });
-  });
+
 
   // Sets the client's username
   function setUsername () {
@@ -222,8 +238,6 @@ $(function() {
         sendMessage();
         socket.emit('stop typing');
         typing = false;
-      } else {
-        setUsername();
       }
     }
   });

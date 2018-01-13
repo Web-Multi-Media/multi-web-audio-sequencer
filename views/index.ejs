@@ -34,9 +34,10 @@
         <a class="btn btn-success <% if(room==3){ %>active<% } %>" href="/?room=3">3</a>
         <a class="btn btn-success <% if(room==4){ %>active<% } %>" href="/?room=4">4</a> &emsp;&emsp;
         <span style="font-size:14px;font-weight: bold;" id="room-number">Nickname:</span>
-        <form class="nickname-form" style="display: inline-block;">
+        <form id="nickname-form" action="javascript:void(0);" style="display: inline-block;">
           <input class="my-box-white usernameInput" style="width:160px;" type="text" placeholder="Enter nickname" maxlength="14" />
-          <input type="submit" class="btn btn-success" value="Change" id="change-nickname">
+
+          <button type="button" class="btn btn-success" id="change-nickname" style="width:100px;">Choose</button>
         </form>
       </div>
     </div>

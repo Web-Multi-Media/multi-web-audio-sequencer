@@ -122,7 +122,6 @@ io.sockets.on('connection', function (socket) {
     // when the client emits 'add user', this listens and executes
     socket.on('add user', function (username) {
       roomUsers[room].push(username);
-      console.log(roomUsers)
       // we store the username in the socket session for this client
       socket.username = username;
       socket.emit('login', {
