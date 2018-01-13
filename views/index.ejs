@@ -12,7 +12,7 @@
 <body>
   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
-  
+
   <!--    HEADER   -->
   <div class="container-fluid">
     <div class="row">
@@ -21,10 +21,10 @@
       </div>
     </div>
   </div>
-  
+
   <!--    MAIN CONTAINER    -->
   <div class="container">
-    
+
     <!--    ROOM & NICKNAME CONTAINER    -->
     <div class="row" id="room-container">
       <div class="col-md-8" style="padding-top: 10px; padding-bottom:10px;">
@@ -32,17 +32,16 @@
         <a class="btn btn-success <% if(room==1){ %>active<% } %>" href="/?room=1">1</a>
         <a class="btn btn-success <% if(room==2){ %>active<% } %>" href="/?room=2">2</a>
         <a class="btn btn-success <% if(room==3){ %>active<% } %>" href="/?room=3">3</a>
-        <a class="btn btn-success <% if(room==4){ %>active<% } %>" href="/?room=4">4</a>
-        &emsp;&emsp;
+        <a class="btn btn-success <% if(room==4){ %>active<% } %>" href="/?room=4">4</a> &emsp;&emsp;
         <span style="font-size:14px;font-weight: bold;" id="room-number">Nickname:</span>
         <form class="nickname-form" style="display: inline-block;">
-            <input class="my-box-white usernameInput" style="width:160px;" type="text" placeholder="Enter nickname" maxlength="14"/>
-            <input type="submit" class="btn btn-success" value="Change" id="change-nickname">
+          <input class="my-box-white usernameInput" style="width:160px;" type="text" placeholder="Enter nickname" maxlength="14" />
+          <input type="submit" class="btn btn-success" value="Change" id="change-nickname">
         </form>
       </div>
     </div>
     <br>
-    
+
     <!--    PLAY TEMPO CONTAINER    -->
     <div class="row">
       <div class="col-md-offset-4 col-md-4 tempoBorder">
@@ -58,7 +57,7 @@
       </div>
     </div>
     <br>
-    
+
     <!--    PLAY TEMPO CONTAINER    -->
     <div class="row">
       <div class="instruments col-sm-12" id="instrument-section">
@@ -76,7 +75,7 @@
       </div>
     </div>
     <br>
-    
+
     <!--   SEARCH CONTAINER    -->
     <div class="row" id="search-container">
       <div class="col-md-8">
@@ -105,7 +104,18 @@
       </div>
     </div>
     <br>
-    
+
+    <!--   CHAT CONTAINER    -->
+    <div class="row" id="chat-container" style="padding-top: 10px; padding-bottom:10px;">
+      <div class="col-md-offset-4 col-md-4 chat">
+        <div class="chatArea">
+          <ul class="messages"></ul>
+        </div>
+        <input class="inputMessage" placeholder="Type here..." />
+      </div>
+    </div>
+    <br>
+
     <!--   EFFECT CONTAINER    -->
     <div class="row">
       <div class="col-md-6">
@@ -129,23 +139,7 @@
         </div>
       </div>
     </div>
-    <br>
-    
-    <!--   EFFECT CONTAINER    -->
-    <div class="row">
-      <div class="col-md-offset-4 col-md-4 chat">
-        <ul class="pages">
-          <li class="chat page">
-            <div class="chatArea">
-              <ul class="messages"></ul>
-            </div>
-          </li>
-          <input class="inputMessage" placeholder="Type here..." />
-          <li class="login page">
-          </li>
-        </ul>
-      </div>
-    </div>
+
   </div>
 
   <!-- Javascripts -->
@@ -159,6 +153,7 @@
   <script type="text/javascript" src="./assets/javascripts/wave.js"></script>
   <script type="text/javascript" src="./assets/javascripts/kit.js"></script>
   <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
+  <script type="text/javascript" src="./assets/javascripts/chat.js"></script>
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
   <script>
     function addPadClickEvent(socket, trackId = null) {
@@ -234,7 +229,6 @@
       });
     })
   </script>
-  <script type="text/javascript" src="./assets/javascripts/chat.js"></script>
 </body>
 
 </html>

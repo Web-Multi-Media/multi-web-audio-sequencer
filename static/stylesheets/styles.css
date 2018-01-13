@@ -45,7 +45,7 @@
   font: black;
 }
 
-.instrument, .instruments, #search-container, .wave, .tempoBorder, .wave, #room-container {
+.instrument, .instruments, #search-container, .wave, .tempoBorder, .wave, #room-container, #chat-container {
   border-width: 1px;
   border-style: groove;
   border-radius: 10px;

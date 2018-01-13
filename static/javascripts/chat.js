@@ -116,6 +116,7 @@ $(function() {
       .append($usernameDiv, $messageBodyDiv);
 
     addMessageElement($messageDiv, options);
+    objDiv.scrollTop = objDiv.scrollHeight;
   }
 
   // Adds the visual chat typing message
@@ -161,6 +162,7 @@ $(function() {
       $messages.append($el);
     }
     $messages[0].scrollTop = $messages[0].scrollHeight;
+    $('.chatArea').scrollTop($('.chatArea')[0].scrollHeight);
   }
 
   // Prevents input from having injected markup
@@ -248,7 +250,7 @@ $(function() {
   socket.on('login', function (data) {
     connected = true;
     // Display the welcome message
-    var message = "Welcome to Socket.IO Chat – ";
+    var message = "Welcome to room #" + room + " chat " + username;
     log(message, {
       prepend: true
     });
