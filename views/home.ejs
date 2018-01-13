@@ -37,26 +37,8 @@
         <a class="thumbnail room-button" href="/?room=4">Room 4</a>
       </div>
     </div>
-    <div>
-      <ul class="messages">
-        <li class="login page">
-          <div class="form">
-            <h3 class="title">What's your nickname?</h3>
-            <input class="usernameInput" type="text" maxlength="14" />
-            <input class="btn btn-success" type="submit" id="nicknameSubmit" value="Submit">
-          </div>
-        </li>
-      </ul>
-    </div>
   </div>
 
-  <script>
-    $(function() {
-      var servername = '<%= fullservername %>';
-      console.log("connecting to " + servername + "room" + <%= room %>);
-      socket = io.connect(servername);
-    });
-  </script>
 </body>
 
 </html>
