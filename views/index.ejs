@@ -12,6 +12,8 @@
 <body>
   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
+  
+  <!--    HEADER   -->
   <div class="container-fluid">
     <div class="row">
       <div class="jumbotron" style="text-align: center;">
@@ -19,12 +21,23 @@
       </div>
     </div>
   </div>
+  
+  <!--    MAIN CONTAINER    -->
   <div class="container">
-    <div class="row">
-      <input type="text" placeholder="Type in a room number" id="roomNumber">
-      <input type="submit" value="Change Room" id="roomNumberSubmit">
-      <p id="roomNo"></p>
+    
+    <!--    ROOM CONTAINER    -->
+    <div class="row" id="room-container">
+      <div class="col-md-8" style="padding-top: 9px; padding-bottom:9px;">
+        <span class="my-box-white" style="font-size:14px;font-weight: bold;" id="room-number">Room: -/4</span>
+        <form id="room-form" action="javascript:void(0);" style="display: inline-block;">
+          <input type="text" class="my-box-white" placeholder="# Room" id="roomNumber" style="width:75px;">
+          <input type="submit" class="btn btn-success" value="Change Room" id="roomNumberSubmit">
+        </form>
+      </div>
     </div>
+    <br>
+    
+    <!--    PLAY TEMPO CONTAINER    -->
     <div class="row">
       <div class="col-md-offset-4 col-md-4 tempoBorder">
         <button id="play-pause" onclick="this.blur();" type="button" class="btn btn-success">
@@ -39,6 +52,8 @@
       </div>
     </div>
     <br>
+    
+    <!--    PLAY TEMPO CONTAINER    -->
     <div class="row">
       <div class="instruments col-sm-12" id="instrument-section">
         <div class="row"></div>
@@ -55,6 +70,8 @@
       </div>
     </div>
     <br>
+    
+    <!--   SEARCH CONTAINER    -->
     <div class="row" id="search-container">
       <div class="col-md-8">
         <form id="search-form" action="javascript:void(0);" style="display: inline-block;">
@@ -82,6 +99,8 @@
       </div>
     </div>
     <br>
+    
+    <!--   EFFECT CONTAINER    -->
     <div class="row">
       <div class="col-md-6">
         <div class="filter-controls col-md-4">
@@ -104,27 +123,28 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-offset-4 col-md-4 chat">
-      <ul class="pages">
-        <li class="chat page">
-          <div class="chatArea">
-            <ul class="messages"></ul>
-          </div>
-        </li>
-        <input class="inputMessage" placeholder="Type here..." />
-        <li class="login page">
-          <div class="form">
-            <h3 class="title">What's your nickname?</h3>
-            <input class="usernameInput" type="text" maxlength="14" />
-            <input class="btn btn-success" type="submit" id="nicknameSubmit" value="Submit">
-          </div>
-        </li>
-      </ul>
+    <br>
+    
+    <!--   EFFECT CONTAINER    -->
+    <div class="row">
+      <div class="col-md-offset-4 col-md-4 chat">
+        <ul class="pages">
+          <li class="chat page">
+            <div class="chatArea">
+              <ul class="messages"></ul>
+            </div>
+          </li>
+          <input class="inputMessage" placeholder="Type here..." />
+          <li class="login page">
+            <div class="form">
+              <h3 class="title">What's your nickname?</h3>
+              <input class="usernameInput" type="text" maxlength="14" />
+              <input class="btn btn-success" type="submit" id="nicknameSubmit" value="Submit">
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-
   </div>
 
   <!-- Javascripts -->

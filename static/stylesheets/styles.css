@@ -45,7 +45,7 @@
   font: black;
 }
 
-.instrument, .instruments, #search-container, .wave, .tempoBorder, .wave {
+.instrument, .instruments, #search-container, .wave, .tempoBorder, .wave, #room-container {
   border-width: 1px;
   border-style: groove;
   border-radius: 10px;
@@ -64,7 +64,7 @@
 }
 
 .tempo-container {
-  margin: 0 10px;
+  margin: 10px 10px;
 }
 
 #tempo-input {
@@ -160,19 +160,12 @@ a {
   border: 1px solid transparent;
   }
 
-.room-button {
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  font-size: 26px;
-  padding-top: 80px;
-  padding-bottom: 80px;
-  border-radius: 20px;
-  background-color: rgb(26, 87, 167);
-}
-
 .chatArea, login page {
   /* width: 500px; */
   height: 175px;
   overflow: auto
+}
+
+.my-container{
+  
 }
