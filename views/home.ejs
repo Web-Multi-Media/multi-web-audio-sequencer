@@ -1,67 +1,65 @@
 <!doctype html>
 <html>
 
-  <head>
-    <title>Multi Web Audio Sequencer</title>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="../assets/stylesheets/styles.css">
-  </head>
+<head>
+  <title>Multi Web Audio Sequencer</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="../assets/stylesheets/styles.css">
+</head>
 
-  <body>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-    crossorigin="anonymous"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="./assets/javascripts/chat.js"></script>
-    <div class="container-fluid">
-      <div class="row">
-        <div class="jumbotron" style="text-align: center;">
-          <h1>Multi Web Audio Sequencer</h1>
-          <h2>Choose a Room</h2>
-        </div>
+<body>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="./assets/javascripts/chat.js"></script>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="jumbotron" style="text-align: center;">
+        <h1>Multi Web Audio Sequencer</h1>
+        <h2>Choose a Room</h2>
       </div>
     </div>
-    
-    <div class="container">
-      <div class="row">
-          <div class="col-xs-6 col-md-6">
-            <a class="thumbnail room-button" href="/?room=1">Room 1</a>
-          </div>
-          <div class="col-xs-6 col-md-6">
-            <a class="thumbnail room-button" href="/?room=2">Room 2</a>
-          </div>
-          <div class="col-xs-6 col-md-6">
-            <a class="thumbnail room-button" href="/?room=3">Room 3</a>
-          </div>
-          <div class="col-xs-6 col-md-6">
-            <a class="thumbnail room-button" href="/?room=4">Room 4</a>
-          </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-6 col-md-6">
+        <a class="thumbnail room-button" href="/?room=1">Room 1</a>
       </div>
-      <div>
+      <div class="col-xs-6 col-md-6">
+        <a class="thumbnail room-button" href="/?room=2">Room 2</a>
+      </div>
+      <div class="col-xs-6 col-md-6">
+        <a class="thumbnail room-button" href="/?room=3">Room 3</a>
+      </div>
+      <div class="col-xs-6 col-md-6">
+        <a class="thumbnail room-button" href="/?room=4">Room 4</a>
+      </div>
+    </div>
+    <div>
       <ul class="messages">
         <li class="login page">
-            <div class="form">
-              <h3 class="title">What's your nickname?</h3>
-              <input class="usernameInput" type="text" maxlength="14" />
-              <input class="btn btn-success" type="submit" id="nicknameSubmit" value="Submit">
-            </div>
+          <div class="form">
+            <h3 class="title">What's your nickname?</h3>
+            <input class="usernameInput" type="text" maxlength="14" />
+            <input class="btn btn-success" type="submit" id="nicknameSubmit" value="Submit">
+          </div>
         </li>
       </ul>
     </div>
-    </ul>
-    </div>
-    </div>
-        
-    <script>
-        $(function () {
-          var servername = '<%= fullservername %>';
-         // console.log("connecting to " + servername + "room" + <%= room %>);
-          socket = io.connect(servername);
-          
-          socket.emit('room', '<%= room %>', );
-          setRoomForChat('<%= room %>');  
-        });
-    </script>
-  </body>
+  </div>
+
+  <script>
+    $(function() {
+      var servername = '<%= fullservername %>';
+      console.log("connecting to " + servername + "room" + <%= room %>);
+      socket = io.connect(servername);
+
+      socket.emit('room', '<%= room %>', );
+      setRoomForChat('<%= room %>');
+    });
+  </script>
+</body>
+
 </html>

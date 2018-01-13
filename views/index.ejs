@@ -25,13 +25,19 @@
   <!--    MAIN CONTAINER    -->
   <div class="container">
     
-    <!--    ROOM CONTAINER    -->
+    <!--    ROOM & NICKNAME CONTAINER    -->
     <div class="row" id="room-container">
-      <div class="col-md-8" style="padding-top: 9px; padding-bottom:9px;">
-        <span class="my-box-white" style="font-size:14px;font-weight: bold;" id="room-number">Room: -/4</span>
-        <form id="room-form" action="javascript:void(0);" style="display: inline-block;">
-          <input type="text" class="my-box-white" placeholder="# Room" id="roomNumber" style="width:75px;">
-          <input type="submit" class="btn btn-success" value="Change Room" id="roomNumberSubmit">
+      <div class="col-md-8" style="padding-top: 10px; padding-bottom:10px;">
+        <span style="font-size:14px;font-weight: bold;" id="room-number">Room:</span>
+        <a class="btn btn-success <% if(room==1){ %>active<% } %>" href="/?room=1">1</a>
+        <a class="btn btn-success <% if(room==2){ %>active<% } %>" href="/?room=2">2</a>
+        <a class="btn btn-success <% if(room==3){ %>active<% } %>" href="/?room=3">3</a>
+        <a class="btn btn-success <% if(room==4){ %>active<% } %>" href="/?room=4">4</a>
+        &emsp;&emsp;
+        <span style="font-size:14px;font-weight: bold;" id="room-number">Nickname:</span>
+        <form class="nickname-form" style="display: inline-block;">
+            <input class="my-box-white usernameInput" style="width:160px;" type="text" placeholder="Enter nickname" maxlength="14"/>
+            <input type="submit" class="btn btn-success" value="Change" id="change-nickname">
         </form>
       </div>
     </div>
@@ -136,11 +142,6 @@
           </li>
           <input class="inputMessage" placeholder="Type here..." />
           <li class="login page">
-            <div class="form">
-              <h3 class="title">What's your nickname?</h3>
-              <input class="usernameInput" type="text" maxlength="14" />
-              <input class="btn btn-success" type="submit" id="nicknameSubmit" value="Submit">
-            </div>
           </li>
         </ul>
       </div>

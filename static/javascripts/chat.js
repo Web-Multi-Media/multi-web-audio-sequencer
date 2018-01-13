@@ -42,16 +42,19 @@ $(function() {
     log(message);
   }
 
-  //validate username
-  function submitUserName(){
-    $('#nicknameSubmit').click(function(){
+  //validate username 
+  $(function () {
+    $('#change-nickname').click(function () {
       setUsername();
-    })
-  }
+    });
+    $('#nickname-form').submit(function () {
+      setUsername();
+    });
+  });
 
   // Sets the client's username
   function setUsername () {
-    username = cleanInput($usernameInput.val().trim()).concat(' says   ');
+    username = cleanInput($usernameInput.val().trim());
 
     // If the username is valid
     if (username) {
@@ -77,7 +80,7 @@ $(function() {
     if (message && connected) {
       $inputMessage.val('');
       addChatMessage({
-        username: username,
+        username: username.concat(' says   '),
         message: message
       });
       // tell server to execute 'new message' and send along one parameter
