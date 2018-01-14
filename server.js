@@ -49,9 +49,25 @@ app.use('/assets', express.static(__dirname + '/static'));
 // ON CONNECTION CONNECT TO ROOM AND SEND STATE TO CLIENT 
 io.sockets.on('connection', function (socket) {
   socket.on('room', function (room) {
-    console.log("New client connected to room: " + room);
     room--;
+    console.log("New client connected to room: " + room);
     socket.join(room);
+
+    // if already in a chat room, autoconect to chat from the chat:
+    if (socket.chatRoom != null) {
+      console.log("A client left the chat of room: " + socket.chatRoom);
+      // echo globally that this client has left
+      socket.in(socket.chatRoom).broadcast.emit('user left', {
+        username: socket.username,
+        numUsers: roomUsers[socket.chatRoom].length - 1
+      });
+      // delete user from roomUsers lists
+      var index = roomUsers[room].indexOf(socket.username);
+      if (index > -1) {
+        roomUsers[room].splice(index, 1);
+      }
+    }
+    socket.chatRoom = null;
 
     // send state
     io.sockets.in(room).emit('SendCurrentState', sequencerStates[room]);
@@ -121,6 +137,8 @@ io.sockets.on('connection', function (socket) {
 
     // when the client emits 'add user', this listens and executes
     socket.on('add user', function (username) {
+      socket.chatRoom = room;
+      console.log("New client on the chat: " + room);
       roomUsers[room].push(username);
       // we store the username in the socket session for this client
       socket.username = username;
@@ -150,15 +168,19 @@ io.sockets.on('connection', function (socket) {
 
     // when the user disconnects.. perform this
     socket.on('disconnect', function () {
-      var index = roomUsers[room].indexOf(socket.username);
-      if (index > -1) {
-        roomUsers[room].splice(index, 1);
+      if (socket.chatRoom != null) {
+        console.log("A client left the chat of room: " + socket.chatRoom);
+        // echo globally that this client has left
+        socket.in(socket.chatRoom).broadcast.emit('user left', {
+          username: socket.username,
+          numUsers: roomUsers[socket.chatRoom].length - 1
+        });
+        // delete user from roomUsers lists
+        var index = roomUsers[socket.chatRoom].indexOf(socket.username);
+        if (index > -1) {
+          roomUsers[room].splice(index, 1);
+        }
       }
-      // echo globally that this client has left
-      socket.in(room).broadcast.emit('user left', {
-        username: socket.username,
-        numUsers: roomUsers[room].length
-      });
     });
   });
 });

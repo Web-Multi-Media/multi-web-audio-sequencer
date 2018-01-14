@@ -99,7 +99,8 @@ $(function() {
         message: message
       });
       // tell server to execute 'new message' and send along one parameter
-      socket.emit('new message', message.concat(': '));
+      socket.emit('new message', ': '.concat(message));
+      console.log('Chat message sent: ' + message)
     }
   }
 
@@ -132,13 +133,13 @@ $(function() {
       .append($usernameDiv, $messageBodyDiv);
 
     addMessageElement($messageDiv, options);
-    objDiv.scrollTop = objDiv.scrollHeight;
+    $messageDiv.scrollTop = $messageDiv.scrollHeight;
   }
 
   // Adds the visual chat typing message
   function addChatTyping (data) {
     data.typing = true;
-    data.message = 'is typing';
+    data.message = ' is typing';
     addChatMessage(data);
   }
 
@@ -285,6 +286,7 @@ $(function() {
   // Whenever the server emits 'user left', log it in the chat body
   socket.on('user left', function (data) {
     log(data.username + ' left');
+    console.log(data.username + ' left')
     addParticipantsMessage(data);
     removeChatTyping(data);
   });
