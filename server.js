@@ -73,7 +73,6 @@ io.sockets.on('connection', function (socket) {
         username: socket.username,
         numUsers: roomUsers[room].length
       });
-      console.log(socket.username);
     }
 
     // send state
@@ -144,19 +143,33 @@ io.sockets.on('connection', function (socket) {
 
     // when the client emits 'add user', this listens and executes
     socket.on('add user', function (username) {
-      socket.chatRoom = room;
-      console.log("New client on the chat: " + room);
-      roomUsers[room].push(username);
-      // we store the username in the socket session for this client
-      socket.username = username;
-      socket.emit('login', {
-        numUsers: roomUsers[room].length
-      });
-      // echo globally (all clients) that a person has connected
-      socket.in(room).broadcast.emit('user joined', {
-        username: socket.username,
-        numUsers: roomUsers[room].length
-      });
+      if (socket.chatRoom!=null) {
+        console.log("Client change name on room: " + room);
+        socket.in(room).broadcast.emit('user change name', {
+          oldName: socket.username,
+          newName: username
+        });
+        var index = roomUsers[socket.chatRoom].indexOf(socket.username);
+        if (index > -1) {
+          roomUsers[room].splice(index, 1);
+        }
+        socket.username = username;
+        roomUsers[room].push(username);
+      } else {
+        socket.chatRoom = room;
+        console.log("New client on the chat: " + room);
+        roomUsers[room].push(username);
+        // we store the username in the socket session for this client
+        socket.username = username;
+        socket.emit('login', {
+          numUsers: roomUsers[room].length
+        });
+        // echo globally (all clients) that a person has connected
+        socket.in(room).broadcast.emit('user joined', {
+          username: socket.username,
+          numUsers: roomUsers[room].length
+        });
+      }
       socket.handshake.session.username = username;
       socket.handshake.session.save();
     });

@@ -30,7 +30,6 @@ $(function() {
   var lastTypingTime;
   var $currentInput = $usernameInput.focus();
   
-//  var socket = io();
 
   function addParticipantsMessage (data) {
     var message = '';
@@ -77,8 +76,6 @@ $(function() {
       $chatPage.show();
       $loginPage.off('click');
       $currentInput = $inputMessage.focus();
-
-      //socket.emit('room', room);
 
       // Tell the server your username
       socket.emit('add user', username);
@@ -279,17 +276,24 @@ $(function() {
       $loginPage.fadeOut();
       $chatPage.show();
       $loginPage.off('click');
-      $currentInput = $inputMessage.focus();
+      $currentInput.val(username)
+      $('#change-nickname').prop("disabled", true);
+      clearInterval(redFormInterval);
+      $('.usernameInput').css("border-color", "transparent");
+      connected = true;
+      // Display the welcome message
+      var message = "Welcome to room #" + chatRoom + " chat " + username;
+      log(message, {
+        prepend: true
+      });
+      addParticipantsMessage(data);
     }
-    connected = true;
-    // Display the welcome message
-    var message = "Welcome to room #" + chatRoom + " chat " + username;
-    log(message, {
-      prepend: true
-    });
-    addParticipantsMessage(data);
   });
   
+  socket.on('user change name', function (data) {
+    var message = data.oldName + " changed his nickname for " + data.newName;
+    log(message)
+  });
   
   // Whenever the server emits 'new message', update the chat body
   socket.on('new message', function (data) {
