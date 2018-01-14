@@ -21,19 +21,27 @@
   </div>
 
   <div class="container">
-    <div class="row">
-      <div class="col-xs-6 col-md-6">
-        <a class="thumbnail room-button" href="/?room=1">Room 1</a>
-      </div>
-      <div class="col-xs-6 col-md-6">
-        <a class="thumbnail room-button" href="/?room=2">Room 2</a>
-      </div>
-      <div class="col-xs-6 col-md-6">
-        <a class="thumbnail room-button" href="/?room=3">Room 3</a>
-      </div>
-      <div class="col-xs-6 col-md-6">
-        <a class="thumbnail room-button" href="/?room=4">Room 4</a>
-      </div>
+    <div class="row display-flex">
+      <% for(var j=0; j<roomUsers.length; j++) {%>
+        <div class="col-xs-3 col-md-3">
+          <a class="thumbnail room-button" href="/?room=<%=j+1%>">
+            <center>
+              <h2>Room <%=j+1%></h2>
+            </center>
+            <h5>User connected:</h5>
+            <div class="info-user">
+              <ul>
+                <% for(var i=0; i<roomUsers[j].length; i++) {%>
+                  <li>
+                    <%= roomUsers[j][i] %>
+                  </li>
+                <% } %>
+              </ul>
+            </div>
+            <div class="info-last-time">Last connection: <%= roomConnectionsAgo[j] %> ago</div>
+          </a>
+        </div>
+      <% } %>
     </div>
   </div>
 

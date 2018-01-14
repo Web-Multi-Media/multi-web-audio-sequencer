@@ -16,6 +16,7 @@ var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
 var fullservername = hostname + ':' + hostnamePort;
 var rooms = ["1", "2", "3", "4"];
 var roomUsers = [[], [], [], []];
+var roomLastConnections = [null, null, null, null];
 
 var sequencerState = {
   trackNames: ['kick', 'snare', 'hihat'],
@@ -58,6 +59,9 @@ io.sockets.on('connection', function (socket) {
     console.log("New client connected to room: " + room);
     socket.join(room);
     socket.chatRoom = null;
+    
+    // store connection activity
+    roomLastConnections[room] =  new Date();
     
     // if username in session, autolog tu chat
     socket.username = socket.handshake.session.username;
@@ -208,6 +212,30 @@ io.sockets.on('connection', function (socket) {
 });
 
 
+
+
+function updateActivity(datetime) {
+    var theevent = new Date(datetime);
+    now = new Date();
+    var sec_num = (now - theevent) / 1000;
+    var days    = Math.floor(sec_num / (3600 * 24));
+    var hours   = Math.floor((sec_num - (days * (3600 * 24)))/3600);
+    var minutes = Math.floor((sec_num - (days * (3600 * 24)) - (hours * 3600)) / 60);
+    var seconds = Math.floor(sec_num - (days * (3600 * 24)) - (hours * 3600) - (minutes * 60));
+
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    if (seconds < 10) {seconds = "0"+seconds;}
+
+    if (days>1000) {
+      return '-'
+    } else if (days>30) {
+      return 'more than 30 days ago'
+    } else {
+      return  days+' days '+ hours+' hours '+minutes+' min '+seconds+ ' s ';
+    }
+}
+
 // VIEWS
 app.get('/', (req, res) => {
   var room = req.query.room;
@@ -218,9 +246,16 @@ app.get('/', (req, res) => {
       room: room
     });
   } else {
+    var dateNow = new Date();
+    var roomConnectionsAgo = roomLastConnections.map(function(e) {
+      var time = updateActivity(e)
+      if (time<0) { time=0; }
+      return updateActivity(e)
+    });
     res.render('home.ejs', {
       fullservername: fullservername,
-      room: room
+      roomUsers: roomUsers,
+      roomConnectionsAgo: roomConnectionsAgo,
     });
   }
 });
