@@ -1,8 +1,8 @@
-var room;
+var chatRoom;
 
 function setRoomForChat(room_input) {
   console.log("[Chat] Room will be", room_input);
-  room=room_input;    
+  chatRoom=room_input;    
 }
 
 $(function() {
@@ -30,7 +30,7 @@ $(function() {
   var lastTypingTime;
   var $currentInput = $usernameInput.focus();
   
-  var socket = io();
+//  var socket = io();
 
   function addParticipantsMessage (data) {
     var message = '';
@@ -71,7 +71,6 @@ $(function() {
   // Sets the client's username
   function setUsername () {
     username = cleanInput($usernameInput.val().trim());
-
     // If the username is valid
     if (username) {
       $loginPage.fadeOut();
@@ -79,7 +78,7 @@ $(function() {
       $loginPage.off('click');
       $currentInput = $inputMessage.focus();
 
-      socket.emit('room', room);
+      //socket.emit('room', room);
 
       // Tell the server your username
       socket.emit('add user', username);
@@ -265,13 +264,33 @@ $(function() {
   socket.on('login', function (data) {
     connected = true;
     // Display the welcome message
-    var message = "Welcome to room #" + room + " chat " + username;
+    var message = "Welcome to room #" + chatRoom + " chat " + username;
     log(message, {
       prepend: true
     });
     addParticipantsMessage(data);
   });
-
+  
+  // Whenever the server emits 'auto-login', auto log with the username message
+  socket.on('autoLogin', function (data) {
+    console.log(data);
+    username = data.username;
+    if (username) {
+      $loginPage.fadeOut();
+      $chatPage.show();
+      $loginPage.off('click');
+      $currentInput = $inputMessage.focus();
+    }
+    connected = true;
+    // Display the welcome message
+    var message = "Welcome to room #" + chatRoom + " chat " + username;
+    log(message, {
+      prepend: true
+    });
+    addParticipantsMessage(data);
+  });
+  
+  
   // Whenever the server emits 'new message', update the chat body
   socket.on('new message', function (data) {
     addChatMessage(data);

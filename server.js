@@ -1,6 +1,11 @@
 var express = require('express');
 var app = express();
-var session = require('cookie-session');
+var session = require('express-session')({
+    secret: "azaezaedzadzea",
+    resave: true,
+    saveUninitialized: true
+});
+var sharedsession = require("express-socket.io-session");
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
@@ -41,10 +46,10 @@ var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
 app.set('view engine', 'ejs');
 
 //middleware
-app.use(session({
-  secret: 'azaezaedzadzea'
-}));
+app.use(session);
 app.use('/assets', express.static(__dirname + '/static'));
+io.use(sharedsession(session, {autoSave:true})); 
+
 
 // ON CONNECTION CONNECT TO ROOM AND SEND STATE TO CLIENT 
 io.sockets.on('connection', function (socket) {
@@ -53,6 +58,23 @@ io.sockets.on('connection', function (socket) {
     console.log("New client connected to room: " + room);
     socket.join(room);
     socket.chatRoom = null;
+    
+    // if username in session, autolog tu chat
+    socket.username = socket.handshake.session.username;
+    if (socket.username!=null) {
+      socket.chatRoom = room;
+      roomUsers[room].push(socket.username);
+      socket.emit('autoLogin', {
+        numUsers: roomUsers[room].length,
+        username: socket.username
+      });
+      // echo globally (all clients) that a person has connected
+      socket.in(room).broadcast.emit('user joined', {
+        username: socket.username,
+        numUsers: roomUsers[room].length
+      });
+      console.log(socket.username);
+    }
 
     // send state
     io.sockets.in(room).emit('SendCurrentState', sequencerStates[room]);
@@ -135,6 +157,8 @@ io.sockets.on('connection', function (socket) {
         username: socket.username,
         numUsers: roomUsers[room].length
       });
+      socket.handshake.session.username = username;
+      socket.handshake.session.save();
     });
 
     // when the client emits 'typing', we broadcast it to others
