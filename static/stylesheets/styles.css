@@ -99,12 +99,10 @@
 }
 
 .deleteTrackButton {
-  /* display: inline-block; */
-  /* position: right; */
+  padding-left: 0.5vw;
+  padding-top: 0.15vw;
   width: 2.4vw;
   height: 4vh;
-  /* margin: 2px; */
-  /* margin-left: 20px; */
 }
 
 wave {
@@ -176,3 +174,4 @@ a {
   border-radius: 20px;
   background-color: rgb(26, 87, 167);
 }
+
