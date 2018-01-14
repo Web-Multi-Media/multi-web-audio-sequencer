@@ -52,21 +52,6 @@ io.sockets.on('connection', function (socket) {
     room--;
     console.log("New client connected to room: " + room);
     socket.join(room);
-
-    // if already in a chat room, autoconect to chat from the chat:
-    if (socket.chatRoom != null) {
-      console.log("A client left the chat of room: " + socket.chatRoom);
-      // echo globally that this client has left
-      socket.in(socket.chatRoom).broadcast.emit('user left', {
-        username: socket.username,
-        numUsers: roomUsers[socket.chatRoom].length - 1
-      });
-      // delete user from roomUsers lists
-      var index = roomUsers[room].indexOf(socket.username);
-      if (index > -1) {
-        roomUsers[room].splice(index, 1);
-      }
-    }
     socket.chatRoom = null;
 
     // send state
@@ -173,7 +158,7 @@ io.sockets.on('connection', function (socket) {
         // echo globally that this client has left
         socket.in(socket.chatRoom).broadcast.emit('user left', {
           username: socket.username,
-          numUsers: roomUsers[socket.chatRoom].length - 1
+          numUsers: roomUsers[socket.chatRoom].length-1
         });
         // delete user from roomUsers lists
         var index = roomUsers[socket.chatRoom].indexOf(socket.username);
