@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Multi Web Audio Sequencer</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="../assets/stylesheets/styles.css">
+</head>
+
+<body>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="jumbotron" style="text-align: center;">
+        <h1>Multi Web Audio Sequencer</h1>
+        <h2>Choose a Room</h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row display-flex">
+      <% for(var j=0; j<roomUsers.length; j++) {%>
+        <div class="col-xs-3 col-md-3">
+          <a class="thumbnail room-button" href="/?room=<%=j+1%>">
+            <center>
+              <h2>Room <%=j+1%></h2>
+            </center>
+            <h5>User connected:</h5>
+            <div class="info-user">
+              <ul>
+                <% for(var i=0; i<roomUsers[j].length; i++) {%>
+                  <li>
+                    <%= roomUsers[j][i] %>
+                  </li>
+                <% } %>
+              </ul>
+            </div>
+            <div class="info-last-time">Last connection: <%= roomConnectionsAgo[j] %> ago</div>
+          </a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+</body>
+
+</html>

@@ -1,3 +1,7 @@
+body {
+   background-color: lightblue;
+}
+
 .pad {
   width: 2.4vw;
   height: 4vh;
@@ -45,7 +49,8 @@
   font: black;
 }
 
-.instrument, .instruments, #search-container, .wave, .tempoBorder, .wave {
+.instrument, .instruments, #search-container, .wave, .tempoBorder, .wave, #room-container, #chat-container {
+  margin-top: 7px;
   border-width: 1px;
   border-style: groove;
   border-radius: 10px;
@@ -64,7 +69,7 @@
 }
 
 .tempo-container {
-  margin: 0 10px;
+  margin: 10px 10px;
 }
 
 #tempo-input {
@@ -99,12 +104,10 @@
 }
 
 .deleteTrackButton {
-  /* display: inline-block; */
-  /* position: right; */
+  padding-left: 0.5vw;
+  padding-top: 0.15vw;
   width: 2.4vw;
   height: 4vh;
-  /* margin: 2px; */
-  /* margin-left: 20px; */
 }
 
 wave {
@@ -117,6 +120,7 @@ a {
 
 .jumbotron {
   background-color:rgb(47, 96, 156);
+  margin-bottom: 10px;
 }
 
 
@@ -159,3 +163,44 @@ a {
   vertical-align: middle;
   border: 1px solid transparent;
   }
+
+.chatArea, login page {
+  /* width: 500px; */
+  height: 175px;
+  overflow: auto
+}
+
+
+/* HOME PAGE */
+.room-button {
+  width: 100%;
+  height: 100%;
+  padding-top: 10px;
+  padding-bottom: 12px;
+  border-radius: 15px;
+  background-color: rgb(26, 87, 167);
+}
+
+.row.display-flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+.thumbnail {
+  height: 100%;
+}
+
+.info-user {
+  margin-top: -5px; 
+  height: 90px;
+  overflow: auto;
+  background-color: rgb(26, 103, 167);
+  border-radius: 3px;
+}
+
+.info-last-time {
+  float: right;
+  font-size: 10px;
+  margin-top: 10px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
