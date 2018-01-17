@@ -518,20 +518,16 @@ Search.prototype.freesoundIframe = function(soundId) {
   return '<iframe frameborder="0" scrolling="no" src="https://freesound.org/embed/sound/iframe/' + soundId + '/simple/small/" width="375" height="30"></iframe>';
 };
 
-Search.prototype.searchFreesound = function(query, page=1, sliderDuration) {
+Search.prototype.searchFreesound = function(query, page, filter) {
   var self = this;
-  var durationMin = sliderDuration.split(',')[0];
-  var durationMax = sliderDuration.split(',')[1];
   
   self.query = query;
   self.page = page;
-  console.log('duration : ' + durationMin + ".0 TO " + durationMax + ".0" );
-  self.filter = "duration:[" + durationMin + ".0 TO " + durationMax + ".0]";
-  //var filter = "duration:[0.0 TO 10]";
+  self.filter = filter;
   var sort = "rating_desc";
   freesound.textSearch(query, {
       page: page,
-      filter: self.filter,
+      filter: filter,
       sort: sort,
       fields: 'id,name,url,previews',
     },
@@ -591,15 +587,12 @@ Search.prototype.searchEvent = function() {
     this.query = $('#search-query').val();
     this.sliderDuration = $('#sampleDuration').slider();
     this.sliderValue = $('#sampleDuration').val();
-    // Slider sample duration
+    // Slider sample duration value
      this.sliderDuration.on('slide', function(slideEvt){
-      this.sliderValue = slideEvt.value;
-      console.log('valeur du slider', this.sliderValue);
+       console.log('valeur du slider', this.sliderValue);
     });
-    //sliderValue = $('#sampleDuration').val()
-    //console.log('valeur du slider ', $('#sampleDuration').val().split(','));
-   console.log('valeur du slider : ' + this.sliderValue);
-    this.searchFreesound(this.query, '', this.sliderValue);
+    var duration = "duration:[" + this.sliderValue.split(',')[0] + ".0 TO " + this.sliderValue.split(',')[1] + ".0]"
+    this.searchFreesound(this.query, 1, duration);
 };
 
 // Drag and drop sounds
