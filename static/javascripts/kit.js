@@ -3,7 +3,7 @@ var NUM_INSTRUMENTS = 2;
 function Kit(name) {
   this.SAMPLE_BASE_PATH = "assets/sounds/drum-samples/";
   this.name = name;
-
+  this.sequenceLength = 16;
   this.buffers = [];
   this.waves = [];
 
@@ -14,6 +14,10 @@ function Kit(name) {
 
 Kit.prototype.pathName = function() {
   return this.SAMPLE_BASE_PATH + this.name + "/";
+};
+
+Kit.prototype.changeSequenceLength = function(sequenceLength) {
+  this.sequenceLength = sequenceLength;
 };
 
 Kit.prototype.load = function() {

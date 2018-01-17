@@ -193,6 +193,10 @@
     function sendDeleteTrack(trackName) {
       socket.emit('deleteTrack', trackName);
     }
+    
+    function sendSequenceLength(sequenceLength) {
+      socket.emit('sequenceLength', sequenceLength);
+    }
 
     $(function() {
 
@@ -239,6 +243,10 @@
         var endTime = message[2];
         currentKit.waves[trackId].setStart(startTime);
         currentKit.waves[trackId].setEnd(endTime);
+      });
+      
+      socket.on('sendSequenceLength', function(message) {
+        changeSequenceLength(message);
       });
     })
   </script>

@@ -19,11 +19,12 @@ var roomUsers = [[], [], [], []];
 var roomLastConnections = [null, null, null, null];
 
 var sequencerState = {
+  sequenceLength: 16,
   trackNames: ['kick', 'snare', 'hihat'],
   pads: [
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    Array(64).fill(0),
+    Array(64).fill(0),
+    Array(64).fill(0)
   ],
   sounds: [
     'http://' + fullservername + '/assets/sounds/drum-samples/TR808/kick.mp3',
@@ -102,7 +103,7 @@ io.sockets.on('connection', function (socket) {
       message.unshift(trackId);
       io.sockets.in(room).emit('sendNewTrack', message);
       sequencerStates[room].trackNames[trackId] = trackName;
-      sequencerStates[room].pads[trackId] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      sequencerStates[room].pads[trackId] = Array(64).fill(0);
       sequencerStates[room].sounds[trackId] = soundUrl;
       sequencerStates[room].waves[trackId] = [false, false];
     });
@@ -134,11 +135,18 @@ io.sockets.on('connection', function (socket) {
       socket.in(room).broadcast.emit('sendWaveRegion', message);
       sequencerStates[room].waves[trackId] = [message[1], message[2]];
     });
+    
+    // CHANGE LENGTH SEQUENCE
+    socket.on('sequenceLength', function(message) {
+      console.log('recieve change senquence length: ' + message);
+      sequencerStates[room].sequenceLength = message;
+      socket.in(room).broadcast.emit('sendSequenceLength', message);
+    });
+    
 
     // CHAT
     // when the client emits 'new message', this listens and executes
     socket.on('new message', function (data) {
-
       // we tell the client to execute 'new message'
       socket.in(room).broadcast.emit('new message', {
         username: socket.username,
