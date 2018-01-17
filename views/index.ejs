@@ -81,6 +81,18 @@
         <form id="search-form" action="javascript:void(0);" style="display: inline-block;">
           <input type="text" id="search-query" placeholder="Enter query" class="my-box-white">
           <button type="button" id="search-button" class="btn btn-success" disabled>Search</button>
+          <br>
+          <div>
+              <input id="sampleDuration" 
+              type="text" 
+              class="span2" 
+              value="" 
+              data-provide="slider"
+              data-slider-min="1"
+              data-slider-max="10" 
+              data-slider-step="1"
+              data-slider-value="[1,10]"/>  Sample duration
+          </div>
         </form>
         &emsp;
         <nav aria-label="Page navigation" style="display: inline-block;">
@@ -98,17 +110,6 @@
             </li>
           </ul>
         </nav>
-        <div>
-            <input id="ex2" 
-            type="text" 
-            class="span2" 
-            value="" 
-            data-provide="slider"
-            data-slider-min="1"
-            data-slider-max="10" 
-            data-slider-step="1"
-            data-slider-value="[1,10]"/>  Sample duration
-        </div>
         <div id="search-result-container"></div>
         <div id="error" style="color:red"></div>
       </div>
@@ -167,7 +168,7 @@
   <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
   <script>
-    $('#ex2').slider();
+    
     function addPadClickEvent(socket, trackId = null) {
       if (trackId) {
         // if an instrument is given, select the pads of it

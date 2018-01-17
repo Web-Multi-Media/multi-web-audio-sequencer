@@ -516,12 +516,19 @@ Search.prototype.freesoundIframe = function(soundId) {
   return '<iframe frameborder="0" scrolling="no" src="https://freesound.org/embed/sound/iframe/' + soundId + '/simple/small/" width="375" height="30"></iframe>';
 };
 
+var mySlider = $('#sampleDuration').slider();
+var sliderValue;
+mySlider.on('slide', function(slideEvt){
+  sliderValue = slideEvt.value;
+  console.log('valeur du slider min ' + sliderValue[0] + ' valeur du slider max ' + sliderValue[1]);
+})
+
 Search.prototype.searchFreesound = function(query, page=1) {
   var self = this;
-  var duration = $('#duration').val();
   self.query = query;
   self.page = page;
-  var filter = "duration:[0.0 TO" + duration + "]";
+  var filter = "duration:[" + sliderValue[0] + " TO " + sliderValue[1] + "]";
+ // var filter = "duration:[0.0 TO 10]";
   var sort = "rating_desc";
   freesound.textSearch(query, {
       page: page,
