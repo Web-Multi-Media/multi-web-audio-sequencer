@@ -506,7 +506,6 @@ function Search() {
   var page = null;
   var numPages = null;
   var numSounds = null;
-  var sliderDuration = null;
   var sliderValue = null;
 }
 
@@ -585,12 +584,11 @@ Search.prototype.addButtonEvents = function() {
 
 Search.prototype.searchEvent = function() {
     this.query = $('#search-query').val();
-    this.sliderDuration = $('#sampleDuration').slider();
     this.sliderValue = $('#sampleDuration').val();
     // Slider sample duration value
-     this.sliderDuration.on('slide', function(slideEvt){
-       console.log('valeur du slider', this.sliderValue);
-    });
+    //  this.sliderDuration.on('slide', function(slideEvt){
+    //    console.log('valeur du slider', this.sliderValue);
+    // });
     var duration = "duration:[" + this.sliderValue.split(',')[0] + ".0 TO " + this.sliderValue.split(',')[1] + ".0]"
     this.searchFreesound(this.query, 1, duration);
 };
