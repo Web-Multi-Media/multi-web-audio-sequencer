@@ -518,9 +518,10 @@ Search.prototype.freesoundIframe = function(soundId) {
 
 Search.prototype.searchFreesound = function(query, page=1) {
   var self = this;
+  var duration = $('#duration').val();
   self.query = query;
   self.page = page;
-  var filter = "duration:[0.0 TO 10.0]";
+  var filter = "duration:[0.0 TO" + duration + "]";
   var sort = "rating_desc";
   freesound.textSearch(query, {
       page: page,

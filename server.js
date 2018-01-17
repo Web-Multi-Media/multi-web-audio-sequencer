@@ -49,6 +49,7 @@ app.set('view engine', 'ejs');
 //middleware
 app.use(session);
 app.use('/assets', express.static(__dirname + '/static'));
+app.use('/assets', express.static(__dirname + '/node_modules'));
 io.use(sharedsession(session, {autoSave:true})); 
 
 
