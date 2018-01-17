@@ -43,6 +43,7 @@ var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
                       JSON.parse(JSON.stringify(sequencerState))];
 
 
+
 //moteur de template
 app.set('view engine', 'ejs');
 
@@ -262,5 +263,5 @@ app.get('/', (req, res) => {
 
 
 http.listen(hostnamePort, function () {
-  console.log('connecté sur le', hostnamePort);
+  console.log('connecté sur le', fullservername);
 });
