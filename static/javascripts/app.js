@@ -506,6 +506,8 @@ function Search() {
   var page = null;
   var numPages = null;
   var numSounds = null;
+  var sliderDuration = null;
+  var sliderValue = null;
 }
 
 Search.prototype.setToken = function() {
@@ -516,23 +518,20 @@ Search.prototype.freesoundIframe = function(soundId) {
   return '<iframe frameborder="0" scrolling="no" src="https://freesound.org/embed/sound/iframe/' + soundId + '/simple/small/" width="375" height="30"></iframe>';
 };
 
-var mySlider = $('#sampleDuration').slider();
-var sliderValue;
-mySlider.on('slide', function(slideEvt){
-  sliderValue = slideEvt.value;
-  console.log('valeur du slider min ' + sliderValue[0] + ' valeur du slider max ' + sliderValue[1]);
-})
-
-Search.prototype.searchFreesound = function(query, page=1) {
+Search.prototype.searchFreesound = function(query, page=1, sliderDuration) {
   var self = this;
+  var durationMin = sliderDuration.split(',')[0];
+  var durationMax = sliderDuration.split(',')[1];
+  
   self.query = query;
   self.page = page;
-  var filter = "duration:[" + sliderValue[0] + " TO " + sliderValue[1] + "]";
- // var filter = "duration:[0.0 TO 10]";
+  console.log('duration : ' + durationMin + ".0 TO " + durationMax + ".0" );
+  self.filter = "duration:[" + durationMin + ".0 TO " + durationMax + ".0]";
+  //var filter = "duration:[0.0 TO 10]";
   var sort = "rating_desc";
   freesound.textSearch(query, {
       page: page,
-      filter: filter,
+      filter: self.filter,
       sort: sort,
       fields: 'id,name,url,previews',
     },
@@ -579,18 +578,28 @@ Search.prototype.addButtonEvents = function() {
 
   $('#previous').click(function () {
     self.page -= 1;
-    self.searchFreesound(self.query, self.page);
+    self.searchFreesound(self.query, self.page, self.filter);
   });
 
   $('#next').click(function () {
     self.page += 1;
-    self.searchFreesound(self.query, self.page);
+    self.searchFreesound(self.query, self.page, self.filter);
   });
 };
 
 Search.prototype.searchEvent = function() {
     this.query = $('#search-query').val();
-    this.searchFreesound(this.query);
+    this.sliderDuration = $('#sampleDuration').slider();
+    this.sliderValue = $('#sampleDuration').val();
+    // Slider sample duration
+     this.sliderDuration.on('slide', function(slideEvt){
+      this.sliderValue = slideEvt.value;
+      console.log('valeur du slider', this.sliderValue);
+    });
+    //sliderValue = $('#sampleDuration').val()
+    //console.log('valeur du slider ', $('#sampleDuration').val().split(','));
+   console.log('valeur du slider : ' + this.sliderValue);
+    this.searchFreesound(this.query, '', this.sliderValue);
 };
 
 // Drag and drop sounds
