@@ -17,7 +17,7 @@ Kit.prototype.pathName = function() {
 };
 
 Kit.prototype.changeSequenceLength = function(sequenceLength) {
-  this.sequenceLength = sequenceLength;
+  this.sequenceLength = parseInt(sequenceLength);
 };
 
 Kit.prototype.load = function() {
