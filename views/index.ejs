@@ -6,6 +6,7 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./assets/bootstrap-slider/dist/css/bootstrap-slider.min.css">
   <link rel="stylesheet" type="text/css" href="../assets/stylesheets/styles.css">
 </head>
 
@@ -76,7 +77,7 @@
 
     <!--   SEARCH CONTAINER    -->
     <div class="row" id="search-container">
-      <div class="col-md-8">
+      <div class="col-md-12">
         <form id="search-form" action="javascript:void(0);" style="display: inline-block;">
           <input type="text" id="search-query" placeholder="Enter query" class="my-box-white">
           <button type="button" id="search-button" class="btn btn-success" disabled>Search</button>
@@ -97,6 +98,19 @@
             </li>
           </ul>
         </nav>
+        <div class="duration-select">
+            <span style="font-size:14px;font-weight: bold;">Duration Filter (sec)  &emsp;</span>
+            <input id="sampleDuration" 
+            type="text" 
+            class="span2" 
+            value="" 
+            data-provide="slider"
+            data-slider-min="0"
+            data-slider-max="20" 
+            data-slider-step="1"
+            data-slider-value="[0,10]"/> 
+          </div>
+          <br>
         <div id="search-result-container"></div>
         <div id="error" style="color:red"></div>
       </div>
@@ -145,6 +159,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  <script src="./assets/bootstrap-slider/dist/bootstrap-slider.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/wavesurfer.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/plugin/wavesurfer.regions.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/plugin/wavesurfer.timeline.min.js"></script>
@@ -152,8 +167,10 @@
   <script type="text/javascript" src="./assets/javascripts/wave.js"></script>
   <script type="text/javascript" src="./assets/javascripts/kit.js"></script>
   <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
+  <script type="text/javascript" src="./assets/javascripts/search.js"></script>
   <script type="text/javascript" src="./assets/javascripts/app.js"></script>
   <script>
+    
     function addPadClickEvent(socket, trackId = null) {
       if (trackId) {
         // if an instrument is given, select the pads of it
