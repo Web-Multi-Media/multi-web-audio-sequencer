@@ -77,7 +77,7 @@
 
     <!--   SEARCH CONTAINER    -->
     <div class="row" id="search-container">
-      <div class="col-md-8">
+      <div class="col-md-12">
         <form id="search-form" action="javascript:void(0);" style="display: inline-block;">
           <input type="text" id="search-query" placeholder="Enter query" class="my-box-white">
           <button type="button" id="search-button" class="btn btn-success" disabled>Search</button>
@@ -98,7 +98,8 @@
             </li>
           </ul>
         </nav>
-        <div>
+        <div class="duration-select">
+            <span style="font-size:14px;font-weight: bold;">Duration Filter (sec)  &emsp;</span>
             <input id="sampleDuration" 
             type="text" 
             class="span2" 
@@ -108,8 +109,8 @@
             data-slider-max="20" 
             data-slider-step="1"
             data-slider-value="[0,10]"/> 
-            <span style="font-size:14px;font-weight: bold;">Sample Duration</span>
-        </div>
+          </div>
+          <br>
         <div id="search-result-container"></div>
         <div id="error" style="color:red"></div>
       </div>
