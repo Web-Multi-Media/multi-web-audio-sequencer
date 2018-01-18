@@ -37,8 +37,7 @@
         <span style="font-size:14px;font-weight: bold;" id="room-number">Nickname:</span>
         <form id="nickname-form" action="javascript:void(0);" style="display: inline-block;">
           <input class="my-box-white usernameInput" style="width:160px;" type="text" placeholder="Enter nickname" maxlength="14" />
-
-          <button type="button" class="btn btn-success" id="change-nickname" style="width:100px;">Choose</button>
+          <button type="button" class="btn btn-success" id="change-nickname" style="width:80px;">Choose</button>
         </form>
       </div>
     </div>
@@ -50,10 +49,17 @@
           <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
         </button>
         <span class="tempo-container">
-          <label >Tempo </label>
+          <label >Tempo:</label>
           <input id="tempo-input" disabled>
           <span id="decrease-tempo" class="glyphicon glyphicon-minus btn btn-success tempo-btn"></span>
         <span id="increase-tempo" class="glyphicon glyphicon-plus btn btn-success tempo-btn"></span>
+        </span>&emsp;&emsp;
+        <span>
+          <label >Sequence length:</label>
+          <form id="change-sequence-length-form" action="javascript:void(0);" style="display: inline-block;">
+            <input id="sequence-length" class="my-box-white" style="width:70px;" type="number" min="1" max="64">
+            <button type="button" class="btn btn-success" id="change-sequence-length" style="width:80px;">Choose</button>
+          </form>
         </span>
       </div>
     </div>
@@ -195,6 +201,10 @@
     function sendDeleteTrack(trackName) {
       socket.emit('deleteTrack', trackName);
     }
+    
+    function sendSequenceLength(sequenceLength) {
+      socket.emit('sequenceLength', sequenceLength);
+    }
 
     $(function() {
 
@@ -241,6 +251,10 @@
         var endTime = message[2];
         currentKit.waves[trackId].setStart(startTime);
         currentKit.waves[trackId].setEnd(endTime);
+      });
+      
+      socket.on('sendSequenceLength', function(message) {
+        changeSequenceLength(message);
       });
     })
   </script>

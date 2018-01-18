@@ -9,7 +9,6 @@ var lowPassFilterNode;
 var noteTime;
 var startTime;
 var lastDrawTime = -1;
-var LOOP_LENGTH = 16;
 var rhythmIndex = 0;
 var timeoutId;
 var testBuffer = null;
@@ -22,7 +21,7 @@ var tempo = 120;
 var TEMPO_MAX = 200;
 var TEMPO_MIN = 40;
 var TEMPO_STEP = 4;
-
+var MAXLENGTH = 64;
 
 var numPages;
 
@@ -33,6 +32,7 @@ if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudio
 $(function () {
   init();
   addNewTrackEvent();
+  addChangeSequenceLengthEvent();
   playPauseListener();
   lowPassFilterListener();
   reverbListener();
@@ -142,6 +142,7 @@ function TranslateStateInActions(sequencerState) {
   var pads = sequencerState['pads'];
   var soundUrls = sequencerState['sounds'];
   var waves = sequencerState['waves'];
+  var sequenceLength = sequencerState['sequenceLength'];
   
   // check if the tracks are already loaded
   if (sequencerState.trackNames.length != $('.instrument').length) {
@@ -150,6 +151,9 @@ function TranslateStateInActions(sequencerState) {
     for (var i = numLocalTracks-1; i >= 0; i--) {
       deleteTrack(i);
     }
+    
+    // change seuquence length
+    changeSequenceLength(sequenceLength);
     
     // Add tracks and load buffers
     for (var j = 0; j < trackNames.length; j++) {
@@ -327,7 +331,7 @@ function schedule() {
 }
 
 function drawPlayhead(xindex) {
-  var lastIndex = (xindex + LOOP_LENGTH - 1) % LOOP_LENGTH;
+  var lastIndex = (xindex + currentKit.sequenceLength - 1) % currentKit.sequenceLength;
 
   //can change this to class selector to select a column
   var $newRows = $('.column_' + xindex);
@@ -344,7 +348,7 @@ function advanceNote() {
   tempo = Number($("#tempo-input").val());
   var secondsPerBeat = 60.0 / tempo;
   rhythmIndex++;
-  if (rhythmIndex == LOOP_LENGTH) {
+  if (rhythmIndex == currentKit.sequenceLength) {
     rhythmIndex = 0;
   }
 
@@ -421,10 +425,15 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
-  for (var i = 1; i < 15; i++) {
-    padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
+  for (var i = 1; i < MAXLENGTH; i++) {
+    if (i < currentKit.sequenceLength) {
+      if (i % 16 == 0 && i!=0) {padEl = padEl + ' <br> ';}
+      padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
+    } else {
+      if (i % 16 == 0 && i!=0) {padEl = padEl + ' <br style="display: none;"> ';}
+      padEl = padEl + '<div class="pad column_' + i + '" style="display: none;">\n\n</div>\n';
+    }
   }
-  padEl = padEl + '<div class="pad column_15"></div>';
   
   var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
     trackName + 
@@ -434,7 +443,7 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
     uniqueTrackId +
     '" class="instrument-label"><i class="glyphicon glyphicon-chevron-right"></i> <strong class="instrumentName">' +
     trackName +
-    '</strong></a></div><div class="col-xs-9 col-lg-9">' +
+    '</strong></a></div><div class="col-xs-9 col-lg-9 pad-container">' +
     padEl +
     '</div><div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-'+
     uniqueTrackId +
@@ -468,6 +477,61 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
   addPadClickEvent(socket, trackId);
   addDeleteTrackClickEvent(trackId);
   addRotateTriangleEvent(trackId);
+}
+
+function changeNumPads(numPads) {
+  var instrumentTracks = $('.instrument');
+  var numPadsNow = currentKit.sequenceLength;
+  if (parseInt(numPads) > parseInt(numPadsNow)) {
+    instrumentTracks.each(function (index) {
+      var lineBreaks = $(this).children('.pad-container').children('br');
+      var pads = $(this).children('.pad-container').children('.pad');
+      for (var i = numPadsNow; i < numPads; i++) {
+        if (i % 16 == 0) {
+          lineBreaks.eq(i/16-1).show();
+        }
+        pads.eq(i).show();
+      }
+    });
+  } else if (parseInt(numPads) < parseInt(numPadsNow)) {
+    instrumentTracks.each(function (index) {
+      var lineBreaks = $(this).children('.pad-container').children('br');
+      var pads = $(this).children('.pad-container').children('.pad');
+      for (var i = numPadsNow - 1; i >= numPads; i--) {
+        if (i % 16 == 0) {
+          lineBreaks.eq(i/16-1).hide();
+        }        
+        pads.eq(i).hide();
+      }
+    });
+  }
+}
+
+function changeSequenceLength(sequenceLength) {
+    changeNumPads(sequenceLength);
+    currentKit.changeSequenceLength(sequenceLength);
+    $('#sequence-length').val(sequenceLength);
+}
+
+function addChangeSequenceLengthEvent() {
+  var changeLength = function (sequenceLength) {
+    if (Number.isInteger(parseFloat(sequenceLength)) && parseInt(sequenceLength) <= 64 && parseInt(sequenceLength) > 0) {
+      changeSequenceLength(sequenceLength);
+      sendSequenceLength(sequenceLength);
+    }
+  }
+  $('#change-sequence-length-form').submit(function () {
+    var sequenceLength = $('#sequence-length').val();
+    changeLength(sequenceLength);
+  });
+  $('#change-sequence-length').click(function () {
+    var sequenceLength = $('#sequence-length').val();
+    changeLength(sequenceLength);
+  });
+  $('#sequence-length').change(function () {
+    var sequenceLength = $('#sequence-length').val();
+    changeLength(sequenceLength);
+  });
 }
 
 function addDeleteTrackClickEvent(trackId) {
