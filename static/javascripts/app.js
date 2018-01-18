@@ -331,7 +331,6 @@ function schedule() {
 
 function drawPlayhead(xindex) {
   var lastIndex = (xindex + currentKit.sequenceLength - 1) % currentKit.sequenceLength;
-  console.log(lastIndex)
 
   //can change this to class selector to select a column
   var $newRows = $('.column_' + xindex);
@@ -425,14 +424,15 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
-  for (var i = 1; i < MAXLENGTH-1; i++) {
-    if (i < currentKit.sequenceLength-1) {
+  for (var i = 1; i < MAXLENGTH; i++) {
+    if (i < currentKit.sequenceLength) {
+      if (i % 16 == 0 && i!=0) {padEl = padEl + ' <br> ';}
       padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
     } else {
+      if (i % 16 == 0 && i!=0) {padEl = padEl + ' <br style="display: none;"> ';}
       padEl = padEl + '<div class="pad column_' + i + '" style="display: none;">\n\n</div>\n';
     }
   }
-  padEl = padEl + '<div class="pad column_15"></div>';
   
   var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
     trackName + 
@@ -480,18 +480,26 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
 
 function changeNumPads(numPads) {
   var instrumentTracks = $('.instrument');
-  var numPadsNow = $('.pad-container').children().eq(0).length;
+  var numPadsNow = currentKit.sequenceLength;
   if (numPads > numPadsNow) {
     instrumentTracks.each(function (index) {
-      var pads = $(this).children('.pad-container').children();
-      for (var i=numPadsNow ; i<numPads-1; i++){
+      var lineBreaks = $(this).children('.pad-container').children('br');
+      var pads = $(this).children('.pad-container').children('.pad');
+      for (var i = numPadsNow; i < numPads; i++) {
+        if (i % 16 == 0) {
+          lineBreaks.eq(i/16-1).show();
+        }
         pads.eq(i).show();
       }
     });
   } else if (numPads < numPadsNow) {
-      instrumentTracks.each(function (index) {
-      var pads = $(this).children('.pad-container').children();
-      for (var i=numPadsNow-1 ; i>numPads; i--){
+    instrumentTracks.each(function (index) {
+      var lineBreaks = $(this).children('.pad-container').children('br');
+      var pads = $(this).children('.pad-container').children('.pad');
+      for (var i = numPadsNow - 1; i >= numPads; i--) {
+        if (i % 16 == 0 && i != 0) {
+          lineBreaks.eq(i/16-1).hide();
+        }        
         pads.eq(i).hide();
       }
     });
@@ -499,8 +507,8 @@ function changeNumPads(numPads) {
 }
 
 function changeSequenceLength(sequenceLength) {
-  currentKit.changeSequenceLength(sequenceLength);
   changeNumPads(sequenceLength);
+  currentKit.changeSequenceLength(sequenceLength);
   sendSequenceLength(sequenceLength);
 }
 
