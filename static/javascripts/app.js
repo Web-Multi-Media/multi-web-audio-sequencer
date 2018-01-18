@@ -482,7 +482,7 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
 function changeNumPads(numPads) {
   var instrumentTracks = $('.instrument');
   var numPadsNow = currentKit.sequenceLength;
-  if (numPads > numPadsNow) {
+  if (parseInt(numPads) > parseInt(numPadsNow)) {
     instrumentTracks.each(function (index) {
       var lineBreaks = $(this).children('.pad-container').children('br');
       var pads = $(this).children('.pad-container').children('.pad');
@@ -493,12 +493,12 @@ function changeNumPads(numPads) {
         pads.eq(i).show();
       }
     });
-  } else if (numPads < numPadsNow) {
+  } else if (parseInt(numPads) < parseInt(numPadsNow)) {
     instrumentTracks.each(function (index) {
       var lineBreaks = $(this).children('.pad-container').children('br');
       var pads = $(this).children('.pad-container').children('.pad');
       for (var i = numPadsNow - 1; i >= numPads; i--) {
-        if (i % 16 == 0 && i != 0) {
+        if (i % 16 == 0) {
           lineBreaks.eq(i/16-1).hide();
         }        
         pads.eq(i).hide();
@@ -508,23 +508,29 @@ function changeNumPads(numPads) {
 }
 
 function changeSequenceLength(sequenceLength) {
-  changeNumPads(sequenceLength);
-  currentKit.changeSequenceLength(sequenceLength);
-  $('#sequence-length').val(sequenceLength);
+    changeNumPads(sequenceLength);
+    currentKit.changeSequenceLength(sequenceLength);
+    $('#sequence-length').val(sequenceLength);
 }
 
 function addChangeSequenceLengthEvent() {
+  var changeLength = function (sequenceLength) {
+    if (Number.isInteger(parseFloat(sequenceLength)) && parseInt(sequenceLength) <= 64 && parseInt(sequenceLength) > 0) {
+      changeSequenceLength(sequenceLength);
+      sendSequenceLength(sequenceLength);
+    }
+  }
   $('#change-sequence-length-form').submit(function () {
-    changeSequenceLength($('#sequence-length').val());
-    sendSequenceLength($('#sequence-length').val());
+    var sequenceLength = $('#sequence-length').val();
+    changeLength(sequenceLength);
   });
   $('#change-sequence-length').click(function () {
-    changeSequenceLength($('#sequence-length').val());
-    sendSequenceLength($('#sequence-length').val());
+    var sequenceLength = $('#sequence-length').val();
+    changeLength(sequenceLength);
   });
   $('#sequence-length').change(function () {
-    changeSequenceLength($('#sequence-length').val());
-    sendSequenceLength($('#sequence-length').val());
+    var sequenceLength = $('#sequence-length').val();
+    changeLength(sequenceLength);
   });
 }
 
