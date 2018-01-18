@@ -32,6 +32,7 @@ if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudio
 $(function () {
   init();
   addNewTrackEvent();
+  addChangeSequenceLengthEvent();
   playPauseListener();
   lowPassFilterListener();
   reverbListener();
@@ -152,7 +153,7 @@ function TranslateStateInActions(sequencerState) {
     }
     
     // change seuquence length
-    currentKit.changeSequenceLength(sequenceLength);
+    changeSequenceLength(sequenceLength);
     
     // Add tracks and load buffers
     for (var j = 0; j < trackNames.length; j++) {
@@ -509,7 +510,22 @@ function changeNumPads(numPads) {
 function changeSequenceLength(sequenceLength) {
   changeNumPads(sequenceLength);
   currentKit.changeSequenceLength(sequenceLength);
-  sendSequenceLength(sequenceLength);
+  $('#sequence-length').val(sequenceLength);
+}
+
+function addChangeSequenceLengthEvent() {
+  $('#change-sequence-length-form').submit(function () {
+    changeSequenceLength($('#sequence-length').val());
+    sendSequenceLength($('#sequence-length').val());
+  });
+  $('#change-sequence-length').click(function () {
+    changeSequenceLength($('#sequence-length').val());
+    sendSequenceLength($('#sequence-length').val());
+  });
+  $('#sequence-length').change(function () {
+    changeSequenceLength($('#sequence-length').val());
+    sendSequenceLength($('#sequence-length').val());
+  });
 }
 
 function addDeleteTrackClickEvent(trackId) {
