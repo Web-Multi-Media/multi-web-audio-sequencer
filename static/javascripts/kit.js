@@ -21,25 +21,6 @@ Kit.prototype.changeSequenceLength = function(sequenceLength) {
   this.sequenceLength = parseInt(sequenceLength);
 };
 
-Kit.prototype.load = function() {
-  if (this.startedLoading) {
-    return;
-  }
-
-  this.startedLoading = true;
-
-  var pathName = this.pathName();
-
-  var kickPath = pathName + "kick.mp3";
-  var snarePath = pathName + "snare.mp3";
-  var hihatPath = pathName + "hihat.mp3";
-
-  this.loadSample(kickPath, 0);
-  this.loadSample(snarePath, 1);
-  this.loadSample(hihatPath, 2);
-  
-};
-
 Kit.prototype.loadSample = function(url, trackId) {
   var request = new XMLHttpRequest();
   request.open("GET", url, true);
