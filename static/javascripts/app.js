@@ -490,21 +490,27 @@ function addNewTrack(trackId, trackName, soundUrl, startTime = null, endTime = n
   addRotateTriangleEvent(trackId);
 }
 
+function log10(x) {
+    return Math.log(x)/Math.LN10;
+}
+
 function addKnob(trackId) {
-  knob = $('.instrument').eq(trackId).find(".dial");
+  var knob = $('.instrument').eq(trackId).find(".dial");
   knob.knob({
     width: 30,
     height: 30,
-    min: 0,
-    max: 100,
+    min: -40,
+    max: 6,
     step: 1,
     displayInput: false,
     thickness: 0.5,
     change : function(v) {
-      currentKit.gainNodes[trackId].gain.value = v/100;
+      currentKit.gainNodes[trackId].gain.value = Math.pow(10, (v / 20));
     }
   });
-  currentKit.gainNodes[trackId].gain.value = 75/100;
+  knob.val("-6")
+  knob.trigger('change');
+  currentKit.gainNodes[trackId].gain.value = Math.pow(10, (-6 / 20));
 }
 
 function changeNumPads(numPads) {
