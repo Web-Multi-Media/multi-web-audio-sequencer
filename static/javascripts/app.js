@@ -506,6 +506,10 @@ function addKnob(trackId) {
     thickness: 0.5,
     change : function(v) {
       currentKit.gainNodes[trackId].gain.value = linear2db(v);
+    },
+    release: function(v) {
+      console.log(v);
+      // send db gain value to server
     }
   });
   knob.val("-6")
