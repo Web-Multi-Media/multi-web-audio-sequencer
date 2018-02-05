@@ -6,6 +6,7 @@ function Kit(name) {
   this.sequenceLength = 16;
   this.buffers = [];
   this.waves = [];
+  this.gainNodes = [];
 
   this.startedLoading = false;
   this.isLoaded = false;

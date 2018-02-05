@@ -286,7 +286,7 @@ function sequencePads() {
   });
 }
 
-function playNote(buffer, noteTime, startTime, endTime) {
+function playNote(buffer, noteTime, startTime, endTime, gainNode) {
   var voice = context.createBufferSource();
   voice.buffer = buffer;
   
@@ -300,8 +300,9 @@ function playNote(buffer, noteTime, startTime, endTime) {
     convolver.connect(currentLastNode);
     currentLastNode = convolver;
   }
-
-  voice.connect(currentLastNode);
+  
+  voice.connect(gainNode)
+  gainNode.connect(currentLastNode);
   voice.start(noteTime, startTime, endTime-startTime);
 }
 
@@ -318,7 +319,7 @@ function schedule() {
       if ($(this).hasClass("selected")) {
         var trackId = $(this).parents('.instrument').index();
         var wave = currentKit.waves[trackId];
-        playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime);
+        playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
       }
     });
     if (noteTime != lastDrawTime) {
@@ -415,7 +416,6 @@ function addNewTrackEvent() {
     //addNewTrack(trackId, trackName, soundUrl);
     // send to server
     sendNewTrack(trackName, soundUrl);
-
   });
 }
 
@@ -454,6 +454,9 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
   
   thisTrack = $('.instrument').eq(trackId);
   
+  // add gainNode
+  currentKit.gainNodes[trackId] = context.createGain();
+    
   // load wavesurfer visu
   currentKit.waves[trackId] = new Wave();
   var wave = currentKit.waves[trackId];
