@@ -449,7 +449,7 @@ function addNewTrack(trackId, trackName, soundUrl, startTime = null, endTime = n
     trackName +
     '</strong></a></div><div class="col-xs-9 col-lg-9 pad-container">' +
     padEl +
-    '<input type="text" value="75" class="dial">' +
+    '<input type="text" value="-6" class="dial">' +
     '</div><div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-' +
     uniqueTrackId +
     '" class="edit-zone collapse"><div class="waveform-container"></div><div class="waveform-timeline"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
@@ -490,8 +490,8 @@ function addNewTrack(trackId, trackName, soundUrl, startTime = null, endTime = n
   addRotateTriangleEvent(trackId);
 }
 
-function log10(x) {
-    return Math.log(x)/Math.LN10;
+function linear2db(x) {
+  return Math.pow(10, (x / 20));
 }
 
 function addKnob(trackId) {
@@ -499,18 +499,18 @@ function addKnob(trackId) {
   knob.knob({
     width: 30,
     height: 30,
-    min: -40,
+    min: -35,
     max: 6,
     step: 1,
     displayInput: false,
     thickness: 0.5,
     change : function(v) {
-      currentKit.gainNodes[trackId].gain.value = Math.pow(10, (v / 20));
+      currentKit.gainNodes[trackId].gain.value = linear2db(v);
     }
   });
   knob.val("-6")
   knob.trigger('change');
-  currentKit.gainNodes[trackId].gain.value = Math.pow(10, (-6 / 20));
+  currentKit.gainNodes[trackId].gain.value = linear2db(-6);
 }
 
 function changeNumPads(numPads) {
