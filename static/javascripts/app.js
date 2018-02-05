@@ -143,18 +143,18 @@ function TranslateStateInActions(sequencerState) {
   var soundUrls = sequencerState['sounds'];
   var waves = sequencerState['waves'];
   var sequenceLength = sequencerState['sequenceLength'];
-  
+
   // check if the tracks are already loaded
   if (sequencerState.trackNames.length != $('.instrument').length) {
     // Delete all existing tracks
     var numLocalTracks = $('.instrument').length;
-    for (var i = numLocalTracks-1; i >= 0; i--) {
+    for (var i = numLocalTracks - 1; i >= 0; i--) {
       deleteTrack(i);
     }
-    
+
     // change seuquence length
     changeSequenceLength(sequenceLength);
-    
+
     // Add tracks and load buffers
     for (var j = 0; j < trackNames.length; j++) {
       addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1]);
@@ -246,7 +246,7 @@ function initializeAudioNodes() {
 function loadKits() {
   //name must be same as path
   var kit = new Kit("TR808");
-  
+
   //TODO: figure out how to test if a kit is loaded
   currentKit = kit;
 }
@@ -289,7 +289,7 @@ function sequencePads() {
 function playNote(buffer, noteTime, startTime, endTime, gainNode) {
   var voice = context.createBufferSource();
   voice.buffer = buffer;
-  
+
   var currentLastNode = masterGainNode;
   if (lowPassFilterNode.active) {
     lowPassFilterNode.connect(currentLastNode);
@@ -300,10 +300,10 @@ function playNote(buffer, noteTime, startTime, endTime, gainNode) {
     convolver.connect(currentLastNode);
     currentLastNode = convolver;
   }
-  
+
   voice.connect(gainNode)
   gainNode.connect(currentLastNode);
-  voice.start(noteTime, startTime, endTime-startTime);
+  voice.start(noteTime, startTime, endTime - startTime);
 }
 
 function schedule() {
@@ -399,10 +399,10 @@ function trackNameExist() {
   var instru = $('.instrument');
   var trackName = $('#newTrackName').val();
   var duplicate = false;
-  instru.each(function(index){
-   if(trackName === $(this).attr('data-instrument')){
-    duplicate = true;
-   }
+  instru.each(function (index) {
+    if (trackName === $(this).attr('data-instrument')) {
+      duplicate = true;
+    }
   });
   return duplicate;
 }
@@ -419,44 +419,50 @@ function addNewTrackEvent() {
   });
 }
 
-function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null) {
+function addNewTrack(trackId, trackName, soundUrl, startTime = null, endTime = null) {
   var uniqueTrackId = Date.now();
-  
+
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
   for (var i = 1; i < MAXLENGTH; i++) {
     if (i < currentKit.sequenceLength) {
-      if (i % 16 == 0 && i!=0) {padEl = padEl + ' <br> ';}
+      if (i % 16 == 0 && i != 0) {
+        padEl = padEl + ' <br> ';
+      }
       padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
     } else {
-      if (i % 16 == 0 && i!=0) {padEl = padEl + ' <br style="display: none;"> ';}
+      if (i % 16 == 0 && i != 0) {
+        padEl = padEl + ' <br style="display: none;"> ';
+      }
       padEl = padEl + '<div class="pad column_' + i + '" style="display: none;">\n\n</div>\n';
     }
   }
-  
+
   var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
-    trackName + 
+    trackName +
     '"><div class="col-xs-2 col-lg-2"> <a data-toggle="collapse" aria-expanded="false" aria-controls="edit-' +
     uniqueTrackId +
-    '" href="#edit-'+
+    '" href="#edit-' +
     uniqueTrackId +
     '" class="instrument-label"><i class="glyphicon glyphicon-chevron-right"></i> <strong class="instrumentName">' +
     trackName +
     '</strong></a></div><div class="col-xs-9 col-lg-9 pad-container">' +
     padEl +
-    '</div><div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-'+
+    '<input type="text" value="75" class="dial">' +
+    '</div><div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-' +
     uniqueTrackId +
     '" class="edit-zone collapse"><div class="waveform-container"></div><div class="waveform-timeline"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
 
   var prevTrack = $('#newTrack');
   prevTrack.before(newTrack);
-  
+
   thisTrack = $('.instrument').eq(trackId);
-  
+
   // add gainNode
   currentKit.gainNodes[trackId] = context.createGain();
-    
+  addKnob(trackId);
+
   // load wavesurfer visu
   currentKit.waves[trackId] = new Wave();
   var wave = currentKit.waves[trackId];
@@ -466,20 +472,37 @@ function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null)
 
   // load the edit visu on the first collapse
   thisTrack.children('.edit-zone').on('shown.bs.collapse', function () {
-    if (!wave.loadedAfterCollapse) { wave.reload(); }
+    if (!wave.loadedAfterCollapse) {
+      wave.reload();
+    }
   });
-  
+
   // load buffer
   currentKit.loadSample(soundUrl, trackId);
   if (startTime) {
     wave.startTime = startTime;
     wave.endTime = endTime;
   }
-  
+
   // add click events
   addPadClickEvent(socket, trackId);
   addDeleteTrackClickEvent(trackId);
   addRotateTriangleEvent(trackId);
+}
+
+function addKnob(trackId) {
+  knob = $('.instrument').eq(trackId).children().children(".dial");
+  knob.knob({
+    width: 30,
+    height: 30,
+    min: 0,
+    max: 100,
+    step: 1,
+    change : function(v) {
+      currentKit.gainNodes[trackId].gain.value = v/100;
+    }
+  });
+  currentKit.gainNodes[trackId].gain.value = 75/100;
 }
 
 function changeNumPads(numPads) {
@@ -491,7 +514,7 @@ function changeNumPads(numPads) {
       var pads = $(this).children('.pad-container').children('.pad');
       for (var i = numPadsNow; i < numPads; i++) {
         if (i % 16 == 0) {
-          lineBreaks.eq(i/16-1).show();
+          lineBreaks.eq(i / 16 - 1).show();
         }
         pads.eq(i).show();
       }
@@ -502,8 +525,8 @@ function changeNumPads(numPads) {
       var pads = $(this).children('.pad-container').children('.pad');
       for (var i = numPadsNow - 1; i >= numPads; i--) {
         if (i % 16 == 0) {
-          lineBreaks.eq(i/16-1).hide();
-        }        
+          lineBreaks.eq(i / 16 - 1).hide();
+        }
         pads.eq(i).hide();
       }
     });
@@ -511,9 +534,9 @@ function changeNumPads(numPads) {
 }
 
 function changeSequenceLength(sequenceLength) {
-    changeNumPads(sequenceLength);
-    currentKit.changeSequenceLength(sequenceLength);
-    $('#sequence-length').val(sequenceLength);
+  changeNumPads(sequenceLength);
+  currentKit.changeSequenceLength(sequenceLength);
+  $('#sequence-length').val(sequenceLength);
 }
 
 function addChangeSequenceLengthEvent() {
@@ -554,7 +577,7 @@ function deleteTrack(trackId) {
 
   // delete buffer
   currentKit.buffers.splice(trackId, 1);
-  
+
   // delete wave
   currentKit.waves.splice(trackId, 1);
 }
@@ -604,32 +627,30 @@ function addRefreshRegionEvent(trackId) {
 function addNewTrackDetails() {
   $('#trackDetails').fadeIn('slow');
 
-  $('#addNewTrack').on('click', function() {
+  $('#addNewTrack').on('click', function () {
     $('#trackDetails').fadeOut('slow');
   });
 
-    $('#newTrackName').keyup(function() {
-      if($(this).val() != '') {
-        $('#addNewTrack').removeAttr('disabled');
-      }
-      else {
-        $('#addNewTrack').attr('disabled', 'disabled')
-      }
-    });
+  $('#newTrackName').keyup(function () {
+    if ($(this).val() != '') {
+      $('#addNewTrack').removeAttr('disabled');
+    } else {
+      $('#addNewTrack').attr('disabled', 'disabled')
+    }
+  });
 }
 
 // enable/disable search button
-$('#search-query').keyup(function() {
-  if($(this).val() != '') {
+$('#search-query').keyup(function () {
+  if ($(this).val() != '') {
     $('#search-button').removeAttr('disabled');
-  }
-  else {
+  } else {
     $('#search-button').attr('disabled', 'disabled')
   }
 });
 
 function addRotateTriangleEvent(trackId) {
-  $(".instrument-label").click(function() {
+  $(".instrument-label").click(function () {
     $('.instrument').eq(trackId).children().children().children(".glyphicon").toggleClass('rotation');
   });
 }
