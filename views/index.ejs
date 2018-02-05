@@ -206,6 +206,10 @@
     function sendSequenceLength(sequenceLength) {
       socket.emit('sequenceLength', sequenceLength);
     }
+    
+    function sendTrackGain(trackId, gain) {
+      socket.emit('gain', [trackId, gain]);
+    }
 
     $(function() {
 
@@ -254,8 +258,16 @@
         currentKit.waves[trackId].setEnd(endTime);
       });
       
+      // on change sequence length
       socket.on('sendSequenceLength', function(message) {
         changeSequenceLength(message);
+      });
+      
+      // on change track gain
+      socket.on('sendGain', function(message) {
+        var trackId = message[0];
+        var gain = message[1];
+        changeTrackGain(trackId, gain)
       });
     })
   </script>

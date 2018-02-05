@@ -143,6 +143,7 @@ function TranslateStateInActions(sequencerState) {
   var soundUrls = sequencerState['sounds'];
   var waves = sequencerState['waves'];
   var sequenceLength = sequencerState['sequenceLength'];
+  var gains = sequencerState['gains'];
 
   // check if the tracks are already loaded
   if (sequencerState.trackNames.length != $('.instrument').length) {
@@ -157,7 +158,7 @@ function TranslateStateInActions(sequencerState) {
 
     // Add tracks and load buffers
     for (var j = 0; j < trackNames.length; j++) {
-      addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1]);
+      addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1], gains[j]);
     }
 
     // Activate pads
@@ -419,7 +420,7 @@ function addNewTrackEvent() {
   });
 }
 
-function addNewTrack(trackId, trackName, soundUrl, startTime = null, endTime = null) {
+function addNewTrack(trackId, trackName, soundUrl, startTime = null, endTime = null, gain = -6) {
   var uniqueTrackId = Date.now();
 
   // create html
@@ -461,7 +462,7 @@ function addNewTrack(trackId, trackName, soundUrl, startTime = null, endTime = n
 
   // add gainNode
   currentKit.gainNodes[trackId] = context.createGain();
-  addKnob(trackId);
+  addKnob(trackId, gain);
 
   // load wavesurfer visu
   currentKit.waves[trackId] = new Wave();
@@ -494,7 +495,7 @@ function linear2db(x) {
   return Math.pow(10, (x / 20));
 }
 
-function addKnob(trackId) {
+function addKnob(trackId, gain) {
   var knob = $('.instrument').eq(trackId).find(".dial");
   knob.knob({
     width: 30,
@@ -505,17 +506,26 @@ function addKnob(trackId) {
     displayInput: false,
     thickness: 0.5,
     change : function(v) {
+      var trackId = $(this.$).parents('.instrument').index();
       currentKit.gainNodes[trackId].gain.value = linear2db(v);
     },
     release: function(v) {
+      var trackId = $(this.$).parents('.instrument').index();
       currentKit.gainNodes[trackId].gain.value = linear2db(v);
-      console.log(v);
       // send db gain value to server
+      sendTrackGain(trackId, v)
     }
   });
-  knob.val("-6")
+  knob.val(gain.toString());
   knob.trigger('change');
   currentKit.gainNodes[trackId].gain.value = linear2db(-6);
+}
+
+function changeTrackGain(trackId, gain) {
+  var knob = $('.instrument').eq(trackId).find(".dial");
+  knob.val(gain.toString());
+  knob.trigger('change');
+  console.log(gain)
 }
 
 function changeNumPads(numPads) {
@@ -593,6 +603,9 @@ function deleteTrack(trackId) {
 
   // delete wave
   currentKit.waves.splice(trackId, 1);
+  
+  // delete gain
+  currentKit.gains.splice(trackId, 1);
 }
 
 // Drag and drop sounds
