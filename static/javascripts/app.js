@@ -448,10 +448,10 @@ function addNewTrack(trackId, trackName, soundUrl, startTime = null, endTime = n
     uniqueTrackId +
     '" class="instrument-label"><i class="glyphicon glyphicon-chevron-right"></i> <strong class="instrumentName">' +
     trackName +
-    '</strong></a></div><div class="col-xs-9 col-lg-9 pad-container">' +
+    '</strong></a></div><div class="col-xs-8 col-lg-8 pad-container">' +
     padEl +
-    '<input type="text" value="-6" class="dial">' +
-    '</div><div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-' +
+    '</div><div class="col-xs-1 col-lg-1"><input type="text" value="-6" class="dial"></div>' +
+    '<div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-' +
     uniqueTrackId +
     '" class="edit-zone collapse"><div class="waveform-container"></div><div class="waveform-timeline"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
 
