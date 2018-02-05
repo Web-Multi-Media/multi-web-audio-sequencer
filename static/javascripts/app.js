@@ -508,6 +508,7 @@ function addKnob(trackId) {
       currentKit.gainNodes[trackId].gain.value = linear2db(v);
     },
     release: function(v) {
+      currentKit.gainNodes[trackId].gain.value = linear2db(v);
       console.log(v);
       // send db gain value to server
     }
