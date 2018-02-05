@@ -3,7 +3,7 @@ body {
 }
 
 .pad {
-  width: 2.4vw;
+  width: 2.3vw;
   height: 4vh;
   display: inline-block;
   background: rgb(182, 173, 56);
@@ -163,6 +163,10 @@ a {
   vertical-align: middle;
   border: 1px solid transparent;
   }
+
+.dial {
+  margin:0;
+}
 
 .chatArea, login page {
   /* width: 500px; */

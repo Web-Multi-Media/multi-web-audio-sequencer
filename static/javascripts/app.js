@@ -491,13 +491,15 @@ function addNewTrack(trackId, trackName, soundUrl, startTime = null, endTime = n
 }
 
 function addKnob(trackId) {
-  knob = $('.instrument').eq(trackId).children().children(".dial");
+  knob = $('.instrument').eq(trackId).find(".dial");
   knob.knob({
     width: 30,
     height: 30,
     min: 0,
     max: 100,
     step: 1,
+    displayInput: false,
+    thickness: 0.5,
     change : function(v) {
       currentKit.gainNodes[trackId].gain.value = v/100;
     }
