@@ -3,8 +3,9 @@ body {
 }
 
 .pad {
-  width: 2.4vw;
-  height: 4vh;
+  width: 2.1vw;
+  height:30px;
+/*  height: 4vh;*/
   display: inline-block;
   background: rgb(182, 173, 56);
   border-radius: 2px;
@@ -107,7 +108,8 @@ body {
   padding-left: 0.5vw;
   padding-top: 0.15vw;
   width: 2.4vw;
-  height: 4vh;
+  height:30px;
+/*  height: 4vh;*/
 }
 
 wave {
@@ -163,6 +165,11 @@ a {
   vertical-align: middle;
   border: 1px solid transparent;
   }
+
+.dial {
+  margin:0;
+  height: 30px;
+}
 
 .chatArea, login page {
   /* width: 500px; */

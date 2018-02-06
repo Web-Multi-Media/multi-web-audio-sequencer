@@ -22,6 +22,7 @@ var TEMPO_MAX = 200;
 var TEMPO_MIN = 40;
 var TEMPO_STEP = 4;
 var MAXLENGTH = 64;
+var COMPRESSOR_ACTIVATED = false;
 
 var numPages;
 
@@ -143,21 +144,22 @@ function TranslateStateInActions(sequencerState) {
   var soundUrls = sequencerState['sounds'];
   var waves = sequencerState['waves'];
   var sequenceLength = sequencerState['sequenceLength'];
-  
+  var gains = sequencerState['gains'];
+
   // check if the tracks are already loaded
   if (sequencerState.trackNames.length != $('.instrument').length) {
     // Delete all existing tracks
     var numLocalTracks = $('.instrument').length;
-    for (var i = numLocalTracks-1; i >= 0; i--) {
+    for (var i = numLocalTracks - 1; i >= 0; i--) {
       deleteTrack(i);
     }
-    
+
     // change seuquence length
     changeSequenceLength(sequenceLength);
-    
+
     // Add tracks and load buffers
     for (var j = 0; j < trackNames.length; j++) {
-      addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1]);
+      addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1], gains[j]);
     }
 
     // Activate pads
@@ -180,7 +182,7 @@ function toggleSelectedListener(padEl) {
 }
 
 function toggleSelectedListenerSocket(trackId, padId, padState) {
-  var padEl = $('.instrument').eq(trackId).children().children().eq(parseInt(padId) + 1);
+  var padEl = $('.instrument').eq(trackId).find('.pad').eq(parseInt(padId));
   var currentState = padEl.hasClass("selected");
   if (currentState) {
     if (padState == 0) {
@@ -193,7 +195,7 @@ function toggleSelectedListenerSocket(trackId, padId, padState) {
   }
 }
 
-
+// SEQUENCER SCHEDULER
 function init() {
   initializeAudioNodes();
   loadKits();
@@ -203,7 +205,7 @@ function init() {
 function initializeAudioNodes() {
   context = new webkitAudioContext();
   var finalMixNode;
-  if (context.createDynamicsCompressor) {
+  if (context.createDynamicsCompressor && COMPRESSOR_ACTIVATED) {
     // Create a dynamics compressor to sweeten the overall mix.
     compressor = context.createDynamicsCompressor();
     compressor.connect(context.destination);
@@ -213,7 +215,6 @@ function initializeAudioNodes() {
     finalMixNode = context.destination;
   }
 
-
   // Create master volume.
   // for now, the master volume is static, but in the future there will be a slider
   masterGainNode = context.createGain();
@@ -221,7 +222,6 @@ function initializeAudioNodes() {
   masterGainNode.connect(finalMixNode);
 
   //connect all sounds to masterGainNode to play them
-
   //don't need this for now, no wet dry mix for effects
   // // Create effect volume.
   // effectLevelNode = context.createGain();
@@ -246,7 +246,7 @@ function initializeAudioNodes() {
 function loadKits() {
   //name must be same as path
   var kit = new Kit("TR808");
-  
+
   //TODO: figure out how to test if a kit is loaded
   currentKit = kit;
 }
@@ -256,40 +256,10 @@ function loadImpulseResponses() {
   reverbImpulseResponse.load();
 }
 
-
-//TODO delete this
-function loadTestBuffer() {
-  var request = new XMLHttpRequest();
-  var url = "http://www.freesound.org/data/previews/102/102130_1721044-lq.mp3";
-  request.open("GET", url, true);
-  request.responseType = "arraybuffer";
-
-  request.onload = function () {
-    context.decodeAudioData(
-      request.response,
-      function (buffer) {
-        testBuffer = buffer;
-      },
-      function (buffer) {
-        console.log("Error decoding drum samples!");
-      }
-    );
-  }
-  request.send();
-}
-
-//TODO delete this
-function sequencePads() {
-  $('.pad.selected').each(function () {
-    $('.pad').removeClass("selected");
-    $(this).addClass("selected");
-  });
-}
-
-function playNote(buffer, noteTime, startTime, endTime) {
+function playNote(buffer, noteTime, startTime, endTime, gainNode) {
   var voice = context.createBufferSource();
   voice.buffer = buffer;
-  
+
   var currentLastNode = masterGainNode;
   if (lowPassFilterNode.active) {
     lowPassFilterNode.connect(currentLastNode);
@@ -301,8 +271,9 @@ function playNote(buffer, noteTime, startTime, endTime) {
     currentLastNode = convolver;
   }
 
-  voice.connect(currentLastNode);
-  voice.start(noteTime, startTime, endTime-startTime);
+  voice.connect(gainNode)
+  gainNode.connect(currentLastNode);
+  voice.start(noteTime, startTime, endTime - startTime);
 }
 
 function schedule() {
@@ -318,7 +289,7 @@ function schedule() {
       if ($(this).hasClass("selected")) {
         var trackId = $(this).parents('.instrument').index();
         var wave = currentKit.waves[trackId];
-        playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime);
+        playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
       }
     });
     if (noteTime != lastDrawTime) {
@@ -343,8 +314,6 @@ function drawPlayhead(xindex) {
 
 function advanceNote() {
   // Advance time by a 16th note...
-  // var secondsPerBeat = 60.0 / theBeat.tempo;
-  //TODO CHANGE TEMPO HERE, convert to float
   tempo = Number($("#tempo-input").val());
   var secondsPerBeat = 60.0 / tempo;
   rhythmIndex++;
@@ -394,91 +363,159 @@ function changeTempoListener() {
   });
 }
 
-function trackNameExist() {
-  var instru = $('.instrument');
-  var trackName = $('#newTrackName').val();
-  var duplicate = false;
-  instru.each(function(index){
-   if(trackName === $(this).attr('data-instrument')){
-    duplicate = true;
-   }
-  });
-  return duplicate;
-}
 
+// SEQUENCER ACTIONS
 function addNewTrackEvent() {
-  $('#addNewTrack').click(function () {
+  function newTrack() {
     var trackName = $('#newTrackName').val();
-    var soundUrl = $('#newTrackUrl').val();
     var trackId = $('.instrument').length;
     // this action needs to be call in the same order in all clients in order to keep same order of tracks
-    //addNewTrack(trackId, trackName, soundUrl);
+    // we first send to server which will emit back the action
     // send to server
-    sendNewTrack(trackName, soundUrl);
-
+    sendNewTrack(trackName, null);
+  }
+  $('#addNewTrack').click(function () {
+    newTrack();
+  });
+  $('#add-track-form').submit(function () {
+    newTrack();
   });
 }
 
-function addNewTrack(trackId, trackName, soundUrl, startTime=null, endTime=null) {
+function addNewTrackDetails() {
+  $('#trackDetails').fadeIn('slow');
+  $('#newTrackName').focus();
+
+  $('#addNewTrack').on('click', function () {
+    $('#trackDetails').fadeOut('slow');
+  });
+  $('#add-track-form').submit(function () {
+    $('#trackDetails').fadeOut('slow');
+  });
+
+  $('#newTrackName').keyup(function () {
+    if ($(this).val() != '') {
+      $('#addNewTrack').removeAttr('disabled');
+    } else {
+      $('#addNewTrack').attr('disabled', 'disabled')
+    }
+  });
+}
+
+function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6) {
   var uniqueTrackId = Date.now();
-  
+
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
 
   for (var i = 1; i < MAXLENGTH; i++) {
     if (i < currentKit.sequenceLength) {
-      if (i % 16 == 0 && i!=0) {padEl = padEl + ' <br> ';}
+      if (i % 16 == 0 && i != 0) {
+        padEl = padEl + ' <br> ';
+      }
       padEl = padEl + '<div class="pad column_' + i + '">\n\n</div>\n';
     } else {
-      if (i % 16 == 0 && i!=0) {padEl = padEl + ' <br style="display: none;"> ';}
+      if (i % 16 == 0 && i != 0) {
+        padEl = padEl + ' <br style="display: none;"> ';
+      }
       padEl = padEl + '<div class="pad column_' + i + '" style="display: none;">\n\n</div>\n';
     }
   }
-  
+
   var newTrack = '<div ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="exitDrop(event)" class="row instrument" data-instrument="' +
-    trackName + 
+    trackName +
     '"><div class="col-xs-2 col-lg-2"> <a data-toggle="collapse" aria-expanded="false" aria-controls="edit-' +
     uniqueTrackId +
-    '" href="#edit-'+
+    '" href="#edit-' +
     uniqueTrackId +
     '" class="instrument-label"><i class="glyphicon glyphicon-chevron-right"></i> <strong class="instrumentName">' +
     trackName +
-    '</strong></a></div><div class="col-xs-9 col-lg-9 pad-container">' +
+    '</strong></a></div><div class="col-xs-8 col-lg-8 pad-container">' +
     padEl +
-    '</div><div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-'+
+    '</div><div class="col-xs-1 col-lg-1" title="Track gain"><input type="text" value="-6" class="dial"></div>' +
+    '<div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-' +
     uniqueTrackId +
     '" class="edit-zone collapse"><div class="waveform-container"></div><div class="waveform-timeline"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
 
   var prevTrack = $('#newTrack');
   prevTrack.before(newTrack);
-  
+
   thisTrack = $('.instrument').eq(trackId);
-  
+
+  // add gainNode
+  currentKit.gainNodes[trackId] = context.createGain();
+  addKnob(trackId, gain);
+
   // load wavesurfer visu
   currentKit.waves[trackId] = new Wave();
   var wave = currentKit.waves[trackId];
-  var waveContainer = thisTrack.children().children('.waveform-container')[0];
+  var waveContainer = thisTrack.find('.waveform-container')[0];
   wave.init(thisTrack, waveContainer);
   addRefreshRegionEvent(trackId);
 
   // load the edit visu on the first collapse
   thisTrack.children('.edit-zone').on('shown.bs.collapse', function () {
-    if (!wave.loadedAfterCollapse) { wave.reload(); }
+    if (!wave.loadedAfterCollapse) {
+      wave.reload();
+    }
   });
-  
+
   // load buffer
-  currentKit.loadSample(soundUrl, trackId);
-  if (startTime) {
-    wave.startTime = startTime;
-    wave.endTime = endTime;
+  if (soundUrl) {
+    currentKit.loadSample(soundUrl, trackId);
+    if (startTime) {
+      wave.startTime = startTime;
+      wave.endTime = endTime;
+    }
   }
-  
+
   // add click events
   addPadClickEvent(socket, trackId);
   addDeleteTrackClickEvent(trackId);
   addRotateTriangleEvent(trackId);
 }
 
+
+// gain knob
+function linear2db(x) {
+  return Math.pow(10, (x / 20));
+}
+
+function addKnob(trackId, gain) {
+  var knob = $('.instrument').eq(trackId).find(".dial");
+  knob.knob({
+    width: 30,
+    height: 30,
+    min: -35,
+    max: 6,
+    step: 1,
+    displayInput: false,
+    thickness: 0.5,
+    change : function(v) {
+      var trackId = $(this.$).parents('.instrument').index();
+      currentKit.gainNodes[trackId].gain.value = linear2db(v);
+    },
+    release: function(v) {
+      var trackId = $(this.$).parents('.instrument').index();
+      currentKit.gainNodes[trackId].gain.value = linear2db(v);
+      // send db gain value to server
+      sendTrackGain(trackId, v)
+    }
+  });
+  knob.val(gain.toString());
+  knob.trigger('change');
+  currentKit.gainNodes[trackId].gain.value = linear2db(gain);
+}
+
+function changeTrackGain(trackId, gain) {
+  var knob = $('.instrument').eq(trackId).find(".dial");
+  knob.val(gain.toString());
+  knob.trigger('change');
+  console.log(gain)
+}
+
+
+// change sequence length
 function changeNumPads(numPads) {
   var instrumentTracks = $('.instrument');
   var numPadsNow = currentKit.sequenceLength;
@@ -488,7 +525,7 @@ function changeNumPads(numPads) {
       var pads = $(this).children('.pad-container').children('.pad');
       for (var i = numPadsNow; i < numPads; i++) {
         if (i % 16 == 0) {
-          lineBreaks.eq(i/16-1).show();
+          lineBreaks.eq(i / 16 - 1).show();
         }
         pads.eq(i).show();
       }
@@ -499,8 +536,8 @@ function changeNumPads(numPads) {
       var pads = $(this).children('.pad-container').children('.pad');
       for (var i = numPadsNow - 1; i >= numPads; i--) {
         if (i % 16 == 0) {
-          lineBreaks.eq(i/16-1).hide();
-        }        
+          lineBreaks.eq(i / 16 - 1).hide();
+        }
         pads.eq(i).hide();
       }
     });
@@ -508,9 +545,9 @@ function changeNumPads(numPads) {
 }
 
 function changeSequenceLength(sequenceLength) {
-    changeNumPads(sequenceLength);
-    currentKit.changeSequenceLength(sequenceLength);
-    $('#sequence-length').val(sequenceLength);
+  changeNumPads(sequenceLength);
+  currentKit.changeSequenceLength(sequenceLength);
+  $('#sequence-length').val(sequenceLength);
 }
 
 function addChangeSequenceLengthEvent() {
@@ -534,8 +571,10 @@ function addChangeSequenceLengthEvent() {
   });
 }
 
+
+// delete track
 function addDeleteTrackClickEvent(trackId) {
-  var deleteButton = $('.instrument').eq(trackId).children().children(".deleteTrackButton")[0];
+  var deleteButton = $('.instrument').eq(trackId).find(".deleteTrackButton")[0];
   $(deleteButton).click(function () {
     var trackId = $(this).parents('.instrument').index();
     // this action needs to be call in the same order in all clients in order to keep same order of tracks
@@ -551,10 +590,14 @@ function deleteTrack(trackId) {
 
   // delete buffer
   currentKit.buffers.splice(trackId, 1);
-  
+
   // delete wave
   currentKit.waves.splice(trackId, 1);
+  
+  // delete gain
+  currentKit.gains.splice(trackId, 1);
 }
+
 
 // Drag and drop sounds
 function allowDrop(ev) {
@@ -597,36 +640,20 @@ function addRefreshRegionEvent(trackId) {
   });
 }
 
-// show new track details
-function addNewTrackDetails() {
-  $('#trackDetails').fadeIn('slow');
-
-  $('#addNewTrack').on('click', function() {
-    $('#trackDetails').fadeOut('slow');
-  });
-
-    $('#newTrackName').keyup(function() {
-      if($(this).val() != '') {
-        $('#addNewTrack').removeAttr('disabled');
-      }
-      else {
-        $('#addNewTrack').attr('disabled', 'disabled')
-      }
-    });
-}
 
 // enable/disable search button
-$('#search-query').keyup(function() {
-  if($(this).val() != '') {
+$('#search-query').keyup(function () {
+  if ($(this).val() != '') {
     $('#search-button').removeAttr('disabled');
-  }
-  else {
+  } else {
     $('#search-button').attr('disabled', 'disabled')
   }
 });
 
+// rotate triangle dropdown
 function addRotateTriangleEvent(trackId) {
-  $(".instrument-label").click(function() {
-    $('.instrument').eq(trackId).children().children().children(".glyphicon").toggleClass('rotation');
+  $(".instrument-label").eq(trackId).click(function () {
+    var trackId = $(this).parents('.instrument').index();
+    $('.instrument').eq(trackId).find(".glyphicon").toggleClass('rotation');
   });
 }

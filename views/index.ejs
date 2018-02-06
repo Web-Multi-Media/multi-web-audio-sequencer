@@ -72,9 +72,10 @@
           <div class="col-xs-12">
             <button id="newTrack" type="button" class="btn btn-success" onclick="addNewTrackDetails()">Add Track</button>
             <div id="trackDetails" hidden>
-              <input type="text" id="newTrackName" placeholder="New track name">
-              <input type="text" id="newTrackUrl" placeholder="Sound url" hidden>
-              <button type="button" id="addNewTrack" class="btn btn-success" disabled>New track</button>
+              <form id="add-track-form" action="javascript:void(0);" style="display: inline-block;">
+                <input type="text" id="newTrackName" placeholder="New track name">
+                <button type="button" id="addNewTrack" class="btn btn-success" disabled>New track</button>
+              </form>
             </div>
           </div>
         </div>
@@ -169,6 +170,7 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/wavesurfer.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/plugin/wavesurfer.regions.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/plugin/wavesurfer.timeline.min.js"></script>
+  <script type="text/javascript" src="./assets/javascripts/jquery.knob.min.js"></script>
   <script type="text/javascript" src="./assets/javascripts/freesound.js"></script>
   <script type="text/javascript" src="./assets/javascripts/wave.js"></script>
   <script type="text/javascript" src="./assets/javascripts/kit.js"></script>
@@ -204,6 +206,10 @@
     
     function sendSequenceLength(sequenceLength) {
       socket.emit('sequenceLength', sequenceLength);
+    }
+    
+    function sendTrackGain(trackId, gain) {
+      socket.emit('gain', [trackId, gain]);
     }
 
     $(function() {
@@ -253,8 +259,16 @@
         currentKit.waves[trackId].setEnd(endTime);
       });
       
+      // on change sequence length
       socket.on('sendSequenceLength', function(message) {
         changeSequenceLength(message);
+      });
+      
+      // on change track gain
+      socket.on('sendGain', function(message) {
+        var trackId = message[0];
+        var gain = message[1];
+        changeTrackGain(trackId, gain)
       });
     })
   </script>

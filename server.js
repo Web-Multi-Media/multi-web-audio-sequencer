@@ -35,7 +35,8 @@ var sequencerState = {
     [false, false],
     [false, false],
     [false, false]
-  ]
+  ],
+  gains: [-6, -6, -6]
 };
 
 var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
@@ -107,6 +108,7 @@ io.sockets.on('connection', function (socket) {
       sequencerStates[room].pads[trackId] = Array(64).fill(0);
       sequencerStates[room].sounds[trackId] = soundUrl;
       sequencerStates[room].waves[trackId] = [false, false];
+      sequencerStates[room].gains[trackId] = -6;
     });
 
     // LOAD SOUND INTO A TRACK
@@ -127,6 +129,7 @@ io.sockets.on('connection', function (socket) {
       sequencerStates[room].sounds.splice(trackId, 1);
       sequencerStates[room].pads.splice(trackId, 1);
       sequencerStates[room].waves.splice(trackId, 1);
+      sequencerStates[room].gains.splice(trackId, 1);
     });
 
     // CHANGE WAVE REGION
@@ -142,6 +145,13 @@ io.sockets.on('connection', function (socket) {
       console.log('recieve change senquence length: ' + message);
       sequencerStates[room].sequenceLength = message;
       socket.in(room).broadcast.emit('sendSequenceLength', message);
+    });
+    
+    // CHANGE TRACK GAIN
+    socket.on('gain', function(message) {
+      console.log('recieve change gain: ' + message);
+      sequencerStates[room].gains[message[0]] = message[1];
+      socket.in(room).broadcast.emit('sendGain', message);
     });
     
 

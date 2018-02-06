@@ -71,11 +71,11 @@ function initSearch() {
     $('#search-button').click(function () {
       self.searchEvent();
     });  
+    
     $('#search-form').submit(function () {
       self.searchEvent();
     });
     
-  
     $('#previous').click(function () {
       self.page -= 1;
       self.searchFreesound(self.query, self.page, self.filter);
