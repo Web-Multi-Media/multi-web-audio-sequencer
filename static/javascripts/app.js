@@ -194,7 +194,7 @@ function toggleSelectedListenerSocket(trackId, padId, padState) {
   }
 }
 
-
+// SEQUENCER SCHEDULER
 function init() {
   initializeAudioNodes();
   loadKits();
@@ -214,7 +214,6 @@ function initializeAudioNodes() {
     finalMixNode = context.destination;
   }
 
-
   // Create master volume.
   // for now, the master volume is static, but in the future there will be a slider
   masterGainNode = context.createGain();
@@ -222,7 +221,6 @@ function initializeAudioNodes() {
   masterGainNode.connect(finalMixNode);
 
   //connect all sounds to masterGainNode to play them
-
   //don't need this for now, no wet dry mix for effects
   // // Create effect volume.
   // effectLevelNode = context.createGain();
@@ -255,36 +253,6 @@ function loadKits() {
 function loadImpulseResponses() {
   reverbImpulseResponse = new ImpulseResponse("sounds/impulse-responses/matrix-reverb2.wav");
   reverbImpulseResponse.load();
-}
-
-
-//TODO delete this
-function loadTestBuffer() {
-  var request = new XMLHttpRequest();
-  var url = "http://www.freesound.org/data/previews/102/102130_1721044-lq.mp3";
-  request.open("GET", url, true);
-  request.responseType = "arraybuffer";
-
-  request.onload = function () {
-    context.decodeAudioData(
-      request.response,
-      function (buffer) {
-        testBuffer = buffer;
-      },
-      function (buffer) {
-        console.log("Error decoding drum samples!");
-      }
-    );
-  }
-  request.send();
-}
-
-//TODO delete this
-function sequencePads() {
-  $('.pad.selected').each(function () {
-    $('.pad').removeClass("selected");
-    $(this).addClass("selected");
-  });
 }
 
 function playNote(buffer, noteTime, startTime, endTime, gainNode) {
@@ -345,8 +313,6 @@ function drawPlayhead(xindex) {
 
 function advanceNote() {
   // Advance time by a 16th note...
-  // var secondsPerBeat = 60.0 / theBeat.tempo;
-  //TODO CHANGE TEMPO HERE, convert to float
   tempo = Number($("#tempo-input").val());
   var secondsPerBeat = 60.0 / tempo;
   rhythmIndex++;
@@ -396,18 +362,8 @@ function changeTempoListener() {
   });
 }
 
-function trackNameExist() {
-  var instru = $('.instrument');
-  var trackName = $('#newTrackName').val();
-  var duplicate = false;
-  instru.each(function (index) {
-    if (trackName === $(this).attr('data-instrument')) {
-      duplicate = true;
-    }
-  });
-  return duplicate;
-}
 
+// SEQUENCER ACTIONS
 function addNewTrackEvent() {
   $('#addNewTrack').click(function () {
     var trackName = $('#newTrackName').val();
@@ -491,6 +447,8 @@ function addNewTrack(trackId, trackName, soundUrl, startTime = null, endTime = n
   addRotateTriangleEvent(trackId);
 }
 
+
+// gain knob
 function linear2db(x) {
   return Math.pow(10, (x / 20));
 }
@@ -528,6 +486,8 @@ function changeTrackGain(trackId, gain) {
   console.log(gain)
 }
 
+
+// change sequence length
 function changeNumPads(numPads) {
   var instrumentTracks = $('.instrument');
   var numPadsNow = currentKit.sequenceLength;
@@ -583,6 +543,8 @@ function addChangeSequenceLengthEvent() {
   });
 }
 
+
+// delete track
 function addDeleteTrackClickEvent(trackId) {
   var deleteButton = $('.instrument').eq(trackId).children().children(".deleteTrackButton")[0];
   $(deleteButton).click(function () {
@@ -607,6 +569,7 @@ function deleteTrack(trackId) {
   // delete gain
   currentKit.gains.splice(trackId, 1);
 }
+
 
 // Drag and drop sounds
 function allowDrop(ev) {
@@ -649,7 +612,8 @@ function addRefreshRegionEvent(trackId) {
   });
 }
 
-// show new track details
+
+// add new track
 function addNewTrackDetails() {
   $('#trackDetails').fadeIn('slow');
 
@@ -666,6 +630,7 @@ function addNewTrackDetails() {
   });
 }
 
+
 // enable/disable search button
 $('#search-query').keyup(function () {
   if ($(this).val() != '') {
@@ -675,6 +640,7 @@ $('#search-query').keyup(function () {
   }
 });
 
+// rotate triangle dropdown
 function addRotateTriangleEvent(trackId) {
   $(".instrument-label").eq(trackId).click(function () {
     var trackId = $(this).parents('.instrument').index();
