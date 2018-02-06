@@ -182,7 +182,7 @@ function toggleSelectedListener(padEl) {
 }
 
 function toggleSelectedListenerSocket(trackId, padId, padState) {
-  var padEl = $('.instrument').eq(trackId).children().children().eq(parseInt(padId) + 1);
+  var padEl = $('.instrument').eq(trackId).find('.pad').eq(parseInt(padId));
   var currentState = padEl.hasClass("selected");
   if (currentState) {
     if (padState == 0) {
@@ -449,7 +449,7 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
   // load wavesurfer visu
   currentKit.waves[trackId] = new Wave();
   var wave = currentKit.waves[trackId];
-  var waveContainer = thisTrack.children().children('.waveform-container')[0];
+  var waveContainer = thisTrack.find('.waveform-container')[0];
   wave.init(thisTrack, waveContainer);
   addRefreshRegionEvent(trackId);
 
@@ -574,7 +574,7 @@ function addChangeSequenceLengthEvent() {
 
 // delete track
 function addDeleteTrackClickEvent(trackId) {
-  var deleteButton = $('.instrument').eq(trackId).children().children(".deleteTrackButton")[0];
+  var deleteButton = $('.instrument').eq(trackId).find(".deleteTrackButton")[0];
   $(deleteButton).click(function () {
     var trackId = $(this).parents('.instrument').index();
     // this action needs to be call in the same order in all clients in order to keep same order of tracks
@@ -654,6 +654,6 @@ $('#search-query').keyup(function () {
 function addRotateTriangleEvent(trackId) {
   $(".instrument-label").eq(trackId).click(function () {
     var trackId = $(this).parents('.instrument').index();
-    $('.instrument').eq(trackId).children().children().children(".glyphicon").toggleClass('rotation');
+    $('.instrument').eq(trackId).find(".glyphicon").toggleClass('rotation');
   });
 }
