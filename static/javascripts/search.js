@@ -33,7 +33,8 @@ function initSearch() {
         page: page,
         filter: filter,
         sort: sort,
-        fields: 'id,name,url,previews',
+        fields: 'id,name,url,previews,analysis',
+        descriptors: 'rhythm.onset_times' 
       },
       function (sounds) {
         var msg = ""
@@ -42,7 +43,20 @@ function initSearch() {
         var numSoundCurrentPage = sounds.results.length;
         for (i = 0; i < numSoundCurrentPage; i++) {
           var snd = sounds.getSound(i);
-          msg += "<div>" + self.freesoundIframe(snd.id) + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" + snd.previews["preview-lq-mp3"] + "'>Drag</div></div>";
+          var onsets = snd.analysis.rhythm.onset_times;
+          var firstOnset;
+          if (onsets instanceof Array) {
+            firstOnset = onsets[0];
+          } else {
+            firstOnset = onsets;
+          }
+          console.log(onsets)
+          msg += "<div>" + self.freesoundIframe(snd.id) 
+            + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" 
+            + snd.previews["preview-lq-mp3"] 
+            + "' first-onset='" 
+            + firstOnset
+            + "'>Drag</div></div>";
         }
         msg += "</ul>"
         document.getElementById("search-result-container").innerHTML = msg;

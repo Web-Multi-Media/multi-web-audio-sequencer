@@ -21,7 +21,7 @@ Kit.prototype.changeSequenceLength = function(sequenceLength) {
   this.sequenceLength = parseInt(sequenceLength);
 };
 
-Kit.prototype.loadSample = function(url, trackId) {
+Kit.prototype.loadSample = function(url, trackId, startTime = null) {
   var request = new XMLHttpRequest();
   request.open("GET", url, true);
   request.responseType = "arraybuffer";
@@ -37,6 +37,9 @@ Kit.prototype.loadSample = function(url, trackId) {
       function(buffer) {
         kit.buffers[trackId] = buffer;
         kit.instrumentLoadCount++;
+        if (startTime) {
+          kit.waves[trackId].setStart(startTime);
+        }
       },
       function(buffer) {
         console.log("Error decoding drum samples for track " + trackId);

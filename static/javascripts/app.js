@@ -616,6 +616,8 @@ function exitDrop(ev) {
 
 function drag(ev) {
   currentSoundUrl = ev.target.getAttribute("sound-url");
+  currentFirstOnset = parseFloat(ev.target.getAttribute("first-onset"));
+  console.log(ev.target.getAttribute("first-onset"));
   ev.dataTransfer.setData("text", "");
 }
 
@@ -624,8 +626,12 @@ function drop(ev) {
   var target = ev.target;
   var trackEl = $(target).hasClass('row') ? $(target) : $(target).parents('.row');
   var trackId = trackEl.index();
-  currentKit.loadSample(currentSoundUrl, trackId);
+  
+  // load sample
+  currentKit.loadSample(currentSoundUrl, trackId, currentFirstOnset);
   sendLoadSound(trackId, currentSoundUrl);
+  console.log(currentFirstOnset)
+  
   trackEl.removeClass("drop-over");
 }
 
