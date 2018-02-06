@@ -7,20 +7,29 @@ The sequencer is available [here](http://the.ndero.ovh:8080/).
 Step sequencer inspired by [Catarak Web Audio Sequencer](https://github.com/catarak/web-audio-sequencer).
 
 
+INSTALL (Docker)
+-------------------
+Note: You'll need to have `docker` and `docker-compose` installed.
+
+```
+docker-compose up
+```
+
 INSTALL
 -------------------
 
 Linux:
-
-* npm install
-* nodejs server.js
+```
+npm install
+nodejs server.js
+```
 
 Windows:
-
-* npm install
-* npm install nodemon
-* npm start
-
+```
+npm install
+npm install nodemon
+npm start
+```
 
 DEPLOY
 -------------------
