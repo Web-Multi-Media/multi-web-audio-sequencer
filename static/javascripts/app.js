@@ -518,7 +518,7 @@ function addKnob(trackId, gain) {
   });
   knob.val(gain.toString());
   knob.trigger('change');
-  currentKit.gainNodes[trackId].gain.value = linear2db(-6);
+  currentKit.gainNodes[trackId].gain.value = linear2db(gain);
 }
 
 function changeTrackGain(trackId, gain) {
