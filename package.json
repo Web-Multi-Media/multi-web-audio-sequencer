@@ -1,6 +1,6 @@
 {
-  "name": "chatnodejs",
-  "version": "1.0.0",
+  "name": "multi-web-audio-sequencer",
+  "version": "0.1.0",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -29,11 +29,11 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/valou5940/chatHuma.git"
+    "url": "git+https://github.com/xavierfav/multi-web-audio-sequencer.git"
   },
   "bugs": {
-    "url": "https://github.com/valou5940/chatHuma/issues"
+    "url": "https://github.com/xavierfav/multi-web-audio-sequencer/issues"
   },
-  "homepage": "https://github.com/valou5940/chatHuma#readme",
+  "homepage": "https://github.com/xavierfav/multi-web-audio-sequencer#readme",
   "description": "INSTALL\r -------------------"
 }
