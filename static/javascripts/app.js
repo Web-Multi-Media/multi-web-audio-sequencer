@@ -676,7 +676,8 @@ $('#search-query').keyup(function () {
 });
 
 function addRotateTriangleEvent(trackId) {
-  $(".instrument-label").click(function () {
+  $(".instrument-label").eq(trackId).click(function () {
+    var trackId = $(this).parents('.instrument').index();
     $('.instrument').eq(trackId).children().children().children(".glyphicon").toggleClass('rotation');
   });
 }
