@@ -365,18 +365,43 @@ function changeTempoListener() {
 
 // SEQUENCER ACTIONS
 function addNewTrackEvent() {
-  $('#addNewTrack').click(function () {
+  function newTrack() {
     var trackName = $('#newTrackName').val();
-    var soundUrl = $('#newTrackUrl').val();
     var trackId = $('.instrument').length;
     // this action needs to be call in the same order in all clients in order to keep same order of tracks
-    //addNewTrack(trackId, trackName, soundUrl);
+    // we first send to server which will emit back the action
     // send to server
-    sendNewTrack(trackName, soundUrl);
+    sendNewTrack(trackName, null);
+  }
+  $('#addNewTrack').click(function () {
+    newTrack();
+  });
+  $('#add-track-form').submit(function () {
+    newTrack();
   });
 }
 
-function addNewTrack(trackId, trackName, soundUrl, startTime = null, endTime = null, gain = -6) {
+function addNewTrackDetails() {
+  $('#trackDetails').fadeIn('slow');
+  $('#newTrackName').focus();
+
+  $('#addNewTrack').on('click', function () {
+    $('#trackDetails').fadeOut('slow');
+  });
+  $('#add-track-form').submit(function () {
+    $('#trackDetails').fadeOut('slow');
+  });
+
+  $('#newTrackName').keyup(function () {
+    if ($(this).val() != '') {
+      $('#addNewTrack').removeAttr('disabled');
+    } else {
+      $('#addNewTrack').attr('disabled', 'disabled')
+    }
+  });
+}
+
+function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6) {
   var uniqueTrackId = Date.now();
 
   // create html
@@ -435,10 +460,12 @@ function addNewTrack(trackId, trackName, soundUrl, startTime = null, endTime = n
   });
 
   // load buffer
-  currentKit.loadSample(soundUrl, trackId);
-  if (startTime) {
-    wave.startTime = startTime;
-    wave.endTime = endTime;
+  if (soundUrl) {
+    currentKit.loadSample(soundUrl, trackId);
+    if (startTime) {
+      wave.startTime = startTime;
+      wave.endTime = endTime;
+    }
   }
 
   // add click events
@@ -609,24 +636,6 @@ function addRefreshRegionEvent(trackId) {
     var trackId = $(this).parents('.instrument').index();
     currentKit.waves[trackId].restartRegion();
     currentKit.waves[trackId].sendRegion();
-  });
-}
-
-
-// add new track
-function addNewTrackDetails() {
-  $('#trackDetails').fadeIn('slow');
-
-  $('#addNewTrack').on('click', function () {
-    $('#trackDetails').fadeOut('slow');
-  });
-
-  $('#newTrackName').keyup(function () {
-    if ($(this).val() != '') {
-      $('#addNewTrack').removeAttr('disabled');
-    } else {
-      $('#addNewTrack').attr('disabled', 'disabled')
-    }
   });
 }
 

@@ -72,9 +72,10 @@
           <div class="col-xs-12">
             <button id="newTrack" type="button" class="btn btn-success" onclick="addNewTrackDetails()">Add Track</button>
             <div id="trackDetails" hidden>
-              <input type="text" id="newTrackName" placeholder="New track name">
-              <input type="text" id="newTrackUrl" placeholder="Sound url" hidden>
-              <button type="button" id="addNewTrack" class="btn btn-success" disabled>New track</button>
+              <form id="add-track-form" action="javascript:void(0);" style="display: inline-block;">
+                <input type="text" id="newTrackName" placeholder="New track name">
+                <button type="button" id="addNewTrack" class="btn btn-success" disabled>New track</button>
+              </form>
             </div>
           </div>
         </div>
