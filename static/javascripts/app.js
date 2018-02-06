@@ -22,6 +22,7 @@ var TEMPO_MAX = 200;
 var TEMPO_MIN = 40;
 var TEMPO_STEP = 4;
 var MAXLENGTH = 64;
+var COMPRESSOR_ACTIVATED = false;
 
 var numPages;
 
@@ -204,7 +205,7 @@ function init() {
 function initializeAudioNodes() {
   context = new webkitAudioContext();
   var finalMixNode;
-  if (context.createDynamicsCompressor) {
+  if (context.createDynamicsCompressor && COMPRESSOR_ACTIVATED) {
     // Create a dynamics compressor to sweeten the overall mix.
     compressor = context.createDynamicsCompressor();
     compressor.connect(context.destination);
