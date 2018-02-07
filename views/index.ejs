@@ -203,6 +203,10 @@
     function sendDeleteTrack(trackName) {
       socket.emit('deleteTrack', trackName);
     }
+
+    function sendTempo(tempo) {
+      socket.emit('tempo', tempo);
+    }
     
     function sendSequenceLength(sequenceLength) {
       socket.emit('sequenceLength', sequenceLength);
@@ -231,6 +235,13 @@
       socket.on('sendPad', function(message) {
         console.log('Valeur des pads reçues', message);
         toggleSelectedListenerSocket(message[0], message[1], message[2]);
+      });
+
+      // on change tempo
+      socket.on('tempo', function(message) {
+        console.log('receive new tempo: ' + message);
+        var tempo = message;
+        changeTempo(tempo);
       });
 
       // on recieve new track
