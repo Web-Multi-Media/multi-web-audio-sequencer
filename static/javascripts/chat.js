@@ -1,19 +1,37 @@
 // Chat adapted from: https://github.com/socketio/socket.io/tree/master/examples/chat
 var chatRoom;
 var numChatEvent = 0;
+var curentlyfocused = 0;
 
 var title = document.title;
 
 function newUpdate() {
     update = setInterval(changeTitle, 2000);
 }
+
+// Set up event handler for the window focus event
+window.addEventListener("focus", function(event) 
+{ 
+    curentlyfocused = 1;
+    numChatEvent = 0;
+}, false);
+
+// Set up event handler for the window blur event
+window.addEventListener("blur", function(event) 
+{ 
+    curentlyfocused = 0;
+}, false);
+
 var docBody = document.getElementById('site-body');
 docBody.onload = newUpdate;
 
 function changeTitle() {
-    if(numChatEvent>0){
+    if(numChatEvent>0 && !curentlyfocused){
         var newTitle = '(' + numChatEvent + ') ' + title;
         document.title = newTitle;
+    }
+    else{
+        document.title = title;
     }
 }
 
