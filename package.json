@@ -1,6 +1,7 @@
 {
   "name": "multi-web-audio-sequencer",
   "version": "0.1.0",
+  "description": "Multi-user step sequencer using Freesound content",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
