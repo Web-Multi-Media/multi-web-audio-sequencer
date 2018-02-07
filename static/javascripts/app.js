@@ -348,7 +348,7 @@ function initializeTempo() {
 }
 
 function changeTempo(tempo_input) {
-    tempo=tempo_input;
+    tempo = tempo_input;
     $("#tempo-input").val(tempo_input);
 }
 
