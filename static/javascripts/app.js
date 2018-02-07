@@ -156,7 +156,6 @@ function TranslateStateInActions(sequencerState) {
     }
     
     // change tempo
-    console.log(tempo)
     changeTempo(tempo);
 
     // change seuquence length
