@@ -1,5 +1,21 @@
 // Chat adapted from: https://github.com/socketio/socket.io/tree/master/examples/chat
 var chatRoom;
+var numChatEvent = 0;
+
+var title = document.title;
+
+function newUpdate() {
+    update = setInterval(changeTitle, 2000);
+}
+var docBody = document.getElementById('site-body');
+docBody.onload = newUpdate;
+
+function changeTitle() {
+    if(numChatEvent>0){
+        var newTitle = '(' + numChatEvent + ') ' + title;
+        document.title = newTitle;
+    }
+}
 
 function setRoomForChat(room_input) {
   console.log("[Chat] Room will be", room_input);
@@ -109,6 +125,7 @@ $(function() {
 
   // Adds the visual chat message to the message list
   function addChatMessage (data, options) {
+    numChatEvent++;
     // Don't fade the message in if there is an 'X was typing'
     var $typingMessages = getTypingMessages(data);
     options = options || {};
