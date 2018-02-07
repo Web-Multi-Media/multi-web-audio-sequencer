@@ -14,6 +14,7 @@ window.addEventListener("focus", function(event)
 { 
     curentlyfocused = 1;
     numChatEvent = 0;
+    document.title = title;
 }, false);
 
 // Set up event handler for the window blur event
@@ -29,9 +30,6 @@ function changeTitle() {
     if(numChatEvent>0 && !curentlyfocused){
         var newTitle = '(' + numChatEvent + ') ' + title;
         document.title = newTitle;
-    }
-    else{
-        document.title = title;
     }
 }
 
@@ -143,7 +141,6 @@ $(function() {
 
   // Adds the visual chat message to the message list
   function addChatMessage (data, options) {
-    numChatEvent++;
     // Don't fade the message in if there is an 'X was typing'
     var $typingMessages = getTypingMessages(data);
     options = options || {};
@@ -157,6 +154,9 @@ $(function() {
       .css('color', getUsernameColor(data.username));
     var $messageBodyDiv = $(' <span class="messageBody">')
       .text(data.message);
+
+    if(!data.typing)
+        numChatEvent++;
 
     var typingClass = data.typing ? 'typing' : '';
     var $messageDiv = $('<li class="message"/>')
@@ -339,12 +339,14 @@ $(function() {
   // Whenever the server emits 'user joined', log it in the chat body
   socket.on('user joined', function (data) {
     log(data.username + ' joined');
+    numChatEvent++;
     addParticipantsMessage(data);
   });
 
   // Whenever the server emits 'user left', log it in the chat body
   socket.on('user left', function (data) {
     log(data.username + ' left');
+    numChatEvent++;
     console.log(data.username + ' left')
     addParticipantsMessage(data);
     removeChatTyping(data);
