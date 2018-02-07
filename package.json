@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js"
   },
-  "author": "Xavier Favory <xavier.favory@gmail.com>",
+  "author": "Xavier Favory <xavier.favory@gmail.com>, Valentin Nerin, Nicolas Derouineau",
   "license": "GPL-3.0",
   "dependencies": {
     "body-parser": "^1.18.2",
