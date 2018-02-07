@@ -101,7 +101,7 @@ io.sockets.on('connection', function (socket) {
     socket.on('tempo', function (message) {
       console.log('receive tempo change: ' + message);
       socket.in(room).broadcast.emit('tempo', message);
-      var tempo = message[0];
+      var tempo = message;
       sequencerStates[room].tempo = tempo;
     });
 

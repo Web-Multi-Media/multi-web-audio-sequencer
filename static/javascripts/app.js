@@ -145,6 +145,7 @@ function TranslateStateInActions(sequencerState) {
   var waves = sequencerState['waves'];
   var sequenceLength = sequencerState['sequenceLength'];
   var gains = sequencerState['gains'];
+  var tempo = sequencerState['tempo'];
 
   // check if the tracks are already loaded
   if (sequencerState.trackNames.length != $('.instrument').length) {
@@ -153,6 +154,10 @@ function TranslateStateInActions(sequencerState) {
     for (var i = numLocalTracks - 1; i >= 0; i--) {
       deleteTrack(i);
     }
+    
+    // change tempo
+    console.log(tempo)
+    changeTempo(tempo);
 
     // change seuquence length
     changeSequenceLength(sequenceLength);
