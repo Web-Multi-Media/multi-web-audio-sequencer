@@ -20,6 +20,7 @@ var roomLastConnections = [null, null, null, null];
 
 var sequencerState = {
   sequenceLength: 16,
+  tempo: 120,
   trackNames: ['kick', 'snare', 'hihat'],
   pads: [
     Array(64).fill(0),
@@ -94,6 +95,14 @@ io.sockets.on('connection', function (socket) {
       var padId = message[1];
       var padState = message[2];
       sequencerStates[room]['pads'][trackId][padId] = padState;
+    });
+
+    // TEMPO RECEPTION VIA THE CLIENT
+    socket.on('tempo', function (message) {
+      console.log('receive tempo change: ' + message);
+      socket.in(room).broadcast.emit('tempo', message);
+      var tempo = message[0];
+      sequencerStates[room].tempo = tempo;
     });
 
     // NEW TRACK
