@@ -1,3 +1,4 @@
+// Chat adapted from: https://github.com/socketio/socket.io/tree/master/examples/chat
 var chatRoom;
 
 function setRoomForChat(room_input) {
