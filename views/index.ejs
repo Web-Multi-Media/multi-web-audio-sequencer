@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="../assets/stylesheets/styles.css">
 </head>
 
-<body>
+<body id="site-body">
   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
   <script src="/socket.io/socket.io.js"></script>
 
@@ -45,7 +45,7 @@
     <!--    PLAY TEMPO CONTAINER    -->
     <div class="row">
       <div class="col-md-12 tempoBorder">
-        <button id="play-pause" onclick="this.blur();" type="button" class="btn btn-success">
+        <button id="play-pause" type="button" class="btn btn-success">
           <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
         </button>
         <span class="tempo-container">

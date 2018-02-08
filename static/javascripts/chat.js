@@ -3,17 +3,17 @@ var chatRoom;
 
 function setRoomForChat(room_input) {
   console.log("[Chat] Room will be", room_input);
-  chatRoom=room_input;    
+  chatRoom = room_input;
 }
 
-$(function() {
+$(function () {
   var FADE_TIME = 150; // ms
   var TYPING_TIMER_LENGTH = 400; // ms
   var COLORS = [
     '#e21400', '#91580f', '#f8a700', '#f78b00',
     '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
     '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
-  ];  
+  ];
 
   // Initialize variables
   var $window = $(window);
@@ -30,9 +30,9 @@ $(function() {
   var typing = false;
   var lastTypingTime;
   var $currentInput = $usernameInput.focus();
-  
 
-  function addParticipantsMessage (data) {
+
+  function addParticipantsMessage(data) {
     var message = '';
     if (data.numUsers === 1) {
       message += "there's 1 participant";
@@ -43,33 +43,33 @@ $(function() {
   }
 
   //validate username 
-    $('.usernameInput').addClass("red");
-    $('.usernameInput').css("border-color", "red");
-    redFormInterval = setInterval(function(){ 
-      if ($('.usernameInput').hasClass("red")) {
-        $('.usernameInput').css("border-color", "transparent"); 
-        $('.usernameInput').removeClass("red");
-      } else {
-        $('.usernameInput').css("border-color", "red"); 
-        $('.usernameInput').addClass("red");
-      }
-    }, 800);
-    $('#change-nickname').click(function () {
-      setUsername();
-      $('#change-nickname').prop("disabled", true);
-      clearInterval(redFormInterval);
-      $('.usernameInput').css("border-color", "transparent");  
-    });
-    $('#nickname-form').submit(function () {
-      setUsername();
-      $('#change-nickname').prop("disabled", true);
-      clearInterval(redFormInterval);
+  $('.usernameInput').addClass("red");
+  $('.usernameInput').css("border-color", "red");
+  redFormInterval = setInterval(function () {
+    if ($('.usernameInput').hasClass("red")) {
       $('.usernameInput').css("border-color", "transparent");
-    });
+      $('.usernameInput').removeClass("red");
+    } else {
+      $('.usernameInput').css("border-color", "red");
+      $('.usernameInput').addClass("red");
+    }
+  }, 800);
+  $('#change-nickname').click(function () {
+    setUsername();
+    $('#change-nickname').prop("disabled", true);
+    clearInterval(redFormInterval);
+    $('.usernameInput').css("border-color", "transparent");
+  });
+  $('#nickname-form').submit(function () {
+    setUsername();
+    $('#change-nickname').prop("disabled", true);
+    clearInterval(redFormInterval);
+    $('.usernameInput').css("border-color", "transparent");
+  });
 
 
   // Sets the client's username
-  function setUsername () {
+  function setUsername() {
     username = cleanInput($usernameInput.val().trim());
     // If the username is valid
     if (username) {
@@ -84,7 +84,7 @@ $(function() {
   }
 
   // Sends a chat message
-  function sendMessage () {
+  function sendMessage() {
     var message = $inputMessage.val();
     // Prevent markup from being injected into the message
     message = cleanInput(message);
@@ -102,13 +102,13 @@ $(function() {
   }
 
   // Log a message
-  function log (message, options) {
+  function log(message, options) {
     var $el = $('<li>').addClass('log').text(message);
     addMessageElement($el, options);
   }
 
   // Adds the visual chat message to the message list
-  function addChatMessage (data, options) {
+  function addChatMessage(data, options) {
     // Don't fade the message in if there is an 'X was typing'
     var $typingMessages = getTypingMessages(data);
     options = options || {};
@@ -123,6 +123,10 @@ $(function() {
     var $messageBodyDiv = $(' <span class="messageBody">')
       .text(data.message);
 
+    if (!data.typing) {
+      newEventMessage();
+    }
+
     var typingClass = data.typing ? 'typing' : '';
     var $messageDiv = $('<li class="message"/>')
       .data('username', data.username)
@@ -134,14 +138,14 @@ $(function() {
   }
 
   // Adds the visual chat typing message
-  function addChatTyping (data) {
+  function addChatTyping(data) {
     data.typing = true;
     data.message = ' is typing';
     addChatMessage(data);
   }
 
   // Removes the visual chat typing message
-  function removeChatTyping (data) {
+  function removeChatTyping(data) {
     getTypingMessages(data).fadeOut(function () {
       $(this).remove();
     });
@@ -152,7 +156,7 @@ $(function() {
   // options.fade - If the element should fade-in (default = true)
   // options.prepend - If the element should prepend
   //   all other messages (default = false)
-  function addMessageElement (el, options) {
+  function addMessageElement(el, options) {
     var $el = $(el);
 
     // Setup default options
@@ -180,12 +184,12 @@ $(function() {
   }
 
   // Prevents input from having injected markup
-  function cleanInput (input) {
+  function cleanInput(input) {
     return $('<div/>').text(input).html();
   }
 
   // Updates the typing event
-  function updateTyping () {
+  function updateTyping() {
     if (connected) {
       if (!typing) {
         typing = true;
@@ -205,18 +209,18 @@ $(function() {
   }
 
   // Gets the 'X is typing' messages of a user
-  function getTypingMessages (data) {
+  function getTypingMessages(data) {
     return $('.typing.message').filter(function (i) {
       return $(this).data('username') === data.username;
     });
   }
 
   // Gets the color of a username through our hash function
-  function getUsernameColor (username) {
+  function getUsernameColor(username) {
     // Compute hash code
     var hash = 7;
     for (var i = 0; i < username.length; i++) {
-       hash = username.charCodeAt(i) + (hash << 5) - hash;
+      hash = username.charCodeAt(i) + (hash << 5) - hash;
     }
     // Calculate color
     var index = Math.abs(hash % COLORS.length);
@@ -240,7 +244,7 @@ $(function() {
     }
   });
 
-  $inputMessage.on('input', function() {
+  $inputMessage.on('input', function () {
     updateTyping();
   });
 
@@ -268,7 +272,7 @@ $(function() {
     });
     addParticipantsMessage(data);
   });
-  
+
   // Whenever the server emits 'auto-login', auto log with the username message
   socket.on('autoLogin', function (data) {
     console.log(data);
@@ -290,12 +294,12 @@ $(function() {
       addParticipantsMessage(data);
     }
   });
-  
+
   socket.on('user change name', function (data) {
     var message = data.oldName + " changed his nickname for " + data.newName;
     log(message)
   });
-  
+
   // Whenever the server emits 'new message', update the chat body
   socket.on('new message', function (data) {
     addChatMessage(data);
@@ -304,12 +308,14 @@ $(function() {
   // Whenever the server emits 'user joined', log it in the chat body
   socket.on('user joined', function (data) {
     log(data.username + ' joined');
+    newEventMessage();
     addParticipantsMessage(data);
   });
 
   // Whenever the server emits 'user left', log it in the chat body
   socket.on('user left', function (data) {
     log(data.username + ' left');
+    newEventMessage();
     console.log(data.username + ' left')
     addParticipantsMessage(data);
     removeChatTyping(data);
@@ -340,4 +346,46 @@ $(function() {
     log('attempt to reconnect has failed');
   });
 
+  
+  // Notification using web page title
+  var numChatEvent = 0;
+  var curentlyfocused = 1;
+
+  var title = document.title;
+
+  function newUpdate() {
+    updateIntervalId = setInterval(changeTitle, 2000);
+  }
+
+  // Set up event handler for the window focus event
+  $('#chat-container').focusin(function () {
+    curentlyfocused = 1;
+    numChatEvent = 0;
+    document.title = title;
+  });
+
+  // Set up event handler for the window blur event
+  $('#chat-container').focusout(function () {
+    curentlyfocused = 0;
+    numChatEvent = 0;
+  });
+
+  // Getting a new message to notify
+  function newEventMessage () {
+    numChatEvent++;
+  }
+
+  $('#site-body').ready(function () {
+    newUpdate();
+    $('#chat-container').click(function () {
+      $('.inputMessage').focus();
+    });
+  });
+
+  function changeTitle() {
+    if ((numChatEvent > 0) && (!curentlyfocused)) {
+      var newTitle = '(' + numChatEvent + ') ' + title;
+      document.title = newTitle;
+    }
+  }
 });
