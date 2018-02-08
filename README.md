@@ -9,7 +9,7 @@ Step sequencer inspired by [Catarak Web Audio Sequencer](https://github.com/cata
 
 INSTALL (Docker)
 -------------------
-Note: You'll need to have `docker` and `docker-compose` installed.
+Note: You'll need to have [`docker`](https://docs.docker.com/install/) and [`docker-compose`](https://docs.docker.com/compose/install/) installed.
 
 ```
 docker-compose up
