@@ -1,44 +1,5 @@
 // Chat adapted from: https://github.com/socketio/socket.io/tree/master/examples/chat
 var chatRoom;
-var numChatEvent = 0;
-var curentlyfocused = 1;
-
-var title = document.title;
-
-function newUpdate() {
-  updateIntervalId = setInterval(changeTitle, 2000);
-}
-
-// Set up event handler for the window focus event
-$('#chat-container').focusin(function () {
-  curentlyfocused = 1;
-  numChatEvent = 0;
-  document.title = title;
-});
-
-// Set up event handler for the window blur event
-$(window).focusout(function () {
-  curentlyfocused = 0;
-  numChatEvent = 0;
-});
-
-function newMessage () {
-  numChatEvent++;
-}
-
-$('#site-body').ready(function () {
-  newUpdate();
-  $('#chat-container').click(function () {
-    $('.inputMessage').focus();
-  });
-});
-
-function changeTitle() {
-  if ((numChatEvent > 0) && (!curentlyfocused)) {
-    var newTitle = '(' + numChatEvent + ') ' + title;
-    document.title = newTitle;
-  }
-}
 
 function setRoomForChat(room_input) {
   console.log("[Chat] Room will be", room_input);
@@ -163,7 +124,7 @@ $(function () {
       .text(data.message);
 
     if (!data.typing) {
-      newMessage();
+      newEventMessage();
     }
 
     var typingClass = data.typing ? 'typing' : '';
@@ -347,14 +308,14 @@ $(function () {
   // Whenever the server emits 'user joined', log it in the chat body
   socket.on('user joined', function (data) {
     log(data.username + ' joined');
-    newMessage();
+    newEventMessage();
     addParticipantsMessage(data);
   });
 
   // Whenever the server emits 'user left', log it in the chat body
   socket.on('user left', function (data) {
     log(data.username + ' left');
-    newMessage();
+    newEventMessage();
     console.log(data.username + ' left')
     addParticipantsMessage(data);
     removeChatTyping(data);
@@ -385,4 +346,46 @@ $(function () {
     log('attempt to reconnect has failed');
   });
 
+  
+  // Notification using web page title
+  var numChatEvent = 0;
+  var curentlyfocused = 1;
+
+  var title = document.title;
+
+  function newUpdate() {
+    updateIntervalId = setInterval(changeTitle, 2000);
+  }
+
+  // Set up event handler for the window focus event
+  $('#chat-container').focusin(function () {
+    curentlyfocused = 1;
+    numChatEvent = 0;
+    document.title = title;
+  });
+
+  // Set up event handler for the window blur event
+  $('#chat-container').focusout(function () {
+    curentlyfocused = 0;
+    numChatEvent = 0;
+  });
+
+  // Getting a new message to notify
+  function newEventMessage () {
+    numChatEvent++;
+  }
+
+  $('#site-body').ready(function () {
+    newUpdate();
+    $('#chat-container').click(function () {
+      $('.inputMessage').focus();
+    });
+  });
+
+  function changeTitle() {
+    if ((numChatEvent > 0) && (!curentlyfocused)) {
+      var newTitle = '(' + numChatEvent + ') ' + title;
+      document.title = newTitle;
+    }
+  }
 });
