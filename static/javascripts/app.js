@@ -522,7 +522,6 @@ function changeTrackGain(trackId, gain) {
   var knob = $('.instrument').eq(trackId).find(".dial");
   knob.val(gain.toString());
   knob.trigger('change');
-  console.log(gain)
 }
 
 
