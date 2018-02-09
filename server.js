@@ -28,9 +28,9 @@ var sequencerState = {
     Array(64).fill(0)
   ],
   sounds: [
-    'http://' + fullservername + '/assets/sounds/drum-samples/TR808/kick.mp3',
-    'http://' + fullservername + '/assets/sounds/drum-samples/TR808/snare.mp3',
-    'http://' + fullservername + '/assets/sounds/drum-samples/TR808/hihat.mp3'
+    '/assets/sounds/drum-samples/TR808/kick.mp3',
+    '/assets/sounds/drum-samples/TR808/snare.mp3',
+    '/assets/sounds/drum-samples/TR808/hihat.mp3'
   ],
   waves: [
     [false, false],
@@ -239,8 +239,6 @@ io.sockets.on('connection', function (socket) {
     });
   });
 });
-
-
 
 
 function updateActivity(datetime) {
