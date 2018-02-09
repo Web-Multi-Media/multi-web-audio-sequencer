@@ -217,10 +217,8 @@
     }
 
     $(function() {
-
-      var servername = '<%= fullservername %>';
-      console.log("connecting to " + servername + " room " + '<%= room %>');
-      socket = io.connect(servername);
+      console.log("connecting to room " + '<%= room %>');
+      socket = io.connect('/');
 
       socket.emit('room', '<%= room %>');
       setRoomForChat('<%= room %>');

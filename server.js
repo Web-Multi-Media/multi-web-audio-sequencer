@@ -269,7 +269,6 @@ app.get('/', (req, res) => {
   // var username = req.query.username;
   if (room) {
     res.render('index.ejs', {
-      fullservername: fullservername,
       room: room
     });
   } else {
