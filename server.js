@@ -50,7 +50,7 @@ var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
 
 //moteur de template
 app.set('view engine', 'ejs');
-
+console.log(__dirname)
 //middleware
 app.use(session);
 app.use('/assets', express.static(__dirname + '/static'));
