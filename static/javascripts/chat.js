@@ -1,46 +1,46 @@
 // Chat adapted from: https://github.com/socketio/socket.io/tree/master/examples/chat
-var chatRoom;
 
-function setRoomForChat(room_input) {
-  console.log("[Chat] Room will be", room_input);
-  chatRoom = room_input;
+function Chat() {
+  this.chatRoom = null;
+  this.fadeTime = null;
+  this.typingTimerLength = null;
+  this.colors = null;
+  this.usernameInput = null;
+  this.messages = null;
+  this.inputMessage = null; // Input message input box
+  this.loginPage = null; // The login page
+  this.chatPage = null; // The chatroom page
+
+  // Prompt for setting a username
+  this.username = null;
+  this.connected = null;
+  this.typing = null;
+  this.lastTypingTime = null;
+  this.currentInput = = null;
 }
 
-$(function () {
-  var FADE_TIME = 150; // ms
-  var TYPING_TIMER_LENGTH = 400; // ms
-  var COLORS = [
+Chat.prototype.init = function() {
+  this.fadeTime = 150; // ms
+  this.typingTimerLength = 400; // ms
+  this.colors = [
     '#e21400', '#91580f', '#f8a700', '#f78b00',
     '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
     '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
   ];
 
   // Initialize variables
-  var $window = $(window);
-  var $usernameInput = $('.usernameInput'); // Input for username
-  var $messages = $('.messages'); // Messages area
-  var $inputMessage = $('.inputMessage'); // Input message input box
+  this.window = $(window);
+  this.usernameInput = $('.usernameInput'); // Input for username
+  this.messages = $('.messages'); // Messages area
+  this.inputMessage = $('.inputMessage'); // Input message input box
 
-  var $loginPage = $('.login.page'); // The login page
-  var $chatPage = $('.chat.page'); // The chatroom page
+  this.loginPage = $('.login.page'); // The login page
+  this.chatPage = $('.chat.page'); // The chatroom page
 
-  // Prompt for setting a username
-  var username;
-  var connected = false;
-  var typing = false;
-  var lastTypingTime;
-  var $currentInput = $usernameInput.focus();
-
-
-  function addParticipantsMessage(data) {
-    var message = '';
-    if (data.numUsers === 1) {
-      message += "there's 1 participant";
-    } else {
-      message += "there are " + data.numUsers + " participants";
-    }
-    log(message);
-  }
+  this.connected = false;
+  this.typing = false;
+  this.lastTypingTime;
+  this.currentInput = $usernameInput.focus();
 
   //validate username 
   $('.usernameInput').addClass("red");
@@ -67,9 +67,25 @@ $(function () {
     $('.usernameInput').css("border-color", "transparent");
   });
 
+};
+
+Chat.prototype.setRoomForChat(room_input) {
+  console.log("[Chat] Room will be", room_input);
+  this.chatRoom = room_input;
+}
+
+Chat.prototype.addParticipantsMessage(data) {
+    var message = '';
+    if (data.numUsers === 1) {
+      message += "there's 1 participant";
+    } else {
+      message += "there are " + data.numUsers + " participants";
+    }
+    log(message);
+}
 
   // Sets the client's username
-  function setUsername() {
+Chat.prototype.setUsername() {
     username = cleanInput($usernameInput.val().trim());
     // If the username is valid
     if (username) {
@@ -81,10 +97,10 @@ $(function () {
       // Tell the server your username
       socket.emit('add user', username);
     }
-  }
+}
 
-  // Sends a chat message
-  function sendMessage() {
+// Sends a chat message
+Chat.prototype.sendMessage() {
     var message = $inputMessage.val();
     // Prevent markup from being injected into the message
     message = cleanInput(message);
@@ -99,16 +115,16 @@ $(function () {
       socket.emit('new message', ': '.concat(message));
       console.log('Chat message sent: ' + message)
     }
-  }
+}
 
-  // Log a message
-  function log(message, options) {
+// Log a message
+Chat.prototype.log(message, options) {
     var $el = $('<li>').addClass('log').text(message);
     addMessageElement($el, options);
-  }
+}
 
-  // Adds the visual chat message to the message list
-  function addChatMessage(data, options) {
+// Adds the visual chat message to the message list
+Chat.prototype.addChatMessage(data, options) {
     // Don't fade the message in if there is an 'X was typing'
     var $typingMessages = getTypingMessages(data);
     options = options || {};
@@ -135,7 +151,7 @@ $(function () {
 
     addMessageElement($messageDiv, options);
     $messageDiv.scrollTop = $messageDiv.scrollHeight;
-  }
+}
 
   // Adds the visual chat typing message
   function addChatTyping(data) {
@@ -388,4 +404,3 @@ $(function () {
       document.title = newTitle;
     }
   }
-});
