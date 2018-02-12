@@ -30,10 +30,10 @@
     <div class="row" id="room-container">
       <div class="col-md-8" style="padding-top: 10px; padding-bottom:10px;">
         <span style="font-size:14px;font-weight: bold;" id="room-number">Room:</span>
-        <a class="btn btn-success <% if(room==1){ %>active<% } %>" href="/?room=1">1</a>
-        <a class="btn btn-success <% if(room==2){ %>active<% } %>" href="/?room=2">2</a>
-        <a class="btn btn-success <% if(room==3){ %>active<% } %>" href="/?room=3">3</a>
-        <a class="btn btn-success <% if(room==4){ %>active<% } %>" href="/?room=4">4</a> &emsp;&emsp;
+        <a class="btn btn-success <% if(room==1){ %>active<% } %>" href="<%=base_path%>/?room=1">1</a>
+        <a class="btn btn-success <% if(room==2){ %>active<% } %>" href="<%=base_path%>/?room=2">2</a>
+        <a class="btn btn-success <% if(room==3){ %>active<% } %>" href="<%=base_path%>/?room=3">3</a>
+        <a class="btn btn-success <% if(room==4){ %>active<% } %>" href="<%=base_path%>/?room=4">4</a> &emsp;&emsp;
         <span style="font-size:14px;font-weight: bold;" id="room-number">Nickname:</span>
         <form id="nickname-form" action="javascript:void(0);" style="display: inline-block;">
           <input class="my-box-white usernameInput" style="width:160px;" type="text" placeholder="Enter nickname" maxlength="14" />
@@ -170,13 +170,13 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/wavesurfer.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/plugin/wavesurfer.regions.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/plugin/wavesurfer.timeline.min.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/jquery.knob.min.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/freesound.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/wave.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/kit.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/search.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/app.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/jquery.knob.min.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/freesound.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/wave.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/kit.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/impulse-response.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/search.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/app.js"></script>
   <script>
     
     function addPadClickEvent(socket, trackId = null) {
@@ -218,7 +218,7 @@
 
     $(function() {
       console.log("connecting to room " + '<%= room %>');
-      socket = io.connect('/');
+      socket = io.connect('/<%=base_path%>');
 
       socket.emit('room', '<%= room %>');
       setRoomForChat('<%= room %>');

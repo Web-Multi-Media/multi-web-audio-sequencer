@@ -11,7 +11,7 @@ var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 var eventEmitter = require('events').EventEmitter
 var hostname = process.env.MULT_WEB_SEQ_SERV || 'localhost';
-var base_path = process.env.BASE_PATH;
+var base_path = process.env.BASE_PATH || '';
 var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
 
 var fullservername = hostname + ':' + hostnamePort;
@@ -50,7 +50,7 @@ var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
 
 //moteur de template
 app.set('view engine', 'ejs');
-console.log(__dirname)
+
 //middleware
 app.use(session);
 app.use(base_path + '/assets', express.static(__dirname + '/static'));
@@ -284,6 +284,7 @@ app.get(base_path+'/', (req, res) => {
       fullservername: fullservername,
       roomUsers: roomUsers,
       roomConnectionsAgo: roomConnectionsAgo,
+      base_path: base_path
     });
   }
 });
