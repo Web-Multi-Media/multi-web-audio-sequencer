@@ -11,7 +11,7 @@ var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 var eventEmitter = require('events').EventEmitter
 var hostname = process.env.MULT_WEB_SEQ_SERV || 'localhost';
-var host = process.env.HOST;
+var base_path = process.env.BASE_PATH;
 var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
 
 var fullservername = hostname + ':' + hostnamePort;
@@ -265,13 +265,13 @@ function updateActivity(datetime) {
 }
 
 // VIEWS
-app.get(host+'/', (req, res) => {
+app.get(base_path+'/', (req, res) => {
   var room = req.query.room;
   // var username = req.query.username;
   if (room) {
     res.render('index.ejs', {
       room: room,
-      host: host
+      base_path: base_path
     });
   } else {
     var dateNow = new Date();
