@@ -264,7 +264,7 @@ function updateActivity(datetime) {
 }
 
 // VIEWS
-app.get('/sequencer', (req, res) => {
+app.get('/', (req, res) => {
   var room = req.query.room;
   // var username = req.query.username;
   if (room) {
