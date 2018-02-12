@@ -7,12 +7,12 @@ var session = require('express-session')({
 });
 var sharedsession = require("express-socket.io-session");
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 var eventEmitter = require('events').EventEmitter
 var hostname = process.env.MULT_WEB_SEQ_SERV || 'localhost';
 var base_path = process.env.BASE_PATH || '';
 var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
+var io = require('socket.io')(http, {path: base_path});
 
 var fullservername = hostname + ':' + hostnamePort;
 var rooms = ["1", "2", "3", "4"];
