@@ -12,10 +12,7 @@ var eventEmitter = require('events').EventEmitter
 var hostname = process.env.MULT_WEB_SEQ_SERV || 'localhost';
 var base_path = process.env.BASE_PATH || '';
 var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
-var io = require('socket.io')(http, {
-  path: base_path + '/socket.io',
-  secure: true
-});
+var io = require('socket.io')(http, {path: base_path + '/socket.io'});
 
 var fullservername = hostname + ':' + hostnamePort;
 var rooms = ["1", "2", "3", "4"];
