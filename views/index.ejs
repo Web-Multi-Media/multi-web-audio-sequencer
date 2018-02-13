@@ -218,12 +218,7 @@
 
     $(function() {
       console.log("connecting to room " + '<%= room %>');
-      socket = io.connect('/', {
-                  path: '<%=base_path%>/socket.io',
-                  secure: true,
-                  rejectUnauthorized: false,
-                  debug: true
-                  });
+      socket = io.connect('/', {path: '<%=base_path%>/socket.io'});
 
       socket.emit('room', '<%= room %>');
       setRoomForChat('<%= room %>');
