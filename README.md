@@ -2,7 +2,7 @@
 A web collaborative step sequencer using [Freesound](https://freesound.org/) content.
 Built using Express.js, Web Audio API, Socket.io.
 
-The sequencer is available [here](http://the.ndero.ovh:8080/).
+The sequencer is available [here](https://labs.freesound.org/sequencer/).
 
 Step sequencer inspired by [Catarak Web Audio Sequencer](https://github.com/catarak/web-audio-sequencer).
 
