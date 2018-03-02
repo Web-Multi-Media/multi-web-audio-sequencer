@@ -12,6 +12,7 @@ var lastDrawTime = -1;
 var rhythmIndex = 0;
 var timeoutId;
 var testBuffer = null;
+var isrecording = false;
 
 var currentKit = null;
 var wave = null;
@@ -131,9 +132,26 @@ function CheckAndTrigerPlayPause() {
 //  }
 //})
 
+function CheckAndTrigerRecord() {
+   if(!isrecording){
+       console.log("Record is triggered");
+       isrecording=1;
+   }
+   else{
+       console.log("Record is untriggered");
+       isrecording=0;
+   }    
+}
+
 function playPauseListener() {
   $('#play-pause').click(function () {
     CheckAndTrigerPlayPause();
+  });
+}
+
+function RecordListener() {
+  $('#record').click(function () {
+    CheckAndTrigerRecord();
   });
 }
 
@@ -208,6 +226,9 @@ function init() {
 
 function initializeAudioNodes() {
   context = new webkitAudioContext();
+  var dest = context.createMediaStreamDestination();
+  var mediaRecorder = new MediaRecorder(dest.stream);
+  
   var finalMixNode;
   if (context.createDynamicsCompressor && COMPRESSOR_ACTIVATED) {
     // Create a dynamics compressor to sweeten the overall mix.
