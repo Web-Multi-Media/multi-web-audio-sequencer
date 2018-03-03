@@ -5,6 +5,8 @@ var compressor;
 var masterGainNode;
 var effectLevelNode;
 var lowPassFilterNode;
+var mediaRecorder;
+var chunks = [];
 
 var noteTime;
 var startTime;
@@ -36,6 +38,7 @@ $(function () {
   addNewTrackEvent();
   addChangeSequenceLengthEvent();
   playPauseListener();
+  RecordListener();
   lowPassFilterListener();
   reverbListener();
   createLowPassFilterSliders();
@@ -133,14 +136,16 @@ function CheckAndTrigerPlayPause() {
 //})
 
 function CheckAndTrigerRecord() {
-   if(!isrecording){
-       console.log("Record is triggered");
-       isrecording=1;
-   }
-   else{
-       console.log("Record is untriggered");
-       isrecording=0;
-   }    
+ if(!isrecording){
+   console.log("Record is triggered");
+   isrecording=1;
+   mediaRecorder.start();
+ }
+ else{
+   console.log("Record is untriggered");
+   isrecording=0;
+   mediaRecorder.stop();
+ }    
 }
 
 function playPauseListener() {
@@ -224,10 +229,23 @@ function init() {
   loadImpulseResponses();
 }
 
+
+
 function initializeAudioNodes() {
   context = new webkitAudioContext();
   var dest = context.createMediaStreamDestination();
-  var mediaRecorder = new MediaRecorder(dest.stream);
+  mediaRecorder = new MediaRecorder(dest.stream);
+
+  mediaRecorder.ondataavailable = function(evt) {
+    // push each chunk (blobs) in an array
+    chunks.push(evt.data);
+  };
+
+  mediaRecorder.onstop = function(evt) {
+    // Make blob out of our blobs, and open it.
+    var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+    document.querySelector("audio").src = URL.createObjectURL(blob);
+  };
   
   var finalMixNode;
   if (context.createDynamicsCompressor && COMPRESSOR_ACTIVATED) {
