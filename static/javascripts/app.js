@@ -6,6 +6,7 @@ var masterGainNode;
 var effectLevelNode;
 var lowPassFilterNode;
 var mediaRecorder;
+var recordingDest;
 var chunks = [];
 
 var noteTime;
@@ -233,16 +234,14 @@ function init() {
 
 function initializeAudioNodes() {
   context = new webkitAudioContext();
-  var dest = context.createMediaStreamDestination();
-  mediaRecorder = new MediaRecorder(dest.stream);
+  recordingDest = context.createMediaStreamDestination();
+  mediaRecorder = new MediaRecorder(recordingDest.stream);
 
   mediaRecorder.ondataavailable = function(evt) {
+    console.log("Pushing Data");
     // push each chunk (blobs) in an array
     chunks.push(evt.data);
-  };
-
-  mediaRecorder.onstop = function(evt) {
-    // Make blob out of our blobs, and open it.
+    console.log(evt.data);
     var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
     document.querySelector("audio").src = URL.createObjectURL(blob);
   };
@@ -316,6 +315,7 @@ function playNote(buffer, noteTime, startTime, endTime, gainNode) {
 
   voice.connect(gainNode)
   gainNode.connect(currentLastNode);
+  gainNode.connect(recordingDest);
   voice.start(noteTime, startTime, endTime - startTime);
 }
 
