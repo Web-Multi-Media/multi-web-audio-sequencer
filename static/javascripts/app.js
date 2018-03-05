@@ -140,11 +140,13 @@ function CheckAndTrigerRecord() {
  if(!isrecording){
    console.log("Record is triggered");
    isrecording=1;
+   $('#record').css('color','red');
    mediaRecorder.start();
  }
  else{
    console.log("Record is untriggered");
    isrecording=0;
+   $('#record').css('color','white');
    mediaRecorder.stop();
  }    
 }
