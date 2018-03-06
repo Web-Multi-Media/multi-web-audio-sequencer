@@ -163,6 +163,14 @@ function RecordListener() {
   });
 }
 
+function OnDataAvailableInRecorderFunc(evt) {
+    // push each chunk (blobs) in an array
+    chunks.push(evt.data);
+    console.log(evt.data);
+    var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+    document.querySelector("audio").src = URL.createObjectURL(blob);
+};
+
 
 function TranslateStateInActions(sequencerState) {
   var trackNames = sequencerState['trackNames'];
@@ -239,14 +247,7 @@ function initializeAudioNodes() {
   recordingDest = context.createMediaStreamDestination();
   mediaRecorder = new MediaRecorder(recordingDest.stream);
 
-  mediaRecorder.ondataavailable = function(evt) {
-    console.log("Pushing Data");
-    // push each chunk (blobs) in an array
-    chunks.push(evt.data);
-    console.log(evt.data);
-    var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
-    document.querySelector("audio").src = URL.createObjectURL(blob);
-  };
+  mediaRecorder.ondataavailable = OnDataAvailableInRecorderFunc;
   
   var finalMixNode;
   if (context.createDynamicsCompressor && COMPRESSOR_ACTIVATED) {
