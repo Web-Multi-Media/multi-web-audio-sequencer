@@ -169,7 +169,7 @@ function OnDataAvailableInRecorderFunc(evt) {
     chunks.push(evt.data);    
     var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
     var soundSrc = URL.createObjectURL(blob);
-    var NewHtmlEl = '<audio src=' + soundSrc+' controls=controls></audio><br>';
+    var NewHtmlEl = '<audio src=' + soundSrc+' controls=controls></audio><a href=' + soundSrc + ' download="exported_loop.ogg">Download</a><br>';
     $(NewHtmlEl).appendTo(".exported-audio");
     chunks = [];
   }
