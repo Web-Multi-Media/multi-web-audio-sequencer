@@ -168,7 +168,10 @@ function OnDataAvailableInRecorderFunc(evt) {
   if(evt.data.size>0){
     chunks.push(evt.data);    
     var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
-    document.querySelector("audio").src = URL.createObjectURL(blob);
+    var soundSrc = URL.createObjectURL(blob);
+    var NewHtmlEl = '<audio src=' + soundSrc+' controls=controls></audio><br>';
+    $(NewHtmlEl).appendTo(".exported-audio");
+    chunks = [];
   }
 };
 
