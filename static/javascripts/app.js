@@ -164,11 +164,12 @@ function RecordListener() {
 }
 
 function OnDataAvailableInRecorderFunc(evt) {
-    // push each chunk (blobs) in an array
-    chunks.push(evt.data);
-    console.log(evt.data);
+  // push each chunk (blobs) in an array
+  if(evt.data.size>0){
+    chunks.push(evt.data);    
     var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
     document.querySelector("audio").src = URL.createObjectURL(blob);
+  }
 };
 
 
