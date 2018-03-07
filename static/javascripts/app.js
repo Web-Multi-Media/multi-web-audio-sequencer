@@ -244,7 +244,6 @@ function init() {
   loadImpulseResponses();
 }
 
-
 function initializeAudioNodes() {
   context = new webkitAudioContext();
   recordingDest = context.createMediaStreamDestination();
