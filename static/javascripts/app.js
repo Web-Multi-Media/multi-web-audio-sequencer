@@ -114,7 +114,7 @@ function changeQuality(event, ui) {
   lowPassFilterNode.Q.value = ui.value * 30;
 }
 
-function CheckAndTrigerPlayPause() {
+function checkAndTrigerPlayPause() {
   var $span = $('#play-pause').children("span");
   if ($span.hasClass('glyphicon-play')) {
     $span.removeClass('glyphicon-play');
@@ -136,7 +136,7 @@ function CheckAndTrigerPlayPause() {
 //  }
 //})
 
-function CheckAndTrigerRecord() {
+function checkAndTrigerRecord() {
  if(!isrecording){
    console.log("Record is triggered");
    isrecording=1;
@@ -153,24 +153,24 @@ function CheckAndTrigerRecord() {
 
 function playPauseListener() {
   $('#play-pause').click(function () {
-    CheckAndTrigerPlayPause();
+    checkAndTrigerPlayPause();
   });
 }
 
 function RecordListener() {
   $('#record').click(function () {
-    CheckAndTrigerRecord();
+    checkAndTrigerRecord();
   });
 }
 
-function OnDataAvailableInRecorderFunc(evt) {
+function onDataAvailableInRecorderFunc(evt) {
   // push each chunk (blobs) in an array
   if(evt.data.size>0){
     chunks.push(evt.data);    
     var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
     var soundSrc = URL.createObjectURL(blob);
-    var NewHtmlEl = '<audio src=' + soundSrc+' controls=controls></audio><a href=' + soundSrc + ' download="exported_loop.ogg">Download</a><br>';
-    $(NewHtmlEl).appendTo(".exported-audio");
+    var newHtmlEl = '<audio src=' + soundSrc+' controls=controls></audio><a href=' + soundSrc + ' download="exported_loop.ogg">Download</a><br>';
+    $(newHtmlEl).appendTo(".exported-audio");
     chunks = [];
   }
 };
@@ -245,13 +245,12 @@ function init() {
 }
 
 
-
 function initializeAudioNodes() {
   context = new webkitAudioContext();
   recordingDest = context.createMediaStreamDestination();
   mediaRecorder = new MediaRecorder(recordingDest.stream);
 
-  mediaRecorder.ondataavailable = OnDataAvailableInRecorderFunc;
+  mediaRecorder.ondataavailable = onDataAvailableInRecorderFunc;
   
   var finalMixNode;
   if (context.createDynamicsCompressor && COMPRESSOR_ACTIVATED) {
