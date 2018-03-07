@@ -137,18 +137,17 @@ function checkAndTrigerPlayPause() {
 //})
 
 function checkAndTrigerRecord() {
- if(!isrecording){
-   console.log("Record is triggered");
-   isrecording=1;
-   $('#record').css('color','red');
-   mediaRecorder.start();
- }
- else{
-   console.log("Record is untriggered");
-   isrecording=0;
-   $('#record').css('color','white');
-   mediaRecorder.stop();
- }    
+  if (!isrecording) {
+    console.log("Record is triggered");
+    isrecording = 1;
+    $('#record').css('color', 'red');
+    mediaRecorder.start();
+  } else {
+    console.log("Record is untriggered");
+    isrecording = 0;
+    $('#record').css('color', 'white');
+    mediaRecorder.stop();
+  }
 }
 
 function playPauseListener() {
@@ -165,16 +164,17 @@ function RecordListener() {
 
 function onDataAvailableInRecorderFunc(evt) {
   // push each chunk (blobs) in an array
-  if(evt.data.size>0){
-    chunks.push(evt.data);    
-    var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+  if (evt.data.size > 0) {
+    chunks.push(evt.data);
+    var blob = new Blob(chunks, {
+      'type': 'audio/ogg; codecs=opus'
+    });
     var soundSrc = URL.createObjectURL(blob);
-    var newHtmlEl = '<audio src=' + soundSrc+' controls=controls></audio><a href=' + soundSrc + ' download="exported_loop.ogg">  Download</a><br>';
+    var newHtmlEl = '<audio src=' + soundSrc + ' controls=controls></audio><a href=' + soundSrc + ' download="exported_loop.ogg">  Download</a><br>';
     $(newHtmlEl).appendTo(".exported-audio");
     chunks = [];
   }
-};
-
+}
 
 function TranslateStateInActions(sequencerState) {
   var trackNames = sequencerState['trackNames'];
@@ -192,7 +192,7 @@ function TranslateStateInActions(sequencerState) {
     for (var i = numLocalTracks - 1; i >= 0; i--) {
       deleteTrack(i);
     }
-    
+
     // change tempo
     changeTempo(tempo);
 
@@ -250,7 +250,7 @@ function initializeAudioNodes() {
   mediaRecorder = new MediaRecorder(recordingDest.stream);
 
   mediaRecorder.ondataavailable = onDataAvailableInRecorderFunc;
-  
+
   var finalMixNode;
   if (context.createDynamicsCompressor && COMPRESSOR_ACTIVATED) {
     // Create a dynamics compressor to sweeten the overall mix.
@@ -396,8 +396,8 @@ function initializeTempo() {
 }
 
 function changeTempo(tempo_input) {
-    tempo = tempo_input;
-    $("#tempo-input").val(tempo_input);
+  tempo = tempo_input;
+  $("#tempo-input").val(tempo_input);
 }
 
 function changeTempoListener() {
@@ -546,11 +546,11 @@ function addKnob(trackId, gain) {
     step: 1,
     displayInput: false,
     thickness: 0.5,
-    change : function(v) {
+    change: function (v) {
       var trackId = $(this.$).parents('.instrument').index();
       currentKit.gainNodes[trackId].gain.value = linear2db(v);
     },
-    release: function(v) {
+    release: function (v) {
       var trackId = $(this.$).parents('.instrument').index();
       currentKit.gainNodes[trackId].gain.value = linear2db(v);
       // send db gain value to server
@@ -647,7 +647,7 @@ function deleteTrack(trackId) {
 
   // delete wave
   currentKit.waves.splice(trackId, 1);
-  
+
   // delete gain
   currentKit.gains.splice(trackId, 1);
 }
