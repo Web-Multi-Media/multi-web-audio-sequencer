@@ -649,7 +649,7 @@ function deleteTrack(trackId) {
   currentKit.waves.splice(trackId, 1);
 
   // delete gain
-  currentKit.gains.splice(trackId, 1);
+  currentKit.gainNodes.splice(trackId, 1);
 }
 
 
