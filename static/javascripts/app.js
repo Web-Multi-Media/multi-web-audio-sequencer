@@ -170,7 +170,7 @@ function onDataAvailableInRecorderFunc(evt) {
       'type': 'audio/ogg; codecs=opus'
     });
     var soundSrc = URL.createObjectURL(blob);
-    var newHtmlEl = '<div style="height:40px; margin:3px;"><audio src=' + soundSrc + ' controls=controls></audio><span style="position: absolute; margin:3px;" class="btn btn-success" href=' + soundSrc + ' download="exported_loop.ogg">Download</span><br><div>';
+    var newHtmlEl = '<div style="height:40px; margin:3px;"><audio src=' + soundSrc + ' controls=controls></audio><a style="position: absolute; margin:3px;" class="btn btn-success" href=' + soundSrc + ' download="exported_loop.ogg">Download</a><br><div>';
     $(newHtmlEl).appendTo(".exported-audio");
     chunks = [];
   }
