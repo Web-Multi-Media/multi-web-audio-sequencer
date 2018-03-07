@@ -5,6 +5,9 @@ var compressor;
 var masterGainNode;
 var effectLevelNode;
 var lowPassFilterNode;
+var mediaRecorder;
+var recordingDest;
+var chunks = [];
 
 var noteTime;
 var startTime;
@@ -12,6 +15,7 @@ var lastDrawTime = -1;
 var rhythmIndex = 0;
 var timeoutId;
 var testBuffer = null;
+var isrecording = false;
 
 var currentKit = null;
 var wave = null;
@@ -35,6 +39,7 @@ $(function () {
   addNewTrackEvent();
   addChangeSequenceLengthEvent();
   playPauseListener();
+  RecordListener();
   lowPassFilterListener();
   reverbListener();
   createLowPassFilterSliders();
@@ -109,7 +114,7 @@ function changeQuality(event, ui) {
   lowPassFilterNode.Q.value = ui.value * 30;
 }
 
-function CheckAndTrigerPlayPause() {
+function checkAndTrigerPlayPause() {
   var $span = $('#play-pause').children("span");
   if ($span.hasClass('glyphicon-play')) {
     $span.removeClass('glyphicon-play');
@@ -131,12 +136,45 @@ function CheckAndTrigerPlayPause() {
 //  }
 //})
 
+function checkAndTrigerRecord() {
+  if (!isrecording) {
+    console.log("Record is triggered");
+    isrecording = 1;
+    $('#record').css('color', 'red');
+    mediaRecorder.start();
+  } else {
+    console.log("Record is untriggered");
+    isrecording = 0;
+    $('#record').css('color', 'white');
+    mediaRecorder.stop();
+  }
+}
+
 function playPauseListener() {
   $('#play-pause').click(function () {
-    CheckAndTrigerPlayPause();
+    checkAndTrigerPlayPause();
   });
 }
 
+function RecordListener() {
+  $('#record').click(function () {
+    checkAndTrigerRecord();
+  });
+}
+
+function onDataAvailableInRecorderFunc(evt) {
+  // push each chunk (blobs) in an array
+  if (evt.data.size > 0) {
+    chunks.push(evt.data);
+    var blob = new Blob(chunks, {
+      'type': 'audio/ogg; codecs=opus'
+    });
+    var soundSrc = URL.createObjectURL(blob);
+    var newHtmlEl = '<div style="height:40px; margin:3px;"><audio src=' + soundSrc + ' controls=controls></audio><a style="position: absolute; margin:3px;" class="btn btn-success" href=' + soundSrc + ' download="exported_loop.ogg">Download</a><br><div>';
+    $(newHtmlEl).appendTo(".exported-audio");
+    chunks = [];
+  }
+}
 
 function TranslateStateInActions(sequencerState) {
   var trackNames = sequencerState['trackNames'];
@@ -154,7 +192,7 @@ function TranslateStateInActions(sequencerState) {
     for (var i = numLocalTracks - 1; i >= 0; i--) {
       deleteTrack(i);
     }
-    
+
     // change tempo
     changeTempo(tempo);
 
@@ -208,6 +246,11 @@ function init() {
 
 function initializeAudioNodes() {
   context = new webkitAudioContext();
+  recordingDest = context.createMediaStreamDestination();
+  mediaRecorder = new MediaRecorder(recordingDest.stream);
+
+  mediaRecorder.ondataavailable = onDataAvailableInRecorderFunc;
+
   var finalMixNode;
   if (context.createDynamicsCompressor && COMPRESSOR_ACTIVATED) {
     // Create a dynamics compressor to sweeten the overall mix.
@@ -277,6 +320,7 @@ function playNote(buffer, noteTime, startTime, endTime, gainNode) {
 
   voice.connect(gainNode)
   gainNode.connect(currentLastNode);
+  gainNode.connect(recordingDest);
   voice.start(noteTime, startTime, endTime - startTime);
 }
 
@@ -352,8 +396,8 @@ function initializeTempo() {
 }
 
 function changeTempo(tempo_input) {
-    tempo = tempo_input;
-    $("#tempo-input").val(tempo_input);
+  tempo = tempo_input;
+  $("#tempo-input").val(tempo_input);
 }
 
 function changeTempoListener() {
@@ -502,11 +546,11 @@ function addKnob(trackId, gain) {
     step: 1,
     displayInput: false,
     thickness: 0.5,
-    change : function(v) {
+    change: function (v) {
       var trackId = $(this.$).parents('.instrument').index();
       currentKit.gainNodes[trackId].gain.value = linear2db(v);
     },
-    release: function(v) {
+    release: function (v) {
       var trackId = $(this.$).parents('.instrument').index();
       currentKit.gainNodes[trackId].gain.value = linear2db(v);
       // send db gain value to server
@@ -603,9 +647,9 @@ function deleteTrack(trackId) {
 
   // delete wave
   currentKit.waves.splice(trackId, 1);
-  
+
   // delete gain
-  currentKit.gains.splice(trackId, 1);
+  currentKit.gainNodes.splice(trackId, 1);
 }
 
 

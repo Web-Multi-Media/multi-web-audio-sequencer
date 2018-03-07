@@ -48,6 +48,9 @@
         <button id="play-pause" type="button" class="btn btn-success">
           <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
         </button>
+        <button id="record" type="button" class="btn btn-success">
+          <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
+        </button>
         <span class="tempo-container">
           <label >Tempo:</label>
           <input id="tempo-input" disabled>
@@ -130,6 +133,14 @@
           <ul class="messages"></ul>
         </div>
         <input class="inputMessage" placeholder="Type here..." />
+      </div>
+    </div>
+    
+    <!--   EXPORT CONTAINER    -->
+    <div class="row" id="export-container" style="padding-top: 10px; padding-bottom:10px;">
+      <div class="col-md-6 export">
+        <label >Exported audio:</label>
+        <div class="exported-audio"></div>
       </div>
     </div>
     <br>
