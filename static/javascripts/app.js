@@ -406,13 +406,14 @@ function initializeTempo() {
 function changeTempo(tempo_input) {
   tempo = tempo_input;
   $("#tempo-input").val(tempo_input);
+  currentSequencerState.tempo = tempo;
 }
 
 function changeTempoListener() {
   $("#increase-tempo").click(function () {
     if (tempo < TEMPO_MAX) {
       tempo += TEMPO_STEP;
-      $("#tempo-input").val(tempo);
+      changeTempo(tempo);
       sendTempo(tempo);
     }
   });
@@ -420,7 +421,7 @@ function changeTempoListener() {
   $("#decrease-tempo").click(function () {
     if (tempo > TEMPO_MIN) {
       tempo -= TEMPO_STEP;
-      $("#tempo-input").val(tempo);
+      changeTempo(tempo);
       sendTempo(tempo);
     }
   });
