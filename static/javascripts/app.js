@@ -140,7 +140,7 @@ function checkAndTrigerPlayPause() {
 //})
 
 function checkAndTrigerRecord() {
-  if (!isrecording) {
+  if (!isRecording) {
     console.log("Record is triggered");
     isRecording = 1;
     $('#record').css('color', 'red');
