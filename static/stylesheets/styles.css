@@ -215,3 +215,7 @@ a {
 .slider {
   width: 315px !important;
 }
+
+.room-card {
+  margin-top: 10px;
+}
