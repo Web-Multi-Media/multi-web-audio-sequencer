@@ -346,7 +346,7 @@ function schedule() {
     }
     advanceNote();
   }
-  timeoutId = requestAnimationFrame(schedule)
+  timeoutId = setTimeout(schedule, 50);
 }
 
 function drawPlayhead(xindex) {
