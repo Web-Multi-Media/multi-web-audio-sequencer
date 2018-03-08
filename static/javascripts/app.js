@@ -730,3 +730,9 @@ function addRotateTriangleEvent(trackId) {
     $('.instrument').eq(trackId).find(".glyphicon").toggleClass('rotation');
   });
 }
+
+
+// Presets
+function saveCurrentSequencerstatePreset(presetName) {
+  sendSequencerPreset(currentSequencerState, presetName);
+}
