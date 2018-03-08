@@ -25,7 +25,7 @@ var reverbImpulseResponse = null;
 var tempo = 120;
 var TEMPO_MAX = 200;
 var TEMPO_MIN = 40;
-var TEMPO_STEP = 4;
+var TEMPO_STEP = 1;
 var MAXLENGTH = 64;
 var COMPRESSOR_ACTIVATED = false;
 
