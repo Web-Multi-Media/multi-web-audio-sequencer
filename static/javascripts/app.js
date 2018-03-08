@@ -519,11 +519,11 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
       wave.reload();
     }
   });
-
+  console.log(startTime, endTime)
   // load buffer
   if (soundUrl) {
     currentKit.loadSample(soundUrl, trackId);
-    if (startTime) {
+    if (startTime !== 'null' && startTime !== false ) {
       wave.startTime = startTime;
       wave.endTime = endTime;
     }
