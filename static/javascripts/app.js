@@ -392,7 +392,7 @@ function handlePlay(event) {
 }
 
 function handleStop(event) {
-  cancelAnimationFrame(timeoutId);
+  clearTimeout(timeoutId);
   $(".pad").removeClass("playing");
 }
 
