@@ -277,6 +277,8 @@
         var endTime = message[2];
         currentKit.waves[trackId].setStart(startTime);
         currentKit.waves[trackId].setEnd(endTime);
+        // update sequencer state
+        currentSequencerState.waves[trackId] = [startTime, endTime];
       });
       
       // on change sequence length
