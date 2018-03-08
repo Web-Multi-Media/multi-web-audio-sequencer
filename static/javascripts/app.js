@@ -666,6 +666,13 @@ function deleteTrack(trackId) {
 
   // delete gain
   currentKit.gainNodes.splice(trackId, 1);
+  
+  // update sequencer state
+  currentSequencerState.trackNames.splice(trackId, 1);
+  currentSequencerState.sounds.splice(trackId, 1);
+  currentSequencerState.pads.splice(trackId, 1);
+  currentSequencerState.waves.splice(trackId, 1);
+  currentSequencerState.gains.splice(trackId, 1);
 }
 
 
