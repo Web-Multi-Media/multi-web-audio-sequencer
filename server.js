@@ -15,9 +15,9 @@ var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
 var io = require('socket.io')(http, {path: base_path + '/socket.io'});
 
 var fullservername = hostname + ':' + hostnamePort;
-var rooms = ["1", "2", "3", "4"];
-var roomUsers = [[], [], [], []];
-var roomLastConnections = [null, null, null, null];
+var rooms = ["1", "2", "3", "4", "5", "6", "7", "8"];
+var roomUsers = [[], [], [], [], [], [], [], []];
+var roomLastConnections = [null, null, null, null, null, null, null, null];
 
 var sequencerState = {
   sequenceLength: 16,
@@ -42,9 +42,14 @@ var sequencerState = {
 };
 
 var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
-                      JSON.parse(JSON.stringify(sequencerState)),
-                      JSON.parse(JSON.stringify(sequencerState)),
-                      JSON.parse(JSON.stringify(sequencerState))];
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                      ];
 
 
 
