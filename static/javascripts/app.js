@@ -463,6 +463,13 @@ function addNewTrackDetails() {
 
 function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6) {
   var uniqueTrackId = Date.now();
+  
+  // update sequencer state
+  currentSequencerState.trackNames[trackId] = trackName;
+  currentSequencerState.pads[trackId] = Array(64).fill(0);
+  currentSequencerState.sounds[trackId] = soundUrl;
+  currentSequencerState.waves[trackId] = [startTime, endTime];
+  currentSequencerState.gains[trackId] = gain;
 
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
