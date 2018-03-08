@@ -46,6 +46,7 @@ var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
                       JSON.parse(JSON.stringify(sequencerState)),
                       JSON.parse(JSON.stringify(sequencerState))];
 
+var sequencerPresets = [];
 
 
 //moteur de template
@@ -165,8 +166,17 @@ io.sockets.on('connection', function (socket) {
       sequencerStates[room].gains[message[0]] = message[1];
       socket.in(room).broadcast.emit('sendGain', message);
     });
+    
+    // SAVE PRESET
+    socket.on('savePreset', function (message) {
+      console.log('recieve save preset: ' + message[1]);
+      var presetName = message[1];
+      var sequencerPresetState = message[0];
+      sequencerPresets.push({[presetName]: sequencerPresetState});
+      // TODO: save in a file
+    });
 
-
+    
     // CHAT
     // when the client emits 'new message', this listens and executes
     socket.on('new message', function (data) {

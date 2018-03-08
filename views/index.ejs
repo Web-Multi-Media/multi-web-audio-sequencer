@@ -226,6 +226,10 @@
     function sendTrackGain(trackId, gain) {
       socket.emit('gain', [trackId, gain]);
     }
+    
+    function sendSequencerPreset(sequencerState, presetName) {
+      socket.emit('savePreset', [sequencerState, presetName]);
+    }
 
     $(function() {
       console.log("connecting to room " + '<%= room %>');
