@@ -519,7 +519,7 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
       wave.reload();
     }
   });
-  console.log(startTime, endTime)
+
   // load buffer
   if (soundUrl) {
     currentKit.loadSample(soundUrl, trackId);

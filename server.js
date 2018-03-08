@@ -29,9 +29,9 @@ var sequencerState = {
     Array(64).fill(0)
   ],
   sounds: [
-    base_path + '/assets/sounds/drum-samples/TR808/kick.mp3',
-    base_path + '/assets/sounds/drum-samples/TR808/snare.mp3',
-    base_path + '/assets/sounds/drum-samples/TR808/hihat.mp3'
+    base_path + '/assets/sounds/drum-samples/TR808/kick.ogg',
+    base_path + '/assets/sounds/drum-samples/TR808/snare.ogg',
+    base_path + '/assets/sounds/drum-samples/TR808/hihat.ogg'
   ],
   waves: [
     [false, false],
@@ -41,7 +41,9 @@ var sequencerState = {
   gains: [-6, -6, -6]
 };
 
-var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
+var preset = require('./presets/0.json');
+
+var sequencerStates = [preset,
                        JSON.parse(JSON.stringify(sequencerState)),
                        JSON.parse(JSON.stringify(sequencerState)),
                        JSON.parse(JSON.stringify(sequencerState)),
