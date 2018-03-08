@@ -543,10 +543,6 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
 
 
 // gain knob
-function linear2db(x) {
-  return Math.pow(10, (x / 20));
-}
-
 function addKnob(trackId, gain) {
   var knob = $('.instrument').eq(trackId).find(".dial");
   knob.knob({
@@ -559,18 +555,18 @@ function addKnob(trackId, gain) {
     thickness: 0.5,
     change: function (v) {
       var trackId = $(this.$).parents('.instrument').index();
-      currentKit.gainNodes[trackId].gain.value = linear2db(v);
+      currentKit.changeGainNodeValue(trackId, v);
     },
     release: function (v) {
       var trackId = $(this.$).parents('.instrument').index();
-      currentKit.gainNodes[trackId].gain.value = linear2db(v);
+      currentKit.changeGainNodeValue(trackId, v);
       // send db gain value to server
       sendTrackGain(trackId, v)
     }
   });
   knob.val(gain.toString());
   knob.trigger('change');
-  currentKit.gainNodes[trackId].gain.value = linear2db(gain);
+  currentKit.changeGainNodeValue(trackId, gain);
 }
 
 function changeTrackGain(trackId, gain) {
