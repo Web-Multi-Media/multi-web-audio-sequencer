@@ -185,17 +185,17 @@ function TranslateStateInActions(sequencerState) {
   var sequenceLength = sequencerState['sequenceLength'];
   var gains = sequencerState['gains'];
   var tempo = sequencerState['tempo'];
-  
-  currentSequencerState = sequencerState;
 
   // check if the tracks are already loaded
-  if (sequencerState.trackNames.length != $('.instrument').length) {
+  if (JSON.stringify(sequencerState) != JSON.stringify(currentSequencerState)) {
     // Delete all existing tracks
     var numLocalTracks = $('.instrument').length;
     for (var i = numLocalTracks - 1; i >= 0; i--) {
       deleteTrack(i);
     }
-
+    
+    currentSequencerState = sequencerState;
+    
     // change tempo
     changeTempo(tempo);
 
@@ -729,5 +729,9 @@ function addRotateTriangleEvent(trackId) {
 
 // Presets
 function saveCurrentSequencerstatePreset(presetName) {
-  sendSequencerPreset(currentSequencerState, presetName);
+  sendSequencerPreset(JSON.stringify(currentSequencerState), presetName);
+}
+
+function loadSequencerStatePreset(sequencerPresetState) {
+  TranslateStateInActions(Object.values(JSON.parse(sequencerPresetState))[0]);
 }

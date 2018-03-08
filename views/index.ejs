@@ -231,6 +231,10 @@
       socket.emit('savePreset', [sequencerState, presetName]);
     }
 
+    function loadSequencerPreset(presetId) {
+      socket.emit('loadPreset', presetId);
+    }
+    
     $(function() {
       console.log("connecting to room " + '<%= room %>');
       socket = io.connect('/', {path: '<%=base_path%>/socket.io'});
@@ -295,6 +299,12 @@
         var trackId = message[0];
         var gain = message[1];
         changeTrackGain(trackId, gain)
+      });
+      
+      // on receive sequencer preset
+      socket.on('sendSequencerPreset', function(message) {
+        console.log('preset: ' + message);
+        loadSequencerStatePreset(message);
       });
     })
   </script>
