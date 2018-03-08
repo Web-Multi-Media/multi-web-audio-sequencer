@@ -370,7 +370,7 @@ function drawPlayhead(xindex) {
 
 function advanceNote() {
   // Advance time by a 16th note...
-  tempo = Number($("#tempo-input").val());
+  tempo = currentSequencerState.tempo;
   var secondsPerBeat = 60.0 / tempo;
   rhythmIndex++;
   if (rhythmIndex == currentKit.sequenceLength) {
