@@ -18,6 +18,7 @@ var testBuffer = null;
 var isRecording = false;
 var isPlaying = false;
 
+var currentState = null;
 var currentKit = null;
 var wave = null;
 var reverbImpulseResponse = null;
@@ -187,6 +188,8 @@ function TranslateStateInActions(sequencerState) {
   var sequenceLength = sequencerState['sequenceLength'];
   var gains = sequencerState['gains'];
   var tempo = sequencerState['tempo'];
+  
+  currentState = sequencerState;
 
   // check if the tracks are already loaded
   if (sequencerState.trackNames.length != $('.instrument').length) {
@@ -335,11 +338,9 @@ function schedule() {
 
   while (noteTime < currentTime + 0.200) {
     var contextPlayTime = noteTime + startTime;
-    var $currentPads = $(".column_" + rhythmIndex);
-    $currentPads.each(function () {
-      if ($(this).hasClass("selected")) {
-        var trackId = $(this).parents('.instrument').index();
-        var wave = currentKit.waves[trackId];
+    currentState.pads.forEach(function (entry, trackId) {
+      if (entry[rhythmIndex] == 1) {
+        wave = currentKit.waves[trackId];
         playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
       }
     });
