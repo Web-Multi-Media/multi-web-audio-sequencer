@@ -17,7 +17,7 @@ var timeoutId;
 var testBuffer = null;
 var isrecording = false;
 
-var currentState = null;
+var currentSequencerState = null;
 var currentKit = null;
 var wave = null;
 var reverbImpulseResponse = null;
@@ -186,7 +186,7 @@ function TranslateStateInActions(sequencerState) {
   var gains = sequencerState['gains'];
   var tempo = sequencerState['tempo'];
   
-  currentState = sequencerState;
+  currentSequencerState = sequencerState;
 
   // check if the tracks are already loaded
   if (sequencerState.trackNames.length != $('.instrument').length) {
@@ -223,6 +223,7 @@ function toggleSelectedListener(padEl) {
   var padClass = padEl.attr('class');
   var padId = padClass.split(' ')[1].split('_')[1];
   var padState = (padEl.hasClass("selected")) ? 1 : 0;
+  currentSequencerState.pads[trackId][padId] = padState;
   return [trackId, padId, padState]
 }
 
@@ -238,6 +239,7 @@ function toggleSelectedListenerSocket(trackId, padId, padState) {
       padEl.addClass("selected");
     }
   }
+  currentSequencerState.pads[trackId][padId] = padState;
 }
 
 // SEQUENCER SCHEDULER
@@ -335,7 +337,7 @@ function schedule() {
 
   while (noteTime < currentTime + 0.200) {
     var contextPlayTime = noteTime + startTime;
-    currentState.pads.forEach(function (entry, trackId) {
+    currentSequencerState.pads.forEach(function (entry, trackId) {
       if (entry[rhythmIndex] == 1) {
         wave = currentKit.waves[trackId];
         playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
