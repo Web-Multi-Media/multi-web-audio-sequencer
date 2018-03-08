@@ -19,6 +19,7 @@ Kit.prototype.pathName = function() {
 
 Kit.prototype.changeSequenceLength = function(sequenceLength) {
   this.sequenceLength = parseInt(sequenceLength);
+  currentSequencerState.sequenceLength = sequenceLength;
 };
 
 Kit.prototype.loadSample = function(url, trackId) {
