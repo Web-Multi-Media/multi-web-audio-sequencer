@@ -41,11 +41,13 @@ var sequencerState = {
   gains: [-6, -6, -6]
 };
 
-var preset = require('./presets/0.json');
+var preset0 = require('./presets/0.json');
+var preset1 = require('./presets/1.json');
+var preset2 = require('./presets/2.json');
 
-var sequencerStates = [preset,
-                       JSON.parse(JSON.stringify(sequencerState)),
-                       JSON.parse(JSON.stringify(sequencerState)),
+var sequencerStates = [preset0,
+                       preset1,
+                       preset2,
                        JSON.parse(JSON.stringify(sequencerState)),
                        JSON.parse(JSON.stringify(sequencerState)),
                        JSON.parse(JSON.stringify(sequencerState)),
