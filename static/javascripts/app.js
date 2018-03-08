@@ -15,7 +15,8 @@ var lastDrawTime = -1;
 var rhythmIndex = 0;
 var timeoutId;
 var testBuffer = null;
-var isrecording = false;
+var isRecording = false;
+var isPlaying = false;
 
 var currentKit = null;
 var wave = null;
@@ -119,8 +120,10 @@ function checkAndTrigerPlayPause() {
   if ($span.hasClass('glyphicon-play')) {
     $span.removeClass('glyphicon-play');
     $span.addClass('glyphicon-pause');
+    isPlaying = 1;
     handlePlay();
   } else {
+    isPlaying = 0;
     $span.addClass('glyphicon-play');
     $span.removeClass('glyphicon-pause');
     handleStop();
@@ -137,14 +140,14 @@ function checkAndTrigerPlayPause() {
 //})
 
 function checkAndTrigerRecord() {
-  if (!isrecording) {
+  if (!isRecording) {
     console.log("Record is triggered");
-    isrecording = 1;
+    isRecording = 1;
     $('#record').css('color', 'red');
     mediaRecorder.start();
   } else {
     console.log("Record is untriggered");
-    isrecording = 0;
+    isRecording = 0;
     $('#record').css('color', 'white');
     mediaRecorder.stop();
   }
@@ -344,9 +347,11 @@ function schedule() {
       lastDrawTime = noteTime;
       drawPlayhead(rhythmIndex);
     }
-    advanceNote();
+    if(isPlaying)
+      advanceNote();
   }
-  timeoutId = requestAnimationFrame(schedule)
+  if(isPlaying)
+    timeoutId = setTimeout(schedule, 50);
 }
 
 function drawPlayhead(xindex) {
@@ -387,7 +392,7 @@ function handlePlay(event) {
 }
 
 function handleStop(event) {
-  cancelAnimationFrame(timeoutId);
+  clearTimeout(timeoutId);
   $(".pad").removeClass("playing");
 }
 
