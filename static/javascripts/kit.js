@@ -22,6 +22,10 @@ Kit.prototype.changeSequenceLength = function(sequenceLength) {
 };
 
 Kit.prototype.loadSample = function(url, trackId) {
+  // update sequencer state
+  currentSequencerState.sounds[trackId] = url;
+  
+  // load sound in buffer
   var request = new XMLHttpRequest();
   request.open("GET", url, true);
   request.responseType = "arraybuffer";
