@@ -196,9 +196,9 @@ function TranslateStateInActions(sequencerState) {
     for (var i = numLocalTracks - 1; i >= 0; i--) {
       deleteTrack(i);
     }
-    
+
     currentSequencerState = sequencerState;
-    
+
     // change tempo
     changeTempo(tempo);
 
@@ -207,7 +207,7 @@ function TranslateStateInActions(sequencerState) {
 
     // Add tracks and load buffers
     for (var j = 0; j < trackNames.length; j++) {
-      addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1], gains[j]);
+      addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1], gains[j], pads[j]);
     }
 
     // Activate pads
@@ -466,12 +466,12 @@ function addNewTrackDetails() {
   });
 }
 
-function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6) {
+function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6, pads=null) {
   var uniqueTrackId = Date.now();
   
   // update sequencer state
   currentSequencerState.trackNames[trackId] = trackName;
-  currentSequencerState.pads[trackId] = Array(64).fill(0);
+  currentSequencerState.pads[trackId] = pads !== null ? pads : Array(64).fill(0);
   currentSequencerState.sounds[trackId] = soundUrl;
   currentSequencerState.waves[trackId] = [startTime, endTime];
   currentSequencerState.gains[trackId] = gain;
