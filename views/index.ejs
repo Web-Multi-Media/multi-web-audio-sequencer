@@ -236,7 +236,7 @@
       socket.emit('savePreset', [sequencerState, presetName]);
     }
 
-    function loadSequencerPreset(presetId) {
+    function sendLoadSequencerPreset(presetId) {
       socket.emit('loadPreset', presetId);
     }
     
