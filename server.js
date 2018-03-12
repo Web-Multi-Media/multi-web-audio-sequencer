@@ -99,7 +99,7 @@ io.sockets.on('connection', function (socket) {
     }
 
     // send state
-    io.sockets.in(room).emit('SendCurrentState', sequencerStates[room]);
+    socket.emit('SendCurrentState', sequencerStates[room]);
 
     // PAD RECEPTION VIA THE CLIENT
     socket.on('pad', function (message) {
@@ -184,6 +184,7 @@ io.sockets.on('connection', function (socket) {
       var sequencerPresetState = JSON.parse(message[0]);
       sequencerPresets.push({[presetName]: sequencerPresetState});
       // TODO: save in a file
+      io.sockets.in(room).emit('sendSaveSequencerPreset', presetName);
     });
     
     socket.on('loadPreset', function (message) {

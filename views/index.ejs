@@ -327,6 +327,11 @@
         console.log('preset: ' + message);
         loadSequencerStatePreset(message);
       });
+      
+      // on receive save sequencer preset
+      socket.on('sendSaveSequencerPreset', function(message) {
+        addSequencerPreset(message);
+      });
     })
   </script>
     <script type="text/javascript" src="./assets/javascripts/chat.js"></script>

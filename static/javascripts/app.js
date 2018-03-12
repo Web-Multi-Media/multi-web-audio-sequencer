@@ -736,11 +736,6 @@ function addRotateTriangleEvent(trackId) {
 // Presets
 function saveCurrentSequencerstatePreset(presetName) {
   sendSequencerPreset(JSON.stringify(currentSequencerState), presetName);
-  sequencerPresetNames.push(presetName);
-  $("#preset-container").append('<div id="preset-' + presetName + '" class="dropdown-item btn" type="button">' + presetName + '</div>');
-  $("#preset-" + presetName).click(function () {
-    sendLoadSequencerPreset(sequencerPresetNames.indexOf(presetName));
-  })
 }
 
 function loadSequencerStatePreset(sequencerPresetState) {
@@ -751,3 +746,11 @@ $("#save-preset").click(function () {
   var presetName = 'p' + (sequencerPresetNames.length + 1);
   saveCurrentSequencerstatePreset(presetName);
 });
+
+function addSequencerPreset(presetName) {
+  sequencerPresetNames.push(presetName);
+  $("#preset-container").append('<div id="preset-' + presetName + '" class="dropdown-item btn" type="button">' + presetName + '</div>');
+  $("#preset-" + presetName).click(function () {
+    sendLoadSequencerPreset(sequencerPresetNames.indexOf(presetName));
+  });
+}
