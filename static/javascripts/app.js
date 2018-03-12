@@ -748,6 +748,6 @@ function loadSequencerStatePreset(sequencerPresetState) {
 }
 
 $("#save-preset").click(function () {
-  var presetName = 'p' + sequencerPresetNames.length + 1;
+  var presetName = 'p' + (sequencerPresetNames.length + 1);
   saveCurrentSequencerstatePreset(presetName);
 });
