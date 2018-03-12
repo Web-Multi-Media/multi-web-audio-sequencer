@@ -469,7 +469,7 @@ function addNewTrackDetails() {
 
 function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6, pads=null) {
   var uniqueTrackId = Date.now();
-  
+
   // update sequencer state
   currentSequencerState.trackNames[trackId] = trackName;
   currentSequencerState.pads[trackId] = pads !== null ? pads : Array(64).fill(0);

@@ -24,7 +24,7 @@ Kit.prototype.changeSequenceLength = function(sequenceLength) {
 
 Kit.prototype.changeGainNodeValue = function(trackId, value) {
   this.gainNodes[trackId].gain.value = linear2db(value);
-  currentSequencerState.gains[trackId] = linear2db(value);
+  currentSequencerState.gains[trackId] = value;
 };
 
 Kit.prototype.loadSample = function(url, trackId) {
