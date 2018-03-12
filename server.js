@@ -100,6 +100,11 @@ io.sockets.on('connection', function (socket) {
 
     // send state
     socket.emit('SendCurrentState', sequencerStates[room]);
+    
+    // send preset names
+    for (i = 0; i < sequencerPresets.length; i++) {
+      socket.emit('sendSaveSequencerPreset', Object.keys(sequencerPresets[i])[0]);
+    }
 
     // PAD RECEPTION VIA THE CLIENT
     socket.on('pad', function (message) {
