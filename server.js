@@ -328,6 +328,7 @@ function updateActivity(datetime) {
 
 // VIEWS
 app.get(base_path + '/', (req, res) => {
+  console.log("Client ip adress is : " + req.ip);
   var room = req.query.room;
   // var username = req.query.username;
   if (room) {
