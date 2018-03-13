@@ -188,9 +188,7 @@ io.sockets.on('connection', function (socket) {
       console.log('recieve save preset: ' + message[0]);
       var presetName = message[1];
       var sequencerPresetState = JSON.parse(message[0]);
-//      sequencerPresets.push({[presetName]: sequencerPresetState});
       savePreset(presetName, sequencerPresetState)
-      // TODO: save in a file
       io.sockets.in(room).emit('sendSaveSequencerPreset', presetName);
     });
     
