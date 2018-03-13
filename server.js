@@ -60,6 +60,10 @@ var sequencerStates = [preset0,
                       ];
 
 
+//admin ip adresses
+var adminIPs = require('./admin-ip.json');
+console.log('Admin IP adresses are: ' + adminIPs)
+
 //moteur de template
 app.set('view engine', 'ejs');
 
@@ -329,12 +333,13 @@ function updateActivity(datetime) {
 
 // VIEWS
 app.get(base_path + '/', (req, res) => {
-  console.log("Client ip adress is : " + req.ip);
   var room = req.query.room;
-  // var username = req.query.username;
   if (room) {
+    // check if client ip is admin
+    var adminClient = (adminIPs.indexOf(req.ip) >= 0);
     res.render('index.ejs', {
       room: room,
+      adminClient: adminClient,
       base_path: base_path
     });
   } else {

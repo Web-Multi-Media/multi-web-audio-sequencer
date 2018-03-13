@@ -69,7 +69,7 @@
             <button type="button" class="btn btn-success" id="change-sequence-length" style="width:80px;">Choose</button>
           </form>
         </span>&emsp;&emsp;
-        <span>
+        <span <%if (!adminClient) { %>hidden<% } %>>
           <label >Presets:</label>
           <button id="save-preset" type="button" class="btn btn-success">Save</button>
           <span class="dropdown">
@@ -77,11 +77,6 @@
               Load
             </button>
             <div id="preset-container" class="dropdown-menu" aria-labelledby="dropdown-presets">
-<!--
-              <div class="dropdown-item btn" type="button">Action</div>
-              <div class="dropdown-item btn" type="button">Another action</div>
-              <div class="dropdown-item btn" type="button">Something else here</div>
--->
             </div>
           </span>
         </span>
