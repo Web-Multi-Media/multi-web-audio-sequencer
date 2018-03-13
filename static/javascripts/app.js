@@ -5,6 +5,9 @@ var compressor;
 var masterGainNode;
 var effectLevelNode;
 var lowPassFilterNode;
+var mediaRecorder;
+var recordingDest;
+var chunks = [];
 
 var noteTime;
 var startTime;
@@ -12,6 +15,8 @@ var lastDrawTime = -1;
 var rhythmIndex = 0;
 var timeoutId;
 var testBuffer = null;
+var isRecording = false;
+var isPlaying = false;
 
 var currentKit = null;
 var wave = null;
@@ -20,7 +25,7 @@ var reverbImpulseResponse = null;
 var tempo = 120;
 var TEMPO_MAX = 200;
 var TEMPO_MIN = 40;
-var TEMPO_STEP = 4;
+var TEMPO_STEP = 1;
 var MAXLENGTH = 64;
 var COMPRESSOR_ACTIVATED = false;
 
@@ -35,6 +40,7 @@ $(function () {
   addNewTrackEvent();
   addChangeSequenceLengthEvent();
   playPauseListener();
+  RecordListener();
   lowPassFilterListener();
   reverbListener();
   createLowPassFilterSliders();
@@ -109,13 +115,15 @@ function changeQuality(event, ui) {
   lowPassFilterNode.Q.value = ui.value * 30;
 }
 
-function CheckAndTrigerPlayPause() {
+function checkAndTrigerPlayPause() {
   var $span = $('#play-pause').children("span");
   if ($span.hasClass('glyphicon-play')) {
     $span.removeClass('glyphicon-play');
     $span.addClass('glyphicon-pause');
+    isPlaying = 1;
     handlePlay();
   } else {
+    isPlaying = 0;
     $span.addClass('glyphicon-play');
     $span.removeClass('glyphicon-pause');
     handleStop();
@@ -131,12 +139,45 @@ function CheckAndTrigerPlayPause() {
 //  }
 //})
 
+function checkAndTrigerRecord() {
+  if (!isRecording) {
+    console.log("Record is triggered");
+    isRecording = 1;
+    $('#record').css('color', 'red');
+    mediaRecorder.start();
+  } else {
+    console.log("Record is untriggered");
+    isRecording = 0;
+    $('#record').css('color', 'white');
+    mediaRecorder.stop();
+  }
+}
+
 function playPauseListener() {
   $('#play-pause').click(function () {
-    CheckAndTrigerPlayPause();
+    checkAndTrigerPlayPause();
   });
 }
 
+function RecordListener() {
+  $('#record').click(function () {
+    checkAndTrigerRecord();
+  });
+}
+
+function onDataAvailableInRecorderFunc(evt) {
+  // push each chunk (blobs) in an array
+  if (evt.data.size > 0) {
+    chunks.push(evt.data);
+    var blob = new Blob(chunks, {
+      'type': 'audio/ogg; codecs=opus'
+    });
+    var soundSrc = URL.createObjectURL(blob);
+    var newHtmlEl = '<div style="height:40px; margin:3px;"><audio src=' + soundSrc + ' controls=controls></audio><a style="position: absolute; margin:3px;" class="btn btn-success" href=' + soundSrc + ' download="exported_loop.ogg">Download</a><br><div>';
+    $(newHtmlEl).appendTo(".exported-audio");
+    chunks = [];
+  }
+}
 
 function TranslateStateInActions(sequencerState) {
   var trackNames = sequencerState['trackNames'];
@@ -154,7 +195,7 @@ function TranslateStateInActions(sequencerState) {
     for (var i = numLocalTracks - 1; i >= 0; i--) {
       deleteTrack(i);
     }
-    
+
     // change tempo
     changeTempo(tempo);
 
@@ -208,6 +249,11 @@ function init() {
 
 function initializeAudioNodes() {
   context = new webkitAudioContext();
+  recordingDest = context.createMediaStreamDestination();
+  mediaRecorder = new MediaRecorder(recordingDest.stream);
+
+  mediaRecorder.ondataavailable = onDataAvailableInRecorderFunc;
+
   var finalMixNode;
   if (context.createDynamicsCompressor && COMPRESSOR_ACTIVATED) {
     // Create a dynamics compressor to sweeten the overall mix.
@@ -277,6 +323,7 @@ function playNote(buffer, noteTime, startTime, endTime, gainNode) {
 
   voice.connect(gainNode)
   gainNode.connect(currentLastNode);
+  gainNode.connect(recordingDest);
   voice.start(noteTime, startTime, endTime - startTime);
 }
 
@@ -300,9 +347,11 @@ function schedule() {
       lastDrawTime = noteTime;
       drawPlayhead(rhythmIndex);
     }
-    advanceNote();
+    if(isPlaying)
+      advanceNote();
   }
-  timeoutId = requestAnimationFrame(schedule)
+  if(isPlaying)
+    timeoutId = setTimeout(schedule, 50);
 }
 
 function drawPlayhead(xindex) {
@@ -343,7 +392,7 @@ function handlePlay(event) {
 }
 
 function handleStop(event) {
-  cancelAnimationFrame(timeoutId);
+  clearTimeout(timeoutId);
   $(".pad").removeClass("playing");
 }
 
@@ -352,8 +401,8 @@ function initializeTempo() {
 }
 
 function changeTempo(tempo_input) {
-    tempo = tempo_input;
-    $("#tempo-input").val(tempo_input);
+  tempo = tempo_input;
+  $("#tempo-input").val(tempo_input);
 }
 
 function changeTempoListener() {
@@ -476,7 +525,7 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
   // load buffer
   if (soundUrl) {
     currentKit.loadSample(soundUrl, trackId);
-    if (startTime) {
+    if (startTime !== 'null' && startTime !== false ) {
       wave.startTime = startTime;
       wave.endTime = endTime;
     }
@@ -505,11 +554,11 @@ function addKnob(trackId, gain) {
     step: 1,
     displayInput: false,
     thickness: 0.5,
-    change : function(v) {
+    change: function (v) {
       var trackId = $(this.$).parents('.instrument').index();
       currentKit.gainNodes[trackId].gain.value = linear2db(v);
     },
-    release: function(v) {
+    release: function (v) {
       var trackId = $(this.$).parents('.instrument').index();
       currentKit.gainNodes[trackId].gain.value = linear2db(v);
       // send db gain value to server
@@ -606,9 +655,9 @@ function deleteTrack(trackId) {
 
   // delete wave
   currentKit.waves.splice(trackId, 1);
-  
+
   // delete gain
-  currentKit.gains.splice(trackId, 1);
+  currentKit.gainNodes.splice(trackId, 1);
 }
 
 

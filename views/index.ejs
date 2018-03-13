@@ -33,7 +33,12 @@
         <a class="btn btn-success <% if(room==1){ %>active<% } %>" href="<%=base_path%>/?room=1">1</a>
         <a class="btn btn-success <% if(room==2){ %>active<% } %>" href="<%=base_path%>/?room=2">2</a>
         <a class="btn btn-success <% if(room==3){ %>active<% } %>" href="<%=base_path%>/?room=3">3</a>
-        <a class="btn btn-success <% if(room==4){ %>active<% } %>" href="<%=base_path%>/?room=4">4</a> &emsp;&emsp;
+        <a class="btn btn-success <% if(room==4){ %>active<% } %>" href="<%=base_path%>/?room=4">4</a> 
+        <a class="btn btn-success <% if(room==5){ %>active<% } %>" href="<%=base_path%>/?room=5">5</a> 
+        <a class="btn btn-success <% if(room==6){ %>active<% } %>" href="<%=base_path%>/?room=6">6</a> 
+        <a class="btn btn-success <% if(room==7){ %>active<% } %>" href="<%=base_path%>/?room=7">7</a>
+        <a class="btn btn-success <% if(room==8){ %>active<% } %>" href="<%=base_path%>/?room=8">8</a>
+        &emsp;&emsp;
         <span style="font-size:14px;font-weight: bold;" id="room-number">Nickname:</span>
         <form id="nickname-form" action="javascript:void(0);" style="display: inline-block;">
           <input class="my-box-white usernameInput" style="width:160px;" type="text" placeholder="Enter nickname" maxlength="14" />
@@ -48,11 +53,14 @@
         <button id="play-pause" type="button" class="btn btn-success">
           <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
         </button>
+        <button id="record" type="button" class="btn btn-success">
+          <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
+        </button>&emsp;&emsp;
         <span class="tempo-container">
           <label >Tempo:</label>
           <input id="tempo-input" disabled>
           <span id="decrease-tempo" class="glyphicon glyphicon-minus btn btn-success tempo-btn"></span>
-        <span id="increase-tempo" class="glyphicon glyphicon-plus btn btn-success tempo-btn"></span>
+          <span id="increase-tempo" class="glyphicon glyphicon-plus btn btn-success tempo-btn"></span>
         </span>&emsp;&emsp;
         <span>
           <label >Sequence length:</label>
@@ -86,7 +94,7 @@
     <div class="row" id="search-container">
       <div class="col-md-12">
         <form id="search-form" action="javascript:void(0);" style="display: inline-block;">
-          <input type="text" id="search-query" placeholder="Enter query" class="my-box-white">
+          <input type="text" id="search-query" placeholder="Enter sound query" class="my-box-white">
           <button type="button" id="search-button" class="btn btn-success" disabled>Search</button>
         </form>
         &emsp;
@@ -130,6 +138,14 @@
           <ul class="messages"></ul>
         </div>
         <input class="inputMessage" placeholder="Type here..." />
+      </div>
+    </div>
+    
+    <!--   EXPORT CONTAINER    -->
+    <div class="row" id="export-container" style="padding-top: 10px; padding-bottom:10px;">
+      <div class="col-md-6 export">
+        <label >Exported audio:</label>
+        <div class="exported-audio"></div>
       </div>
     </div>
     <br>

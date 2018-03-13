@@ -15,9 +15,9 @@ var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
 var io = require('socket.io')(http, {path: base_path + '/socket.io'});
 
 var fullservername = hostname + ':' + hostnamePort;
-var rooms = ["1", "2", "3", "4"];
-var roomUsers = [[], [], [], []];
-var roomLastConnections = [null, null, null, null];
+var rooms = ["1", "2", "3", "4", "5", "6", "7", "8"];
+var roomUsers = [[], [], [], [], [], [], [], []];
+var roomLastConnections = [null, null, null, null, null, null, null, null];
 
 var sequencerState = {
   sequenceLength: 16,
@@ -29,9 +29,9 @@ var sequencerState = {
     Array(64).fill(0)
   ],
   sounds: [
-    base_path + '/assets/sounds/drum-samples/TR808/kick.mp3',
-    base_path + '/assets/sounds/drum-samples/TR808/snare.mp3',
-    base_path + '/assets/sounds/drum-samples/TR808/hihat.mp3'
+    base_path + '/assets/sounds/drum-samples/TR808/kick.ogg',
+    base_path + '/assets/sounds/drum-samples/TR808/snare.ogg',
+    base_path + '/assets/sounds/drum-samples/TR808/hihat.ogg'
   ],
   waves: [
     [false, false],
@@ -41,10 +41,19 @@ var sequencerState = {
   gains: [-6, -6, -6]
 };
 
-var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
-                      JSON.parse(JSON.stringify(sequencerState)),
-                      JSON.parse(JSON.stringify(sequencerState)),
-                      JSON.parse(JSON.stringify(sequencerState))];
+var preset0 = require('./presets/0.json');
+var preset1 = require('./presets/1.json');
+var preset2 = require('./presets/2.json');
+
+var sequencerStates = [preset0,
+                       preset1,
+                       preset2,
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                      ];
 
 
 

@@ -42,7 +42,7 @@ function initSearch() {
         var numSoundCurrentPage = sounds.results.length;
         for (i = 0; i < numSoundCurrentPage; i++) {
           var snd = sounds.getSound(i);
-          msg += "<div>" + self.freesoundIframe(snd.id) + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" + snd.previews["preview-lq-mp3"] + "'>Drag</div></div>";
+          msg += "<div>" + self.freesoundIframe(snd.id) + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" + snd.previews["preview-lq-ogg"] + "'>Drag</div></div>";
         }
         msg += "</ul>"
         document.getElementById("search-result-container").innerHTML = msg;
