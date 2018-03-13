@@ -61,6 +61,9 @@ var sequencerStates = [preset0,
 
 
 //admin ip adresses
+fs.readdir('./', function(err, items) {
+    console.log("Existing files: " + items);
+  });
 if (fs.existsSync('./admin-ip.json')) {
   var adminIPs = require('./admin-ip.json');
 } else {
