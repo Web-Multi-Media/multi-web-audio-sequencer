@@ -69,6 +69,7 @@ if (fs.existsSync('./admin-ip.json')) {
 } else {
   var adminIPs = ["::ffff:127.0.0.1", "::ffff:172.17.0.1"];
 }
+var adminIPs = process.env.ADMIN_IP || ["::ffff:127.0.0.1", "::ffff:172.17.0.1"];
 console.log('Admin IP adresses are: ' + adminIPs)
 
 //moteur de template
