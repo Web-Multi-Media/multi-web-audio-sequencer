@@ -61,7 +61,11 @@ var sequencerStates = [preset0,
 
 
 //admin ip adresses
-var adminIPs = require('./admin-ip.json');
+if (fs.existsSync('./admin-ip.json')) {
+  var adminIPs = require('./admin-ip.json');
+} else {
+  var adminIPs = ["::ffff:127.0.0.1", "::ffff:172.17.0.1"];
+}
 console.log('Admin IP adresses are: ' + adminIPs)
 
 //moteur de template
