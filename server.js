@@ -13,6 +13,7 @@ var hostname = process.env.MULT_WEB_SEQ_SERV || 'localhost';
 var base_path = process.env.BASE_PATH || '';
 var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
 var io = require('socket.io')(http, {path: base_path + '/socket.io'});
+var fs = require('fs');
 
 var fullservername = hostname + ':' + hostnamePort;
 var rooms = ["1", "2", "3", "4", "5", "6", "7", "8"];
@@ -44,6 +45,9 @@ var sequencerState = {
 var preset0 = require('./presets/0.json');
 var preset1 = require('./presets/1.json');
 var preset2 = require('./presets/2.json');
+var sequencerPresetFiles = [];
+getListPresetFiles();
+
 
 var sequencerStates = [preset0,
                        preset1,
@@ -54,9 +58,6 @@ var sequencerStates = [preset0,
                        JSON.parse(JSON.stringify(sequencerState)),
                        JSON.parse(JSON.stringify(sequencerState)),
                       ];
-
-
-var sequencerPresets = [];
 
 
 //moteur de template
@@ -102,8 +103,8 @@ io.sockets.on('connection', function (socket) {
     socket.emit('SendCurrentState', sequencerStates[room]);
     
     // send preset names
-    for (i = 0; i < sequencerPresets.length; i++) {
-      socket.emit('sendSaveSequencerPreset', Object.keys(sequencerPresets[i])[0]);
+    for (i = 0; i < sequencerPresetFiles.length; i++) {
+      socket.emit('sendSaveSequencerPreset', sequencerPresetFiles[i].split('.')[0]);
     }
 
     // PAD RECEPTION VIA THE CLIENT
@@ -187,14 +188,16 @@ io.sockets.on('connection', function (socket) {
       console.log('recieve save preset: ' + message[0]);
       var presetName = message[1];
       var sequencerPresetState = JSON.parse(message[0]);
-      sequencerPresets.push({[presetName]: sequencerPresetState});
+//      sequencerPresets.push({[presetName]: sequencerPresetState});
+      savePreset(presetName, sequencerPresetState)
       // TODO: save in a file
       io.sockets.in(room).emit('sendSaveSequencerPreset', presetName);
     });
     
     socket.on('loadPreset', function (message) {
       console.log('recieve load preset: ' + message);
-      io.sockets.in(room).emit('sendSequencerPreset', JSON.stringify(sequencerPresets[message]));
+      var preset = getPreset(message);
+      io.sockets.in(room).emit('sendSequencerPreset', JSON.stringify(preset));
     });
 
     
@@ -275,6 +278,28 @@ io.sockets.on('connection', function (socket) {
 });
 
 
+// PRESETS
+function getListPresetFiles() {
+  fs.readdir('./presets/', function(err, items) {
+    console.log("Existing presets: " + items);
+    sequencerPresetFiles = items;
+  });
+}
+
+function getPreset(presetId) {
+  var preset = require('./presets/' + sequencerPresetFiles[presetId]);
+  console.log(preset)
+  return require('./presets/' + sequencerPresetFiles[presetId]);
+}
+
+function savePreset(presetName, preset) {
+  var jsonPreset = JSON.stringify(preset);
+  fs.writeFile('./presets/' + presetName + '.json', jsonPreset, 'utf8');
+  sequencerPresetFiles.push(presetName + '.json')
+}
+
+
+// ACTIVITY DATE
 function updateActivity(datetime) {
   var theevent = new Date(datetime);
   now = new Date();

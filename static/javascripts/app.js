@@ -739,11 +739,11 @@ function saveCurrentSequencerstatePreset(presetName) {
 }
 
 function loadSequencerStatePreset(sequencerPresetState) {
-  TranslateStateInActions(Object.values(JSON.parse(sequencerPresetState))[0]);
+  TranslateStateInActions(JSON.parse(sequencerPresetState));
 }
 
 $("#save-preset").click(function () {
-  var presetName = 'p' + (sequencerPresetNames.length + 1);
+  var presetName = sequencerPresetNames.length;
   saveCurrentSequencerstatePreset(presetName);
 });
 
