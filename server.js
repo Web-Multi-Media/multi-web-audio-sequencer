@@ -70,6 +70,7 @@ app.use(base_path + '/assets', express.static(__dirname + '/node_modules'));
 io.use(sharedsession(session, {
   autoSave: true
 }));
+app.set('trust proxy', true)
 
 
 // ON CONNECTION CONNECT TO ROOM AND SEND STATE TO CLIENT 
