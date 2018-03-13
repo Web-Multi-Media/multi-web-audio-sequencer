@@ -340,7 +340,8 @@ function schedule() {
       if ($(this).hasClass("selected")) {
         var trackId = $(this).parents('.instrument').index();
         var wave = currentKit.waves[trackId];
-        playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
+        if(!currentKit.isMuted[trackId])
+          playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
       }
     });
     if (noteTime != lastDrawTime) {
@@ -531,6 +532,8 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
     }
   }
 
+  currentKit.isMuted[trackId] = 0;
+
   // add click events
   addPadClickEvent(socket, trackId);
   addDeleteTrackClickEvent(trackId);
@@ -672,13 +675,8 @@ function addMuteTrackEvent(trackId) {
 }
 
 function muteTrack(trackId) {
-  if (currentKit.gainNodes[trackId].gain.value == 0) {
-    currentKit.gainNodes[trackId].gain.value = linear2db($('.instrument').eq(trackId).find(".dial").eq(0).val())
-  } else {
-    currentKit.gainNodes[trackId].gain.value = 0;
-  }
+   currentKit.isMuted[trackId] = (currentKit.isMuted[trackId]==1) ? 0 : 1;
 }
-
 
 // Drag and drop sounds
 function allowDrop(ev) {
