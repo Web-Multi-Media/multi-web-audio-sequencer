@@ -68,7 +68,7 @@
             <input id="sequence-length" class="my-box-white" style="width:70px;" type="number" min="1" max="64">
             <button type="button" class="btn btn-success" id="change-sequence-length" style="width:80px;">Choose</button>
           </form>
-        </span>&emsp;&emsp;
+        </span> <%if (!adminClient) { %>&emsp;&emsp;<% } %>
         <span <%if (!adminClient) { %>hidden<% } %>>
           <label >Presets:</label>
           <button id="save-preset" type="button" class="btn btn-success">Save</button>
