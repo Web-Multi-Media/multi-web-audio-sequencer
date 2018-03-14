@@ -42,20 +42,8 @@ var sequencerState = {
   gains: [-6, -6, -6]
 };
 
-fs.readdir('./', function(err, items) {
-  console.log("Existing files: " + items);
-});
-
-fs.readdir('./presets/', function(err, items) {
-  console.log("Existing preset files: " + items);
-});
-
-//var preset0 = require('./presets/0.json');
-//var preset1 = require('./presets/1.json');
-//var preset2 = require('./presets/2.json');
 var sequencerPresetFiles = [];
 getListPresetFiles();
-
 
 var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
                        JSON.parse(JSON.stringify(sequencerState)),
