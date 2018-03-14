@@ -1,9 +1,5 @@
 FROM node:carbon
 
-RUN mkdir /src
-
+ADD . /src
 WORKDIR /src
-ADD package.json /src/package.json
 RUN npm install
-
-COPY . /src
