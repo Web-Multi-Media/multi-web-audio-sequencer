@@ -192,7 +192,7 @@ io.sockets.on('connection', function (socket) {
     });
     
     socket.on('loadPreset', function (message) {
-      console.log('recieve load preset: ' + message);
+      console.log('recieve load preset');
       var preset = getPreset(message);
       sequencerStates[room] = preset;
       io.sockets.in(room).emit('sendSequencerPreset', JSON.stringify(preset));
