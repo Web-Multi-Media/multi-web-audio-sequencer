@@ -12,6 +12,7 @@ var eventEmitter = require('events').EventEmitter
 var hostname = process.env.MULT_WEB_SEQ_SERV || 'localhost';
 var base_path = process.env.BASE_PATH || '';
 var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
+var adminPassword = process.env.ADMIN_PASSWORD || 'admin';
 var io = require('socket.io')(http, {path: base_path + '/socket.io'});
 var fs = require('fs');
 
@@ -55,18 +56,6 @@ var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
                        JSON.parse(JSON.stringify(sequencerState)),
                       ];
 
-
-//admin ip adresses
-fs.readdir('./', function(err, items) {
-  console.log("Existing files: " + items);
-});
-if (fs.existsSync('./admin-ip.json')) {
-  var adminIPs = require('./admin-ip.json');
-} else {
-  var adminIPs = ["::ffff:127.0.0.1", "::ffff:172.17.0.1"];
-}
-
-console.log('Admin IP adresses are: ' + adminIPs)
 
 //moteur de template
 app.set('view engine', 'ejs');
@@ -339,9 +328,8 @@ function updateActivity(datetime) {
 // VIEWS
 app.get(base_path + '/', (req, res) => {
   var room = req.query.room;
+  var adminClient = req.query.admin == adminPassword;
   if (room) {
-    // check if client ip is admin
-    var adminClient = (adminIPs.indexOf(req.ip) >= 0);
     res.render('index.ejs', {
       room: room,
       adminClient: adminClient,
