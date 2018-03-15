@@ -184,7 +184,7 @@ io.sockets.on('connection', function (socket) {
     
     // SAVE PRESET
     socket.on('savePreset', function (message) {
-      console.log('recieve save preset: ' + message[0]);
+      console.log('recieve save preset');
       var presetName = message[1];
       var sequencerPresetState = JSON.parse(message[0]);
       savePreset(presetName, sequencerPresetState)
@@ -286,14 +286,13 @@ function getListPresetFiles() {
 
 function getPreset(presetId) {
   var preset = require('./presets/' + sequencerPresetFiles[presetId]);
-  console.log(preset)
   return require('./presets/' + sequencerPresetFiles[presetId]);
 }
 
 function savePreset(presetName, preset) {
   var jsonPreset = JSON.stringify(preset);
   fs.writeFile('./presets/' + presetName + '.json', jsonPreset, 'utf8');
-  sequencerPresetFiles.push(presetName + '.json')
+  sequencerPresetFiles.push(presetName + '.json');
 }
 
 
