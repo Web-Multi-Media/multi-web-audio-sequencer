@@ -14,8 +14,10 @@ function Search() {
   var sliderValue = null;
 }
 
-Search.prototype.setToken = function () {
-  freesound.setToken("bs5DQrWNL9d8zrQl0ApCvcQqwg0gg8ytGE60qg5o");
+Search.prototype.setToken = function (token) {
+  $.get('/get_freesound_token', [],function(data) {
+    freesound.setToken(data);
+  });
 };
 
 Search.prototype.freesoundIframe = function (soundId) {

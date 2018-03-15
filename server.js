@@ -13,6 +13,7 @@ var hostname = process.env.MULT_WEB_SEQ_SERV || 'localhost';
 var base_path = process.env.BASE_PATH || '';
 var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
 var adminPassword = process.env.ADMIN_PASSWORD || 'admin';
+var freesoundClientToken = process.env.FREESOUND_TOKEN || 'bs5DQrWNL9d8zrQl0ApCvcQqwg0gg8ytGE60qg5o';
 var io = require('socket.io')(http, {path: base_path + '/socket.io'});
 var fs = require('fs');
 
@@ -351,6 +352,12 @@ app.get(base_path + '/', (req, res) => {
       base_path: base_path
     });
   }
+});
+
+
+// AJAX
+app.get('/get_freesound_token', function(req, res){
+  res.send(freesoundClientToken);
 });
 
 
