@@ -68,18 +68,20 @@
             <input id="sequence-length" class="my-box-white" style="width:70px;" type="number" min="1" max="64">
             <button type="button" class="btn btn-success" id="change-sequence-length" style="width:80px;">Choose</button>
           </form>
-        </span> <%if (adminClient) { %>&emsp;&emsp;<% } %>
-        <span <%if (!adminClient) { %>hidden<% } %>>
-          <label >Presets:</label>
-          <button id="save-preset" type="button" class="btn btn-success">Save</button>
-          <span class="dropdown">
-            <button class="btn btn-success dropdown-toggle" type="button" id="dropdown-presets" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Load
-            </button>
-            <div id="preset-container" class="dropdown-menu" aria-labelledby="dropdown-presets">
-            </div>
-          </span>
         </span>
+        <%if (adminClient) { %> &emsp;&emsp;
+          <span>
+            <label >Presets:</label>
+            <button id="save-preset" type="button" class="btn btn-success">Save</button>
+            <span class="dropdown">
+              <button class="btn btn-success dropdown-toggle" type="button" id="dropdown-presets" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Load
+              </button>
+              <div id="preset-container" class="dropdown-menu" aria-labelledby="dropdown-presets">
+              </div>
+            </span>
+          </span>
+        <% } %>
       </div>
     </div>
 
