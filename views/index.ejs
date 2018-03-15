@@ -69,6 +69,19 @@
             <button type="button" class="btn btn-success" id="change-sequence-length" style="width:80px;">Choose</button>
           </form>
         </span>
+        <%if (adminClient) { %> &emsp;&emsp;
+          <span>
+            <label >Presets:</label>
+            <button id="save-preset" type="button" class="btn btn-success">Save</button>
+            <span class="dropdown">
+              <button class="btn btn-success dropdown-toggle" type="button" id="dropdown-presets" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Load
+              </button>
+              <div id="preset-container" class="dropdown-menu" aria-labelledby="dropdown-presets">
+              </div>
+            </span>
+          </span>
+        <% } %>
       </div>
     </div>
 
@@ -231,7 +244,15 @@
     function sendTrackGain(trackId, gain) {
       socket.emit('gain', [trackId, gain]);
     }
+    
+    function sendSequencerPreset(sequencerState, presetName) {
+      socket.emit('savePreset', [sequencerState, presetName]);
+    }
 
+    function sendLoadSequencerPreset(presetId) {
+      socket.emit('loadPreset', presetId);
+    }
+    
     $(function() {
       console.log("connecting to room " + '<%= room %>');
       socket = io.connect('/', {path: '<%=base_path%>/socket.io'});
@@ -282,6 +303,8 @@
         var endTime = message[2];
         currentKit.waves[trackId].setStart(startTime);
         currentKit.waves[trackId].setEnd(endTime);
+        // update sequencer state
+        currentSequencerState.waves[trackId] = [startTime, endTime];
       });
       
       // on change sequence length
@@ -294,6 +317,17 @@
         var trackId = message[0];
         var gain = message[1];
         changeTrackGain(trackId, gain)
+      });
+      
+      // on receive sequencer preset
+      socket.on('sendSequencerPreset', function(message) {
+        console.log('preset: ' + message);
+        loadSequencerStatePreset(message);
+      });
+      
+      // on receive save sequencer preset
+      socket.on('sendSaveSequencerPreset', function(message) {
+        addSequencerPreset(message);
       });
     })
   </script>

@@ -18,9 +18,11 @@ var testBuffer = null;
 var isRecording = false;
 var isPlaying = false;
 
+var currentSequencerState = null;
 var currentKit = null;
 var wave = null;
 var reverbImpulseResponse = null;
+var sequencerPresetNames = [];
 
 var tempo = 120;
 var TEMPO_MAX = 200;
@@ -29,7 +31,6 @@ var TEMPO_STEP = 1;
 var MAXLENGTH = 64;
 var COMPRESSOR_ACTIVATED = false;
 
-var numPages;
 
 if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudioContext')) {
   window.webkitAudioContext = AudioContext;
@@ -189,12 +190,14 @@ function TranslateStateInActions(sequencerState) {
   var tempo = sequencerState['tempo'];
 
   // check if the tracks are already loaded
-  if (sequencerState.trackNames.length != $('.instrument').length) {
+  if (JSON.stringify(sequencerState) != JSON.stringify(currentSequencerState)) {
     // Delete all existing tracks
     var numLocalTracks = $('.instrument').length;
     for (var i = numLocalTracks - 1; i >= 0; i--) {
       deleteTrack(i);
     }
+
+    currentSequencerState = sequencerState;
 
     // change tempo
     changeTempo(tempo);
@@ -204,7 +207,7 @@ function TranslateStateInActions(sequencerState) {
 
     // Add tracks and load buffers
     for (var j = 0; j < trackNames.length; j++) {
-      addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1], gains[j]);
+      addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1], gains[j], pads[j]);
     }
 
     // Activate pads
@@ -223,6 +226,7 @@ function toggleSelectedListener(padEl) {
   var padClass = padEl.attr('class');
   var padId = padClass.split(' ')[1].split('_')[1];
   var padState = (padEl.hasClass("selected")) ? 1 : 0;
+  currentSequencerState.pads[trackId][padId] = padState;
   return [trackId, padId, padState]
 }
 
@@ -238,6 +242,7 @@ function toggleSelectedListenerSocket(trackId, padId, padState) {
       padEl.addClass("selected");
     }
   }
+  currentSequencerState.pads[trackId][padId] = padState;
 }
 
 // SEQUENCER SCHEDULER
@@ -335,11 +340,9 @@ function schedule() {
 
   while (noteTime < currentTime + 0.200) {
     var contextPlayTime = noteTime + startTime;
-    var $currentPads = $(".column_" + rhythmIndex);
-    $currentPads.each(function () {
-      if ($(this).hasClass("selected")) {
-        var trackId = $(this).parents('.instrument').index();
-        var wave = currentKit.waves[trackId];
+    currentSequencerState.pads.forEach(function (entry, trackId) {
+      if (entry[rhythmIndex] == 1) {
+        wave = currentKit.waves[trackId];
         playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
       }
     });
@@ -367,7 +370,7 @@ function drawPlayhead(xindex) {
 
 function advanceNote() {
   // Advance time by a 16th note...
-  tempo = Number($("#tempo-input").val());
+  tempo = currentSequencerState.tempo;
   var secondsPerBeat = 60.0 / tempo;
   rhythmIndex++;
   if (rhythmIndex == currentKit.sequenceLength) {
@@ -403,13 +406,14 @@ function initializeTempo() {
 function changeTempo(tempo_input) {
   tempo = tempo_input;
   $("#tempo-input").val(tempo_input);
+  currentSequencerState.tempo = tempo;
 }
 
 function changeTempoListener() {
   $("#increase-tempo").click(function () {
     if (tempo < TEMPO_MAX) {
       tempo += TEMPO_STEP;
-      $("#tempo-input").val(tempo);
+      changeTempo(tempo);
       sendTempo(tempo);
     }
   });
@@ -417,7 +421,7 @@ function changeTempoListener() {
   $("#decrease-tempo").click(function () {
     if (tempo > TEMPO_MIN) {
       tempo -= TEMPO_STEP;
-      $("#tempo-input").val(tempo);
+      changeTempo(tempo);
       sendTempo(tempo);
     }
   });
@@ -462,8 +466,15 @@ function addNewTrackDetails() {
   });
 }
 
-function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6) {
+function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6, pads=null) {
   var uniqueTrackId = Date.now();
+
+  // update sequencer state
+  currentSequencerState.trackNames[trackId] = trackName;
+  currentSequencerState.pads[trackId] = pads !== null ? pads : Array(64).fill(0);
+  currentSequencerState.sounds[trackId] = soundUrl;
+  currentSequencerState.waves[trackId] = [startTime, endTime];
+  currentSequencerState.gains[trackId] = gain;
 
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
@@ -537,10 +548,6 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
 
 
 // gain knob
-function linear2db(x) {
-  return Math.pow(10, (x / 20));
-}
-
 function addKnob(trackId, gain) {
   var knob = $('.instrument').eq(trackId).find(".dial");
   knob.knob({
@@ -553,18 +560,18 @@ function addKnob(trackId, gain) {
     thickness: 0.5,
     change: function (v) {
       var trackId = $(this.$).parents('.instrument').index();
-      currentKit.gainNodes[trackId].gain.value = linear2db(v);
+      currentKit.changeGainNodeValue(trackId, v);
     },
     release: function (v) {
       var trackId = $(this.$).parents('.instrument').index();
-      currentKit.gainNodes[trackId].gain.value = linear2db(v);
+      currentKit.changeGainNodeValue(trackId, v);
       // send db gain value to server
       sendTrackGain(trackId, v)
     }
   });
   knob.val(gain.toString());
   knob.trigger('change');
-  currentKit.gainNodes[trackId].gain.value = linear2db(gain);
+  currentKit.changeGainNodeValue(trackId, gain);
 }
 
 function changeTrackGain(trackId, gain) {
@@ -655,6 +662,13 @@ function deleteTrack(trackId) {
 
   // delete gain
   currentKit.gainNodes.splice(trackId, 1);
+  
+  // update sequencer state
+  currentSequencerState.trackNames.splice(trackId, 1);
+  currentSequencerState.sounds.splice(trackId, 1);
+  currentSequencerState.pads.splice(trackId, 1);
+  currentSequencerState.waves.splice(trackId, 1);
+  currentSequencerState.gains.splice(trackId, 1);
 }
 
 
@@ -714,5 +728,28 @@ function addRotateTriangleEvent(trackId) {
   $(".instrument-label").eq(trackId).click(function () {
     var trackId = $(this).parents('.instrument').index();
     $('.instrument').eq(trackId).find(".glyphicon").toggleClass('rotation');
+  });
+}
+
+
+// Presets
+function saveCurrentSequencerstatePreset(presetName) {
+  sendSequencerPreset(JSON.stringify(currentSequencerState), presetName);
+}
+
+function loadSequencerStatePreset(sequencerPresetState) {
+  TranslateStateInActions(JSON.parse(sequencerPresetState));
+}
+
+$("#save-preset").click(function () {
+  var presetName = sequencerPresetNames.length;
+  saveCurrentSequencerstatePreset(presetName);
+});
+
+function addSequencerPreset(presetName) {
+  sequencerPresetNames.push(presetName);
+  $("#preset-container").append('<div id="preset-' + presetName + '" class="dropdown-item btn" type="button">' + presetName + '</div>');
+  $("#preset-" + presetName).click(function () {
+    sendLoadSequencerPreset(sequencerPresetNames.indexOf(presetName));
   });
 }

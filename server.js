@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var session = require('express-session')({
-  secret: "azaezaedzadzea",
+  secret: process.env.SESSION_SECRET || "azaezaedzadzea",
   resave: true,
   saveUninitialized: true
 });
@@ -12,7 +12,10 @@ var eventEmitter = require('events').EventEmitter
 var hostname = process.env.MULT_WEB_SEQ_SERV || 'localhost';
 var base_path = process.env.BASE_PATH || '';
 var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
+var adminPassword = process.env.ADMIN_PASSWORD || 'admin';
+var freesoundClientToken = process.env.FREESOUND_TOKEN || 'bs5DQrWNL9d8zrQl0ApCvcQqwg0gg8ytGE60qg5o';
 var io = require('socket.io')(http, {path: base_path + '/socket.io'});
+var fs = require('fs');
 
 var fullservername = hostname + ':' + hostnamePort;
 var rooms = ["1", "2", "3", "4", "5", "6", "7", "8"];
@@ -41,20 +44,18 @@ var sequencerState = {
   gains: [-6, -6, -6]
 };
 
-var preset0 = require('./presets/0.json');
-var preset1 = require('./presets/1.json');
-var preset2 = require('./presets/2.json');
+var sequencerPresetFiles = [];
+getListPresetFiles();
 
-var sequencerStates = [preset0,
-                       preset1,
-                       preset2,
+var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
                        JSON.parse(JSON.stringify(sequencerState)),
                        JSON.parse(JSON.stringify(sequencerState)),
                        JSON.parse(JSON.stringify(sequencerState)),
                        JSON.parse(JSON.stringify(sequencerState)),
                        JSON.parse(JSON.stringify(sequencerState)),
                       ];
-
 
 
 //moteur de template
@@ -67,6 +68,7 @@ app.use(base_path + '/assets', express.static(__dirname + '/node_modules'));
 io.use(sharedsession(session, {
   autoSave: true
 }));
+app.set('trust proxy', true)
 
 
 // ON CONNECTION CONNECT TO ROOM AND SEND STATE TO CLIENT 
@@ -97,7 +99,12 @@ io.sockets.on('connection', function (socket) {
     }
 
     // send state
-    io.sockets.in(room).emit('SendCurrentState', sequencerStates[room]);
+    socket.emit('SendCurrentState', sequencerStates[room]);
+    
+    // send preset names
+    for (i = 0; i < sequencerPresetFiles.length; i++) {
+      socket.emit('sendSaveSequencerPreset', sequencerPresetFiles[i].split('.')[0]);
+    }
 
     // PAD RECEPTION VIA THE CLIENT
     socket.on('pad', function (message) {
@@ -163,18 +170,33 @@ io.sockets.on('connection', function (socket) {
 
     // CHANGE LENGTH SEQUENCE
     socket.on('sequenceLength', function (message) {
-      console.log('recieve change senquence length: ' + message);
+      console.log('receive change senquence length: ' + message);
       sequencerStates[room].sequenceLength = message;
       socket.in(room).broadcast.emit('sendSequenceLength', message);
     });
 
     // CHANGE TRACK GAIN
     socket.on('gain', function (message) {
-      console.log('recieve change gain: ' + message);
+      console.log('receive change gain: ' + message);
       sequencerStates[room].gains[message[0]] = message[1];
       socket.in(room).broadcast.emit('sendGain', message);
     });
-
+    
+    // SAVE PRESET
+    socket.on('savePreset', function (message) {
+      console.log('receive save preset');
+      var presetName = message[1];
+      var sequencerPresetState = JSON.parse(message[0]);
+      savePreset(presetName, sequencerPresetState)
+      io.sockets.in(room).emit('sendSaveSequencerPreset', presetName);
+    });
+    
+    socket.on('loadPreset', function (message) {
+      console.log('receive load preset');
+      var preset = getPreset(message);
+      sequencerStates[room] = preset;
+      io.sockets.in(room).emit('sendSequencerPreset', JSON.stringify(preset));
+    });
 
     // CHAT
     // when the client emits 'new message', this listens and executes
@@ -253,6 +275,27 @@ io.sockets.on('connection', function (socket) {
 });
 
 
+// PRESETS
+function getListPresetFiles() {
+  fs.readdir('./presets/', function(err, items) {
+    console.log("Existing presets: " + items);
+    sequencerPresetFiles = items;
+  });
+}
+
+function getPreset(presetId) {
+  var preset = require('./presets/' + sequencerPresetFiles[presetId]);
+  return require('./presets/' + sequencerPresetFiles[presetId]);
+}
+
+function savePreset(presetName, preset) {
+  var jsonPreset = JSON.stringify(preset);
+  fs.writeFile('./presets/' + presetName + '.json', jsonPreset, 'utf8');
+  sequencerPresetFiles.push(presetName + '.json');
+}
+
+
+// ACTIVITY DATE
 function updateActivity(datetime) {
   var theevent = new Date(datetime);
   now = new Date();
@@ -284,10 +327,11 @@ function updateActivity(datetime) {
 // VIEWS
 app.get(base_path + '/', (req, res) => {
   var room = req.query.room;
-  // var username = req.query.username;
+  var adminClient = req.query.admin == adminPassword;
   if (room) {
     res.render('index.ejs', {
       room: room,
+      adminClient: adminClient,
       base_path: base_path
     });
   } else {
@@ -306,6 +350,12 @@ app.get(base_path + '/', (req, res) => {
       base_path: base_path
     });
   }
+});
+
+
+// AJAX
+app.get('/get_freesound_token', function(req, res){
+  res.send(freesoundClientToken);
 });
 
 

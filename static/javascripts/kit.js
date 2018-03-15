@@ -19,9 +19,19 @@ Kit.prototype.pathName = function() {
 
 Kit.prototype.changeSequenceLength = function(sequenceLength) {
   this.sequenceLength = parseInt(sequenceLength);
+  currentSequencerState.sequenceLength = sequenceLength;
+};
+
+Kit.prototype.changeGainNodeValue = function(trackId, value) {
+  this.gainNodes[trackId].gain.value = linear2db(value);
+  currentSequencerState.gains[trackId] = value;
 };
 
 Kit.prototype.loadSample = function(url, trackId) {
+  // update sequencer state
+  currentSequencerState.sounds[trackId] = url;
+  
+  // load sound in buffer
   var request = new XMLHttpRequest();
   request.open("GET", url, true);
   request.responseType = "arraybuffer";
@@ -45,3 +55,7 @@ Kit.prototype.loadSample = function(url, trackId) {
   }
   request.send();
 };
+
+function linear2db(x) {
+  return Math.pow(10, (x / 20));
+}
