@@ -31,7 +31,6 @@ var TEMPO_STEP = 1;
 var MAXLENGTH = 64;
 var COMPRESSOR_ACTIVATED = false;
 
-var numPages;
 
 if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudioContext')) {
   window.webkitAudioContext = AudioContext;
