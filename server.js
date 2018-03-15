@@ -170,21 +170,21 @@ io.sockets.on('connection', function (socket) {
 
     // CHANGE LENGTH SEQUENCE
     socket.on('sequenceLength', function (message) {
-      console.log('recieve change senquence length: ' + message);
+      console.log('receive change senquence length: ' + message);
       sequencerStates[room].sequenceLength = message;
       socket.in(room).broadcast.emit('sendSequenceLength', message);
     });
 
     // CHANGE TRACK GAIN
     socket.on('gain', function (message) {
-      console.log('recieve change gain: ' + message);
+      console.log('receive change gain: ' + message);
       sequencerStates[room].gains[message[0]] = message[1];
       socket.in(room).broadcast.emit('sendGain', message);
     });
     
     // SAVE PRESET
     socket.on('savePreset', function (message) {
-      console.log('recieve save preset');
+      console.log('receive save preset');
       var presetName = message[1];
       var sequencerPresetState = JSON.parse(message[0]);
       savePreset(presetName, sequencerPresetState)
@@ -192,13 +192,12 @@ io.sockets.on('connection', function (socket) {
     });
     
     socket.on('loadPreset', function (message) {
-      console.log('recieve load preset');
+      console.log('receive load preset');
       var preset = getPreset(message);
       sequencerStates[room] = preset;
       io.sockets.in(room).emit('sendSequencerPreset', JSON.stringify(preset));
     });
 
-    
     // CHAT
     // when the client emits 'new message', this listens and executes
     socket.on('new message', function (data) {
