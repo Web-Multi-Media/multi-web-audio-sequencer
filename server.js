@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 var session = require('express-session')({
-  secret: "azaezaedzadzea",
+  secret: process.env.SESSION_SECRET || "azaezaedzadzea",
   resave: true,
   saveUninitialized: true
 });
