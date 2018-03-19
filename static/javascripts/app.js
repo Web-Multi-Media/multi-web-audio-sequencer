@@ -341,10 +341,9 @@ function schedule() {
   while (noteTime < currentTime + 0.200) {
     var contextPlayTime = noteTime + startTime;
     currentSequencerState.pads.forEach(function (entry, trackId) {
-      if (entry[rhythmIndex] == 1) {
+      if (entry[rhythmIndex] == 1 && !currentKit.isMuted[trackId]) {
         wave = currentKit.waves[trackId];
-        if(!currentKit.isMuted[trackId])
-          playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
+        playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
       }
     });
     if (noteTime != lastDrawTime) {
