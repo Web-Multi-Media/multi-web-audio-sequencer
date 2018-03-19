@@ -701,6 +701,12 @@ function addSoloTrackEvent(trackId) {
 
 function soloTrack(trackIdtoSolo) {
   console.log('SoloTrack');
+  if(currentKit.isMuted[trackIdtoSolo]){
+  /*Track can't be solo and muted at the same time, let's unmute it first*/
+    currentKit.isMuted[trackIdtoSolo] = 0;
+    var muteTrackButton = $('.instrument').eq(trackIdtoSolo).find('.mute-track')[0];
+    $(muteTrackButton).trigger("blur");
+  }
   currentSequencerState.pads.forEach(function (entry, trackId) {
     if(trackId != trackIdtoSolo)
       muteTrack(trackId);
