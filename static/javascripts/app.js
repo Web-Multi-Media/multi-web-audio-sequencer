@@ -543,7 +543,7 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
     }
   }
 
-  currentKit.isMuted[trackId] = 0;
+  currentKit.isUnmuted[trackId] = 1;
   currentKit.isSoloed[trackId] = 0;
   currentKit.isPlayable[trackId] = 1;
 
@@ -707,7 +707,7 @@ function soloTrack(trackId) {
 }
 
 function muteTrack(trackId) {
-  currentKit.isMuted[trackId] = (currentKit.isMuted[trackId]==1) ? 0 : 1;
+  currentKit.isUnmuted[trackId] = (currentKit.isUnmuted[trackId]==1) ? 0 : 1;
 }
 
 function solveMuteSoloConflicts() {
@@ -723,11 +723,9 @@ function solveMuteSoloConflicts() {
   if (someTracksAreMutted)
     currentKit.isPlayable = currentKit.isSoloed;
   else{
-    for(var trackId= 0; trackId < currentKit.isMuted.length; trackId++)
-    {
-      currentKit.isPlayable[trackId] = (currentKit.isMuted[trackId]==1) ? 0 : 1;
-    }
+    currentKit.isPlayable = currentKit.isUnmuted;
   }
+  console.log('currentKit.isPlayable: ' + currentKit.isPlayable);
 }
 
 // Drag and drop sounds

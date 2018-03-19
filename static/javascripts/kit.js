@@ -7,7 +7,7 @@ function Kit(name) {
   this.buffers = [];
   this.waves = [];
   this.gainNodes = [];
-  this.isMuted = [];
+  this.isUnmuted = [];
   this.isSoloed = [];
   this.isPlayable = [];
 
