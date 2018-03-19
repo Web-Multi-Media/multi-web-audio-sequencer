@@ -341,7 +341,7 @@ function schedule() {
   while (noteTime < currentTime + 0.200) {
     var contextPlayTime = noteTime + startTime;
     currentSequencerState.pads.forEach(function (entry, trackId) {
-      if (entry[rhythmIndex] == 1 && !currentKit.isMuted[trackId]) {
+      if (entry[rhythmIndex] == 1 && currentKit.isPlayable[trackId]) {
         wave = currentKit.waves[trackId];
         playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
       }
@@ -544,6 +544,8 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
   }
 
   currentKit.isMuted[trackId] = 0;
+  currentKit.isSoloed[trackId] = 0;
+  currentKit.isPlayable[trackId] = 1;
 
   // add click events
   addPadClickEvent(socket, trackId);
@@ -685,7 +687,8 @@ function addMuteTrackEvent(trackId) {
   $(muteTrackButton).click(function () {
     $(this).trigger("blur");
     var trackId = $(this).parents('.instrument').index();
-      muteTrack(trackId);
+    muteTrack(trackId);
+    solveMuteSoloConflicts();
   });
 }
 
@@ -694,27 +697,37 @@ function addSoloTrackEvent(trackId) {
   var muteTrackButton = $('.instrument').eq(trackId).find('.solo-track')[0];
   $(muteTrackButton).click(function () {
     $(this).trigger("blur");
-    var trackId = $(this).parents('.instrument').index();
-      soloTrack(trackId);
+    soloTrack(trackId);
+    solveMuteSoloConflicts();
   });
 }
 
-function soloTrack(trackIdtoSolo) {
-  console.log('SoloTrack');
-  if(currentKit.isMuted[trackIdtoSolo]){
-  /*Track can't be solo and muted at the same time, let's unmute it first*/
-    currentKit.isMuted[trackIdtoSolo] = 0;
-    var muteTrackButton = $('.instrument').eq(trackIdtoSolo).find('.mute-track')[0];
-    $(muteTrackButton).trigger("blur");
-  }
-  currentSequencerState.pads.forEach(function (entry, trackId) {
-    if(trackId != trackIdtoSolo)
-      muteTrack(trackId);
-  });
+function soloTrack(trackId) {
+  currentKit.isSoloed[trackId] = (currentKit.isSoloed[trackId]==1) ? 0 : 1;
 }
 
 function muteTrack(trackId) {
-   currentKit.isMuted[trackId] = (currentKit.isMuted[trackId]==1) ? 0 : 1;
+  currentKit.isMuted[trackId] = (currentKit.isMuted[trackId]==1) ? 0 : 1;
+}
+
+function solveMuteSoloConflicts() {
+  var someTracksAreMutted = false;
+  for(var trackId= 0; trackId < currentKit.isSoloed.length; trackId++)
+  {
+    if(currentKit.isSoloed[trackId]==1){
+      someTracksAreMutted = true;
+      break;
+    }
+  }
+
+  if (someTracksAreMutted)
+    currentKit.isPlayable = currentKit.isSoloed;
+  else{
+    for(var trackId= 0; trackId < currentKit.isMuted.length; trackId++)
+    {
+      currentKit.isPlayable[trackId] = (currentKit.isMuted[trackId]==1) ? 0 : 1;
+    }
+  }
 }
 
 // Drag and drop sounds

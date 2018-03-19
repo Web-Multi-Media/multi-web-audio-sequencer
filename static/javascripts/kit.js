@@ -8,6 +8,8 @@ function Kit(name) {
   this.waves = [];
   this.gainNodes = [];
   this.isMuted = [];
+  this.isSoloed = [];
+  this.isPlayable = [];
 
   this.startedLoading = false;
   this.isLoaded = false;
