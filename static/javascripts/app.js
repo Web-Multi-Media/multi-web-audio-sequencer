@@ -505,6 +505,7 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
     padEl +
     '</div><div class="col-xs-1 col-lg-1" title="Track gain"><input type="text" value="-6" class="dial">' + 
     '<button type="button" class="mute-track btn btn-primary" data-toggle="button">M</button>' +
+    '<button type="button" class="solo-track btn btn-primary" data-toggle="button">S</button>' +
     '</div>' +
     '<div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-' +
     uniqueTrackId +
@@ -549,6 +550,7 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
   addDeleteTrackClickEvent(trackId);
   addRotateTriangleEvent(trackId);
   addMuteTrackEvent(trackId);
+  addSoloTrackEvent(trackId);
 }
 
 
@@ -685,6 +687,20 @@ function addMuteTrackEvent(trackId) {
     var trackId = $(this).parents('.instrument').index();
       muteTrack(trackId);
   });
+}
+
+// Mte track
+function addSoloTrackEvent(trackId) {
+  var muteTrackButton = $('.instrument').eq(trackId).find('.solo-track')[0];
+  $(muteTrackButton).click(function () {
+    $(this).trigger("blur");
+    var trackId = $(this).parents('.instrument').index();
+      soloTrack(trackId);
+  });
+}
+
+function soloTrack(trackId) {
+   console.log('SoloTrack');
 }
 
 function muteTrack(trackId) {
