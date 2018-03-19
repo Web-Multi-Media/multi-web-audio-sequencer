@@ -699,8 +699,12 @@ function addSoloTrackEvent(trackId) {
   });
 }
 
-function soloTrack(trackId) {
-   console.log('SoloTrack');
+function soloTrack(trackIdtoSolo) {
+  console.log('SoloTrack');
+  currentSequencerState.pads.forEach(function (entry, trackId) {
+    if(trackId != trackIdtoSolo)
+      muteTrack(trackId);
+  });
 }
 
 function muteTrack(trackId) {
