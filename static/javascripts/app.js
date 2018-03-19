@@ -341,7 +341,7 @@ function schedule() {
   while (noteTime < currentTime + 0.200) {
     var contextPlayTime = noteTime + startTime;
     currentSequencerState.pads.forEach(function (entry, trackId) {
-      if (entry[rhythmIndex] == 1 && currentKit.isPlayable[trackId]) {
+      if (entry[rhythmIndex] == 1) {
         wave = currentKit.waves[trackId];
         playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
       }
@@ -725,6 +725,15 @@ function solveMuteSoloConflicts() {
   else{
     currentKit.isPlayable = currentKit.isUnmuted;
   }
+
+  for(var trackId= 0; trackId < currentKit.isPlayable.length; trackId++)
+  {
+    if(currentKit.isPlayable[trackId])
+        currentKit.gainNodes[trackId].gain.value = linear2db($('.instrument').eq(trackId).find(".dial").eq(0).val());
+    else
+        currentKit.gainNodes[trackId].gain.value = 0;
+  }  
+  
   console.log('currentKit.isPlayable: ' + currentKit.isPlayable);
 }
 
