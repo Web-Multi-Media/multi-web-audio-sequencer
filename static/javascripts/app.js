@@ -84,7 +84,7 @@ function lowPassFilterListener() {
       lowPassFilterNode.active = false;
       $("#freq-slider,#quality-slider").slider("option", "disabled", true);
     }
-  })
+  });
 }
 
 function reverbListener() {
@@ -514,7 +514,7 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
   var prevTrack = $('#newTrack');
   prevTrack.before(newTrack);
 
-  thisTrack = $('.instrument').eq(trackId);
+  var thisTrack = $('.instrument').eq(trackId);
 
   // add gainNode
   currentKit.gainNodes[trackId] = context.createGain();
