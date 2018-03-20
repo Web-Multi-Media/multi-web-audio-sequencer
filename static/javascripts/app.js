@@ -543,9 +543,8 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
     }
   }
 
-  currentKit.isUnmuted[trackId] = 1;
-  currentKit.isSoloed[trackId] = 0;
-  currentKit.isPlayable[trackId] = 1;
+  currentKit.mutedTracks[trackId] = 1;
+  currentKit.soloedTracks[trackId] = 0;
 
   // add click events
   addPadClickEvent(socket, trackId);
@@ -703,38 +702,44 @@ function addSoloTrackEvent(trackId) {
 }
 
 function soloTrack(trackId) {
-  currentKit.isSoloed[trackId] = (currentKit.isSoloed[trackId]==1) ? 0 : 1;
+  currentKit.soloedTracks[trackId] = (currentKit.soloedTracks[trackId] == 1) ? 0 : 1;
 }
 
 function muteTrack(trackId) {
-  currentKit.isUnmuted[trackId] = (currentKit.isUnmuted[trackId]==1) ? 0 : 1;
+  currentKit.mutedTracks[trackId] = (currentKit.mutedTracks[trackId] == 1) ? 0 : 1;
 }
 
 function solveMuteSoloConflicts() {
   var someTracksAreMutted = false;
-  for(var trackId= 0; trackId < currentKit.isSoloed.length; trackId++)
+  var PlayableTracks = [];
+
+  /* Check if somes tracks are muted */
+  for(var trackId= 0; trackId < currentKit.soloedTracks.length; trackId++)
   {
-    if(currentKit.isSoloed[trackId]==1){
+    if(currentKit.soloedTracks[trackId] == 1){
       someTracksAreMutted = true;
       break;
     }
   }
 
   if (someTracksAreMutted)
-    currentKit.isPlayable = currentKit.isSoloed;
+    PlayableTracks = currentKit.soloedTracks;
   else{
-    currentKit.isPlayable = currentKit.isUnmuted;
+    PlayableTracks = currentKit.mutedTracks;
   }
 
-  for(var trackId= 0; trackId < currentKit.isPlayable.length; trackId++)
+  for(var trackId= 0; trackId < PlayableTracks.length; trackId++)
   {
-    if(currentKit.isPlayable[trackId])
-        currentKit.gainNodes[trackId].gain.value = linear2db($('.instrument').eq(trackId).find(".dial").eq(0).val());
-    else
-        currentKit.gainNodes[trackId].gain.value = 0;
-  }  
-  
-  console.log('currentKit.isPlayable: ' + currentKit.isPlayable);
+    if(PlayableTracks[trackId]){
+      /* track is not muted */
+      var gainFromUI = $('.instrument').eq(trackId).find(".dial").eq(0).val();
+      currentKit.gainNodes[trackId].gain.value = linear2db(gainFromUI);
+    }
+    else{
+      /* track is muted */
+      currentKit.gainNodes[trackId].gain.value = 0;
+    }
+  }    
 }
 
 // Drag and drop sounds
