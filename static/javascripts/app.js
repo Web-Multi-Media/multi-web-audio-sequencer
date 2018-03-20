@@ -525,6 +525,8 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
     
   // add solo mute gain node
   currentKit.soloMuteNodes[trackId] = context.createGain();
+  currentKit.mutedTracks[trackId] = 1;
+  currentKit.soloedTracks[trackId] = 0;
 
   // load wavesurfer visu
   currentKit.waves[trackId] = new Wave();
@@ -548,9 +550,6 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
       wave.endTime = endTime;
     }
   }
-
-  currentKit.mutedTracks[trackId] = 1;
-  currentKit.soloedTracks[trackId] = 0;
 
   // add click events
   addPadClickEvent(socket, trackId);
@@ -676,7 +675,11 @@ function deleteTrack(trackId) {
 
   // delete gain
   currentKit.gainNodes.splice(trackId, 1);
+  
+  // delete gain and solo mute lists
   currentKit.soloMuteNodes.splice(trackId, 1);
+  currentKit.mutedTracks.splice(trackId, 1);
+  currentKit.soloedTracks.splice(trackId, 1);
 
   // update sequencer state
   currentSequencerState.trackNames.splice(trackId, 1);
@@ -702,6 +705,7 @@ function addSoloTrackEvent(trackId) {
   var muteTrackButton = $('.instrument').eq(trackId).find('.solo-track')[0];
   $(muteTrackButton).click(function () {
     $(this).trigger("blur");
+    var trackId = $(this).parents('.instrument').index();
     toggleSoloTrack(trackId);
     solveMuteSoloConflicts();
   });
