@@ -504,13 +504,13 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
     uniqueTrackId +
     '" class="instrument-label"><i class="glyphicon glyphicon-chevron-right"></i> <strong class="instrumentName">' +
     trackName +
-    '</strong></a></div><div class="col-xs-8 col-lg-8 pad-container">' +
+    '</strong></a></div><div class="col-xs-7 col-lg-8 pad-container">' +
     padEl +
-    '</div><div class="col-xs-1 col-lg-1" title="Track gain"><input type="text" value="-6" class="dial">' +
+    '</div><div class="col-xs-3 col-lg-2" title="Track gain"><input type="text" value="-6" class="dial">' +
     '<button type="button" class="mute-track btn btn-primary" data-toggle="button">M</button>' +
     '<button type="button" class="solo-track btn btn-primary" data-toggle="button">S</button>' +
-    '</div>' +
-    '<div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-' +
+    '<button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div>' + 
+    '<div id="edit-' +
     uniqueTrackId +
     '" class="edit-zone collapse"><div class="waveform-container"></div><div class="waveform-timeline"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
 
