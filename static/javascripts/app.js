@@ -311,7 +311,7 @@ function loadImpulseResponses() {
   reverbImpulseResponse.load();
 }
 
-function playNote(buffer, noteTime, startTime, endTime, gainNode) {
+function playNote(buffer, noteTime, startTime, endTime, gainNode, soloMuteNode) {
   var voice = context.createBufferSource();
   voice.buffer = buffer;
 
@@ -326,7 +326,8 @@ function playNote(buffer, noteTime, startTime, endTime, gainNode) {
     currentLastNode = convolver;
   }
 
-  voice.connect(gainNode)
+  voice.connect(soloMuteNode);
+  soloMuteNode.connect(gainNode);
   gainNode.connect(currentLastNode);
   gainNode.connect(recordingDest);
   voice.start(noteTime, startTime, endTime - startTime);
@@ -343,7 +344,9 @@ function schedule() {
     currentSequencerState.pads.forEach(function (entry, trackId) {
       if (entry[rhythmIndex] == 1) {
         wave = currentKit.waves[trackId];
-        playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
+        playNote(currentKit.buffers[trackId], 
+                 contextPlayTime, wave.startTime, wave.endTime, 
+                 currentKit.gainNodes[trackId], currentKit.soloMuteNodes[trackId]);
       }
     });
     if (noteTime != lastDrawTime) {
@@ -519,6 +522,9 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
   // add gainNode
   currentKit.gainNodes[trackId] = context.createGain();
   addKnob(trackId, gain);
+    
+  // add solo mute gain node
+  currentKit.soloMuteNodes[trackId] = context.createGain();
 
   // load wavesurfer visu
   currentKit.waves[trackId] = new Wave();
@@ -670,6 +676,7 @@ function deleteTrack(trackId) {
 
   // delete gain
   currentKit.gainNodes.splice(trackId, 1);
+  currentKit.soloMuteNodes.splice(trackId, 1);
 
   // update sequencer state
   currentSequencerState.trackNames.splice(trackId, 1);
@@ -718,11 +725,10 @@ function solveMuteSoloConflicts() {
   for (var trackId = 0; trackId < payableTracks.length; trackId++) {
     if (payableTracks[trackId]) {
       // track is not muted
-      var gainFromUI = $('.instrument').eq(trackId).find(".dial").eq(0).val();
-      currentKit.gainNodes[trackId].gain.value = linear2db(gainFromUI);
+      currentKit.soloMuteNodes[trackId].gain.value = 1;
     } else {
       // track is muted
-      currentKit.gainNodes[trackId].gain.value = 0;
+      currentKit.soloMuteNodes[trackId].gain.value = 0;
     }
   }
 }
