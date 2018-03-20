@@ -686,7 +686,7 @@ function addMuteTrackEvent(trackId) {
   $(muteTrackButton).click(function () {
     $(this).trigger("blur");
     var trackId = $(this).parents('.instrument').index();
-    ToggleMuteTrack(trackId);
+    toggleMuteTrack(trackId);
     solveMuteSoloConflicts();
   });
 }
@@ -704,7 +704,7 @@ function toggleSoloTrack(trackId) {
   currentKit.soloedTracks[trackId] = (currentKit.soloedTracks[trackId] == 1) ? 0 : 1;
 }
 
-function ToggleMuteTrack(trackId) {
+function toggleMuteTrack(trackId) {
   currentKit.mutedTracks[trackId] = (currentKit.mutedTracks[trackId] == 1) ? 0 : 1;
 }
 
@@ -713,7 +713,7 @@ function solveMuteSoloConflicts() {
   var mutedTracks = currentKit.mutedTracks;
   
   // Check if somes tracks are muted 
-  var payableTracks = (soloedTracks.includes(1) ? soloedTracks : mutedTracks)
+  var payableTracks = soloedTracks.includes(1) ? soloedTracks : mutedTracks;
 
   for (var trackId = 0; trackId < payableTracks.length; trackId++) {
     if (payableTracks[trackId]) {
