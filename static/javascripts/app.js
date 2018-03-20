@@ -350,10 +350,10 @@ function schedule() {
       lastDrawTime = noteTime;
       drawPlayhead(rhythmIndex);
     }
-    if(isPlaying)
+    if (isPlaying)
       advanceNote();
   }
-  if(isPlaying)
+  if (isPlaying)
     timeoutId = setTimeout(schedule, 50);
 }
 
@@ -466,7 +466,7 @@ function addNewTrackDetails() {
   });
 }
 
-function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6, pads=null) {
+function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6, pads = null) {
   var uniqueTrackId = Date.now();
 
   // update sequencer state
@@ -503,7 +503,7 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
     trackName +
     '</strong></a></div><div class="col-xs-8 col-lg-8 pad-container">' +
     padEl +
-    '</div><div class="col-xs-1 col-lg-1" title="Track gain"><input type="text" value="-6" class="dial">' + 
+    '</div><div class="col-xs-1 col-lg-1" title="Track gain"><input type="text" value="-6" class="dial">' +
     '<button type="button" class="mute-track btn btn-primary" data-toggle="button">M</button>' +
     '<button type="button" class="solo-track btn btn-primary" data-toggle="button">S</button>' +
     '</div>' +
@@ -537,7 +537,7 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
   // load buffer
   if (soundUrl) {
     currentKit.loadSample(soundUrl, trackId);
-    if (startTime !== 'null' && startTime !== false ) {
+    if (startTime !== 'null' && startTime !== false) {
       wave.startTime = startTime;
       wave.endTime = endTime;
     }
@@ -670,7 +670,7 @@ function deleteTrack(trackId) {
 
   // delete gain
   currentKit.gainNodes.splice(trackId, 1);
-  
+
   // update sequencer state
   currentSequencerState.trackNames.splice(trackId, 1);
   currentSequencerState.sounds.splice(trackId, 1);
@@ -714,9 +714,8 @@ function solveMuteSoloConflicts() {
   var PlayableTracks = [];
 
   /* Check if somes tracks are muted */
-  for(var trackId= 0; trackId < currentKit.soloedTracks.length; trackId++)
-  {
-    if(currentKit.soloedTracks[trackId] == 1){
+  for (var trackId = 0; trackId < currentKit.soloedTracks.length; trackId++) {
+    if (currentKit.soloedTracks[trackId] == 1) {
       someTracksAreMutted = true;
       break;
     }
@@ -724,22 +723,20 @@ function solveMuteSoloConflicts() {
 
   if (someTracksAreMutted)
     PlayableTracks = currentKit.soloedTracks;
-  else{
+  else {
     PlayableTracks = currentKit.mutedTracks;
   }
 
-  for(var trackId= 0; trackId < PlayableTracks.length; trackId++)
-  {
-    if(PlayableTracks[trackId]){
+  for (var trackId = 0; trackId < PlayableTracks.length; trackId++) {
+    if (PlayableTracks[trackId]) {
       /* track is not muted */
       var gainFromUI = $('.instrument').eq(trackId).find(".dial").eq(0).val();
       currentKit.gainNodes[trackId].gain.value = linear2db(gainFromUI);
-    }
-    else{
+    } else {
       /* track is muted */
       currentKit.gainNodes[trackId].gain.value = 0;
     }
-  }    
+  }
 }
 
 // Drag and drop sounds
