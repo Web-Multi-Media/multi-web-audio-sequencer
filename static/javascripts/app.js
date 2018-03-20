@@ -680,60 +680,48 @@ function deleteTrack(trackId) {
 }
 
 
-// Mte track
+// Mute solo track
 function addMuteTrackEvent(trackId) {
   var muteTrackButton = $('.instrument').eq(trackId).find('.mute-track')[0];
   $(muteTrackButton).click(function () {
     $(this).trigger("blur");
     var trackId = $(this).parents('.instrument').index();
-    muteTrack(trackId);
+    ToggleMuteTrack(trackId);
     solveMuteSoloConflicts();
   });
 }
 
-// Mte track
 function addSoloTrackEvent(trackId) {
   var muteTrackButton = $('.instrument').eq(trackId).find('.solo-track')[0];
   $(muteTrackButton).click(function () {
     $(this).trigger("blur");
-    soloTrack(trackId);
+    toggleSoloTrack(trackId);
     solveMuteSoloConflicts();
   });
 }
 
-function soloTrack(trackId) {
+function toggleSoloTrack(trackId) {
   currentKit.soloedTracks[trackId] = (currentKit.soloedTracks[trackId] == 1) ? 0 : 1;
 }
 
-function muteTrack(trackId) {
+function ToggleMuteTrack(trackId) {
   currentKit.mutedTracks[trackId] = (currentKit.mutedTracks[trackId] == 1) ? 0 : 1;
 }
 
 function solveMuteSoloConflicts() {
-  var someTracksAreMutted = false;
-  var PlayableTracks = [];
+  var soloedTracks = currentKit.soloedTracks;
+  var mutedTracks = currentKit.mutedTracks;
+  
+  // Check if somes tracks are muted 
+  var payableTracks = (soloedTracks.includes(1) ? soloedTracks : mutedTracks)
 
-  /* Check if somes tracks are muted */
-  for (var trackId = 0; trackId < currentKit.soloedTracks.length; trackId++) {
-    if (currentKit.soloedTracks[trackId] == 1) {
-      someTracksAreMutted = true;
-      break;
-    }
-  }
-
-  if (someTracksAreMutted)
-    PlayableTracks = currentKit.soloedTracks;
-  else {
-    PlayableTracks = currentKit.mutedTracks;
-  }
-
-  for (var trackId = 0; trackId < PlayableTracks.length; trackId++) {
-    if (PlayableTracks[trackId]) {
-      /* track is not muted */
+  for (var trackId = 0; trackId < payableTracks.length; trackId++) {
+    if (payableTracks[trackId]) {
+      // track is not muted
       var gainFromUI = $('.instrument').eq(trackId).find(".dial").eq(0).val();
       currentKit.gainNodes[trackId].gain.value = linear2db(gainFromUI);
     } else {
-      /* track is muted */
+      // track is muted
       currentKit.gainNodes[trackId].gain.value = 0;
     }
   }
