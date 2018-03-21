@@ -7,6 +7,9 @@ function Kit(name) {
   this.buffers = [];
   this.waves = [];
   this.gainNodes = [];
+  this.soloMuteNodes = []; // gain nodes for soloing and muting tracks
+  this.mutedTracks = []; // List of Unmuted tracks: If 1, Unmuted, if 0 Muted
+  this.soloedTracks = []; // List of Soloed tracks: If 1, Soloed, if 0 not Soloed
 
   this.startedLoading = false;
   this.isLoaded = false;

@@ -3,8 +3,9 @@ body {
 }
 
 .pad {
-  width: 2.1vw;
-  height:30px;
+  margin-top: 1px;
+  width: 2.0vw;
+  height: 29px;
 /*  height: 4vh;*/
   display: inline-block;
   background: rgb(182, 173, 56);
@@ -104,13 +105,15 @@ body {
   border-color: greenyellow;
 }
 
+/*
 .deleteTrackButton {
   padding-left: 0.5vw;
   padding-top: 0.15vw;
   width: 2.4vw;
   height:30px;
-/*  height: 4vh;*/
+  height: 4vh;
 }
+*/
 
 wave {
   width: 101%;
@@ -218,4 +221,21 @@ a {
 
 .room-card {
   margin-top: 10px;
+}
+
+.mute-track, .solo-track, .deleteTrackButton {
+  border-radius: 5px;
+  width: 20px;
+  padding: 3px;
+  font-size: 12px;
+  margin-top: -22px;
+  margin-left: 4px;
+}
+
+.deleteTrackButton {
+  margin-left: 6px;
+}
+
+.mute-track:hover:not(.active), .solo-track:hover:not(.active) {
+   background-color: rgb(51, 122, 183);
 }

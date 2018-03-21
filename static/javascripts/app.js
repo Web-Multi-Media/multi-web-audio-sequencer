@@ -84,7 +84,7 @@ function lowPassFilterListener() {
       lowPassFilterNode.active = false;
       $("#freq-slider,#quality-slider").slider("option", "disabled", true);
     }
-  })
+  });
 }
 
 function reverbListener() {
@@ -311,7 +311,7 @@ function loadImpulseResponses() {
   reverbImpulseResponse.load();
 }
 
-function playNote(buffer, noteTime, startTime, endTime, gainNode) {
+function playNote(buffer, noteTime, startTime, endTime, gainNode, soloMuteNode) {
   var voice = context.createBufferSource();
   voice.buffer = buffer;
 
@@ -326,7 +326,8 @@ function playNote(buffer, noteTime, startTime, endTime, gainNode) {
     currentLastNode = convolver;
   }
 
-  voice.connect(gainNode)
+  voice.connect(soloMuteNode);
+  soloMuteNode.connect(gainNode);
   gainNode.connect(currentLastNode);
   gainNode.connect(recordingDest);
   voice.start(noteTime, startTime, endTime - startTime);
@@ -343,17 +344,19 @@ function schedule() {
     currentSequencerState.pads.forEach(function (entry, trackId) {
       if (entry[rhythmIndex] == 1) {
         wave = currentKit.waves[trackId];
-        playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
+        playNote(currentKit.buffers[trackId], 
+                 contextPlayTime, wave.startTime, wave.endTime, 
+                 currentKit.gainNodes[trackId], currentKit.soloMuteNodes[trackId]);
       }
     });
     if (noteTime != lastDrawTime) {
       lastDrawTime = noteTime;
       drawPlayhead(rhythmIndex);
     }
-    if(isPlaying)
+    if (isPlaying)
       advanceNote();
   }
-  if(isPlaying)
+  if (isPlaying)
     timeoutId = setTimeout(schedule, 50);
 }
 
@@ -466,7 +469,7 @@ function addNewTrackDetails() {
   });
 }
 
-function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6, pads=null) {
+function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6, pads = null) {
   var uniqueTrackId = Date.now();
 
   // update sequencer state
@@ -501,21 +504,29 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
     uniqueTrackId +
     '" class="instrument-label"><i class="glyphicon glyphicon-chevron-right"></i> <strong class="instrumentName">' +
     trackName +
-    '</strong></a></div><div class="col-xs-8 col-lg-8 pad-container">' +
+    '</strong></a></div><div class="col-xs-7 col-lg-8 pad-container">' +
     padEl +
-    '</div><div class="col-xs-1 col-lg-1" title="Track gain"><input type="text" value="-6" class="dial"></div>' +
-    '<div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-' +
+    '</div><div class="col-xs-3 col-lg-2" title="Track gain"><input type="text" value="-6" class="dial">' +
+    '<button type="button" class="mute-track btn btn-primary" data-toggle="button">M</button>' +
+    '<button type="button" class="solo-track btn btn-primary" data-toggle="button">S</button>' +
+    '<button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div>' + 
+    '<div id="edit-' +
     uniqueTrackId +
     '" class="edit-zone collapse"><div class="waveform-container"></div><div class="waveform-timeline"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
 
   var prevTrack = $('#newTrack');
   prevTrack.before(newTrack);
 
-  thisTrack = $('.instrument').eq(trackId);
+  var thisTrack = $('.instrument').eq(trackId);
 
   // add gainNode
   currentKit.gainNodes[trackId] = context.createGain();
   addKnob(trackId, gain);
+    
+  // add solo mute gain node
+  currentKit.soloMuteNodes[trackId] = context.createGain();
+  currentKit.mutedTracks[trackId] = 1;
+  currentKit.soloedTracks[trackId] = 0;
 
   // load wavesurfer visu
   currentKit.waves[trackId] = new Wave();
@@ -534,7 +545,7 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
   // load buffer
   if (soundUrl) {
     currentKit.loadSample(soundUrl, trackId);
-    if (startTime !== 'null' && startTime !== false ) {
+    if (startTime !== 'null' && startTime !== false) {
       wave.startTime = startTime;
       wave.endTime = endTime;
     }
@@ -544,6 +555,8 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
   addPadClickEvent(socket, trackId);
   addDeleteTrackClickEvent(trackId);
   addRotateTriangleEvent(trackId);
+  addMuteTrackEvent(trackId);
+  addSoloTrackEvent(trackId);
 }
 
 
@@ -663,6 +676,11 @@ function deleteTrack(trackId) {
   // delete gain
   currentKit.gainNodes.splice(trackId, 1);
   
+  // delete gain and solo mute lists
+  currentKit.soloMuteNodes.splice(trackId, 1);
+  currentKit.mutedTracks.splice(trackId, 1);
+  currentKit.soloedTracks.splice(trackId, 1);
+
   // update sequencer state
   currentSequencerState.trackNames.splice(trackId, 1);
   currentSequencerState.sounds.splice(trackId, 1);
@@ -671,6 +689,61 @@ function deleteTrack(trackId) {
   currentSequencerState.gains.splice(trackId, 1);
 }
 
+
+// Mute solo track
+function addMuteTrackEvent(trackId) {
+  var muteTrackButton = $('.instrument').eq(trackId).find('.mute-track').eq(0);
+  muteTrackButton.click(function () {
+    $(this).trigger("blur");
+    var trackId = $(this).parents('.instrument').index();
+    toggleMuteTrack(trackId);
+    solveMuteSoloConflicts();
+  });
+}
+
+function addSoloTrackEvent(trackId) {
+  var soloTrackButton = $('.instrument').eq(trackId).find('.solo-track').eq(0);
+  soloTrackButton.click(function () {
+    $(this).trigger("blur");
+    var trackId = $(this).parents('.instrument').index();
+    toggleSoloTrack(trackId);
+    solveMuteSoloConflicts();
+  });
+}
+
+function toggleSoloTrack(trackId) {
+  currentKit.soloedTracks[trackId] = (currentKit.soloedTracks[trackId] == 1) ? 0 : 1;
+  if (currentKit.soloedTracks[trackId] == 1 && currentKit.mutedTracks[trackId] == 0) {
+    $('.instrument').eq(trackId).find('.mute-track').eq(0).button('toggle');
+    toggleMuteTrack(trackId);
+  }
+}
+
+function toggleMuteTrack(trackId) {
+  currentKit.mutedTracks[trackId] = (currentKit.mutedTracks[trackId] == 1) ? 0 : 1;
+  if (currentKit.mutedTracks[trackId] == 0 && currentKit.soloedTracks[trackId] == 1) {
+    $('.instrument').eq(trackId).find('.solo-track').eq(0).button('toggle');
+    toggleSoloTrack(trackId);
+  }
+}
+
+function solveMuteSoloConflicts() {
+  var soloedTracks = currentKit.soloedTracks;
+  var mutedTracks = currentKit.mutedTracks;
+  
+  // Check if somes tracks are muted 
+  var payableTracks = soloedTracks.includes(1) ? soloedTracks : mutedTracks;
+
+  for (var trackId = 0; trackId < payableTracks.length; trackId++) {
+    if (payableTracks[trackId]) {
+      // track is not muted
+      currentKit.soloMuteNodes[trackId].gain.value = 1;
+    } else {
+      // track is muted
+      currentKit.soloMuteNodes[trackId].gain.value = 0;
+    }
+  }
+}
 
 // Drag and drop sounds
 function allowDrop(ev) {
