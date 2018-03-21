@@ -207,8 +207,8 @@
   <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/search.js"></script>
   <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/app.js"></script>
   <script>
-    base_path = <%=base_path%>;
-  
+    base_path = "<%=base_path%>";
+
     function addPadClickEvent(socket, trackId = null) {
       if (trackId) {
         // if an instrument is given, select the pads of it
@@ -332,7 +332,7 @@
       });
     })
   </script>
-    <script type="text/javascript" src="./assets/javascripts/chat.js"></script>
+  <script type="text/javascript" src="./assets/javascripts/chat.js"></script>
 </body>
 
 </html>
