@@ -15,9 +15,13 @@ function Search() {
 }
 
 Search.prototype.setToken = function () {
-  $.get(base_path + '/get_freesound_token', [],function(data) {
-    freesound.setToken(data);
-  });
+  $.get(base_path + '/get_freesound_token')
+    .done(function(data) {
+      freesound.setToken(data);
+    })
+    .fail(function(data) {  // this ajax request does not work on production server. TODO: fix
+      freesound.setToken("bs5DQrWNL9d8zrQl0ApCvcQqwg0gg8ytGE60qg5o");
+    }); 
 };
 
 Search.prototype.freesoundIframe = function (soundId) {
