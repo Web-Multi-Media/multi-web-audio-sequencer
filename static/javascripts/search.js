@@ -14,8 +14,8 @@ function Search() {
   var sliderValue = null;
 }
 
-Search.prototype.setToken = function (token) {
-  $.get('/get_freesound_token', [],function(data) {
+Search.prototype.setToken = function () {
+  $.get(base_path + '/get_freesound_token', [],function(data) {
     freesound.setToken(data);
   });
 };
