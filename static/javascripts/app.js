@@ -713,10 +713,18 @@ function addSoloTrackEvent(trackId) {
 
 function toggleSoloTrack(trackId) {
   currentKit.soloedTracks[trackId] = (currentKit.soloedTracks[trackId] == 1) ? 0 : 1;
+  if (currentKit.soloedTracks[trackId] == 1 && currentKit.mutedTracks[trackId] == 0) {
+    $('.instrument').eq(trackId).find('.mute-track').eq(0).button('toggle');
+    toggleMuteTrack(trackId);
+  }
 }
 
 function toggleMuteTrack(trackId) {
   currentKit.mutedTracks[trackId] = (currentKit.mutedTracks[trackId] == 1) ? 0 : 1;
+  if (currentKit.mutedTracks[trackId] == 0 && currentKit.soloedTracks[trackId] == 1) {
+    $('.instrument').eq(trackId).find('.solo-track').eq(0).button('toggle');
+    toggleSoloTrack(trackId);
+  }
 }
 
 function solveMuteSoloConflicts() {
