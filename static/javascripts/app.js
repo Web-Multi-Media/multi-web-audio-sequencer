@@ -692,8 +692,8 @@ function deleteTrack(trackId) {
 
 // Mute solo track
 function addMuteTrackEvent(trackId) {
-  var muteTrackButton = $('.instrument').eq(trackId).find('.mute-track')[0];
-  $(muteTrackButton).click(function () {
+  var muteTrackButton = $('.instrument').eq(trackId).find('.mute-track').eq(0);
+  muteTrackButton.click(function () {
     $(this).trigger("blur");
     var trackId = $(this).parents('.instrument').index();
     toggleMuteTrack(trackId);
@@ -702,8 +702,8 @@ function addMuteTrackEvent(trackId) {
 }
 
 function addSoloTrackEvent(trackId) {
-  var muteTrackButton = $('.instrument').eq(trackId).find('.solo-track')[0];
-  $(muteTrackButton).click(function () {
+  var soloTrackButton = $('.instrument').eq(trackId).find('.solo-track').eq(0);
+  soloTrackButton.click(function () {
     $(this).trigger("blur");
     var trackId = $(this).parents('.instrument').index();
     toggleSoloTrack(trackId);
