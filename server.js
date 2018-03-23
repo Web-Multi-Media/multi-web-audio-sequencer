@@ -354,7 +354,7 @@ app.get(base_path + '/', (req, res) => {
 
 
 // AJAX
-app.get('/get_freesound_token', function(req, res){
+app.get(base_path + '/get_freesound_token', function(req, res){
   res.send(freesoundClientToken);
 });
 
