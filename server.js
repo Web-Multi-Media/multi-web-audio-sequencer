@@ -354,7 +354,6 @@ app.get(base_path + '/', (req, res) => {
 
 app.get(base_path + '/presets', (req, res) => {
   var adminClient = req.query.admin == adminPassword;
-  console.log(req.query.admin)
   if (adminClient) {
     res.render('presets.ejs', {
       base_path: base_path,
