@@ -39,7 +39,7 @@ Example for starting the app on your sever using npm:
 export MULT_WEB_SEQ_SERV=myserver.com
 export MULT_WEB_SEQ_SERV_P=9050
 export NODE_ENV=production
-npm start
+node server.js
 ```
 
 If you want to use Docker for the deployment, you will have to edit the docker-compose.yml file according to your settings. 
