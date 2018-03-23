@@ -19,23 +19,23 @@
       </div>
     </div>
   </div>
-  
+
   <!--    PRESETS CONTAINER    -->
   <div class="container">
-    <div class="row" >
+    <div class="row">
       <% for(var j=0; j<presets.length; j++) {%>
         <div class="col-xs-3 col-md-3 room-card">
           <span class="thumbnail room-button">
             <center>
               <h4><%=j%></h4>
-              <span type="button" class="btn btn-primary">Load</span>
-              <span type="button" class="btn btn-primary">Delete</span>
-            </center>
+              <span type="button" class="load-preset btn btn-primary">Load</span>
+          <span type="button" class="btn btn-primary">Delete</span>
+          </center>
           </span>
         </div>
-      <% } %>
+        <% } %>
     </div>
-  
+
     <!--    SEQUENCER CONTAINER    -->
     <div class="row">
       <div id="small-sequencer" class="col-md-5 col-xs-5">
@@ -45,8 +45,114 @@
         </button>
       </div>
     </div>
-    
+
   </div>
+
+  <script src="..<%=base_path%>/socket.io/socket.io.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/wavesurfer.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/plugin/wavesurfer.regions.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/plugin/wavesurfer.timeline.min.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/wave.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/impulse-response.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/kit.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/sequencer.js"></script>
+  <script>
+    function sendLoadSequencerPreset(presetId) {
+      socket.emit('loadPreset', presetId);
+    }
+
+    $(function() {
+      // Socket actions
+      socket = io.connect('/', {
+        path: '<%=base_path%>/socket.io'
+      });
+
+      // we connect to a non existing room 
+      // TODO: make the sever aware that its not a normal room and dont try to send state at connection
+      socket.emit('room', '9'); 
+      
+      // sequencer preset
+      socket.on('sendSequencerPreset', function(message) {
+        console.log('preset: ' + message);
+        loadSequencerStatePreset(message);
+      });
+            
+      function loadSequencerStatePreset(sequencerPresetState) {
+        TranslateStateInActions(JSON.parse(sequencerPresetState));
+      }
+
+      // Init sequencer
+      initSequencer(false);
+      playPauseListener();
+      lowPassFilterListener();
+      reverbListener();
+
+      // events
+      $('.load-preset').click(function() {
+        var presetId = $(this).parents('.room-card').index()
+        console.log('load preset: ' + presetId)
+        sendLoadSequencerPreset(presetId)
+      });
+
+      function TranslateStateInActions(sequencerState) {
+        var trackNames = sequencerState['trackNames'];
+        var pads = sequencerState['pads'];
+        var soundUrls = sequencerState['sounds'];
+        var waves = sequencerState['waves'];
+        var sequenceLength = sequencerState['sequenceLength'];
+        var gains = sequencerState['gains'];
+        var tempo = sequencerState['tempo'];
+
+        currentSequencerState = sequencerState;
+
+        // change tempo
+        changeTempo(tempo);
+
+        // change seuquence length
+        changeSequenceLength(sequenceLength);
+
+        // Add tracks and load buffers
+        for (var j = 0; j < trackNames.length; j++) {
+          addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1], gains[j], pads[j]);
+        }
+      }
+      
+      function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6, pads = null) {
+        // update sequencer state
+        currentSequencerState.trackNames[trackId] = trackName;
+        currentSequencerState.pads[trackId] = pads !== null ? pads : Array(64).fill(0);
+        currentSequencerState.sounds[trackId] = soundUrl;
+        currentSequencerState.waves[trackId] = [startTime, endTime];
+        currentSequencerState.gains[trackId] = gain;
+
+        var thisTrack = $('.instrument').eq(trackId);
+
+        // add gainNode
+        currentKit.gainNodes[trackId] = context.createGain();
+        currentKit.changeGainNodeValue(trackId, gain);
+
+        // add solo mute gain node
+        currentKit.soloMuteNodes[trackId] = context.createGain();
+        currentKit.mutedTracks[trackId] = 1;
+        currentKit.soloedTracks[trackId] = 0;
+
+        // load wavesurfer visu
+        currentKit.waves[trackId] = new Wave();
+        var wave = currentKit.waves[trackId];
+
+        // load buffer
+        if (soundUrl) {
+          wave.startTime = 0;
+          wave.endTime = 10  // here exact duration would be nice
+          currentKit.loadSample(soundUrl, trackId, false);
+          if (startTime !== 'null' && startTime !== false) {
+            wave.startTime = startTime;
+            wave.endTime = endTime;
+          }
+        }
+      }
+    });
+  </script>
 </body>
 
 </html>

@@ -1,5 +1,3 @@
-var NUM_INSTRUMENTS = 2;
-
 function Kit(name) {
   this.SAMPLE_BASE_PATH = "assets/sounds/drum-samples/";
   this.name = name;
@@ -30,7 +28,7 @@ Kit.prototype.changeGainNodeValue = function(trackId, value) {
   currentSequencerState.gains[trackId] = value;
 };
 
-Kit.prototype.loadSample = function(url, trackId) {
+Kit.prototype.loadSample = function(url, trackId, visu=true) {
   // update sequencer state
   currentSequencerState.sounds[trackId] = url;
   
@@ -41,8 +39,10 @@ Kit.prototype.loadSample = function(url, trackId) {
   var kit = this;
   
   // load wavesurfer visu
-  kit.waves[trackId].clear();
-  kit.waves[trackId].load(url);
+  if (visu) {
+    kit.waves[trackId].clear();
+    kit.waves[trackId].load(url);
+  }
   
   request.onload = function () {
     context.decodeAudioData(
