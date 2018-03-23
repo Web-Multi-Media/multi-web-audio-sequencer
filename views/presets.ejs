@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Multi Web Audio Sequencer</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="..<%=base_path%>/assets/stylesheets/styles.css">
+</head>
+
+<body>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="jumbotron" style="text-align: center;">
+        <h1>Multi Web Audio Sequencer</h1>
+        <h2>Manage sequencer presets</h2>
+      </div>
+    </div>
+  </div>
+  
+  <!--    PRESETS CONTAINER    -->
+  <div class="container">
+    <div class="row" >
+      <% for(var j=0; j<presets.length; j++) {%>
+        <div class="col-xs-3 col-md-3 room-card">
+          <span class="thumbnail room-button">
+            <center>
+              <h4><%=j%></h4>
+              <span type="button" class="btn btn-primary">Load</span>
+              <span type="button" class="btn btn-primary">Delete</span>
+            </center>
+          </span>
+        </div>
+      <% } %>
+    </div>
+  
+    <!--    SEQUENCER CONTAINER    -->
+    <div class="row">
+      <div id="small-sequencer" class="col-md-5 col-xs-5">
+        <label>Loaded Sequence:</label> &emsp;&emsp;
+        <button id="play-pause" type="button" class="btn btn-success">
+          <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+    
+  </div>
+</body>
+
+</html>

@@ -51,7 +51,7 @@ body {
   font: black;
 }
 
-.instrument, .instruments, #search-container, .wave, .tempoBorder, .wave, #room-container, #chat-container, #export-container {
+.instrument, .instruments, #search-container, .wave, .tempoBorder, .wave, #room-container, #chat-container, #export-container, #small-sequencer {
   margin-top: 7px;
   border-width: 1px;
   border-style: groove;
