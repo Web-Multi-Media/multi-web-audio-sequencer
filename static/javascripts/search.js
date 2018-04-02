@@ -93,6 +93,14 @@ Search.prototype.addButtonEvents = function () {
 Search.prototype.searchEvent = function () {
   this.query = $('#search-query').val();
   this.sliderValue = $('#sampleDuration').val();
-  var duration = "duration:[" + this.sliderValue.split(',')[0] + ".0 TO " + this.sliderValue.split(',')[1] + ".0]"
-  this.searchFreesound(this.query, 1, duration);
+  var duration = "duration:[" + this.sliderValue.split(',')[0] + ".0 TO " + this.sliderValue.split(',')[1] + ".0]";
+  var loopType = "tag:" + $('input:radio[name=loop-type]:checked').val();
+  var filter = duration + " " + loopType;
+
+  if ($('input:radio[name=loop-type]:checked').val() == 'all'){
+    filter = duration;
+  }
+
+  console.log(filter);
+  this.searchFreesound(this.query, 1, filter);
 };

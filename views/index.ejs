@@ -105,7 +105,7 @@
 
     <!--   SEARCH CONTAINER    -->
     <div class="row" id="search-container">
-      <div class="col-md-12">
+        <div class="col-md-6">
         <form id="search-form" action="javascript:void(0);" style="display: inline-block;">
           <input type="text" id="search-query" placeholder="Enter sound query" class="my-box-white">
           <button type="button" id="search-button" class="btn btn-success" disabled>Search</button>
@@ -126,6 +126,7 @@
             </li>
           </ul>
         </nav>
+        
         <div class="duration-select">
             <span style="font-size:14px;font-weight: bold;">Duration Filter (sec)  &emsp;</span>
             <input id="sampleDuration" 
@@ -138,11 +139,18 @@
             data-slider-step="1"
             data-slider-value="[0,10]"/> 
           </div>
+        </div>
+          <div class="col-md-6 loop-type" style="padding-top: 20px; padding-bottom:10px;">
+            <form>
+              <input type="radio" name="loop-type" value="all" checked> All
+              <input type="radio" name="loop-type" value="single-note"> Single Note
+              <input type="radio" name="loop-type" value="loop"> Loop
+            </form>
+          </div>
           <br>
         <div id="search-result-container"></div>
         <div id="error" style="color:red"></div>
-      </div>
-    </div>
+        </div>
 
     <!--   CHAT CONTAINER    -->
     <div class="row" id="chat-container" style="padding-top: 10px; padding-bottom:10px;">
