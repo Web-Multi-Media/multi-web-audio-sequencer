@@ -3,6 +3,7 @@ function initSearch() {
   var search = new Search();
   search.setToken();
   search.addButtonEvents();
+  search.noteType();
   return search;
 }
 
@@ -12,6 +13,7 @@ function Search() {
   var numPages = null;
   var numSounds = null;
   var sliderValue = null;
+  var loopType = null;
 }
 
 Search.prototype.setToken = function () {
@@ -90,17 +92,39 @@ Search.prototype.addButtonEvents = function () {
   });
 };
 
+Search.prototype.noteType = function() {
+  $('.loop-type').click(function() {
+    loopType = $(this).val();
+    if ($(this).val() === 'loop') {
+      $('#loop').attr('disabled', 'disabled');
+      $('#single-note').removeAttr('disabled');
+      $('#chord').removeAttr('disabled');
+    } else if ($(this).val() === 'single-note') {
+      $('#single-note').attr('disabled', 'disabled');
+      $('#loop').removeAttr('disabled');
+      $('#chord').removeAttr('disabled');
+    } else if ($(this).val() === 'chord') {
+      $('#chord').attr('disabled', 'disabled');
+      $('#loop').removeAttr('disabled');
+      $('#single-note').removeAttr('disabled');
+    }
+    console.log(loopType);
+    return loopType;
+  });
+}
+
 Search.prototype.searchEvent = function () {
   this.query = $('#search-query').val();
   this.sliderValue = $('#sampleDuration').val();
   var duration = "duration:[" + this.sliderValue.split(',')[0] + ".0 TO " + this.sliderValue.split(',')[1] + ".0]";
-  var loopType = "tag:" + $('input:radio[name=loop-type]:checked').val();
-  var filter = duration + " " + loopType;
-
-  if ($('input:radio[name=loop-type]:checked').val() == 'all'){
-    filter = duration;
+  var filter = duration;
+  
+  if($('.loop-type:disabled').val() != undefined) {
+    this.loopType = "tag: " + $('.loop-type:disabled').val();
+    filter += this.loopType;
   }
-
+  
   console.log(filter);
   this.searchFreesound(this.query, 1, filter);
 };
+
