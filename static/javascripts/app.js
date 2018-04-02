@@ -687,6 +687,8 @@ function deleteTrack(trackId) {
   currentSequencerState.pads.splice(trackId, 1);
   currentSequencerState.waves.splice(trackId, 1);
   currentSequencerState.gains.splice(trackId, 1);
+  
+  solveMuteSoloConflicts();
 }
 
 
