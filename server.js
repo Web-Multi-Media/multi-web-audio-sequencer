@@ -1,25 +1,30 @@
 var express = require('express');
 var app = express();
 var session = require('express-session')({
-    secret: "azaezaedzadzea",
-    resave: true,
-    saveUninitialized: true
+  secret: process.env.SESSION_SECRET || "azaezaedzadzea",
+  resave: true,
+  saveUninitialized: true
 });
 var sharedsession = require("express-socket.io-session");
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 var eventEmitter = require('events').EventEmitter
 var hostname = process.env.MULT_WEB_SEQ_SERV || 'localhost';
+var base_path = process.env.BASE_PATH || '';
 var hostnamePort = process.env.MULT_WEB_SEQ_SERV_P || '8080';
+var adminPassword = process.env.ADMIN_PASSWORD || 'admin';
+var freesoundClientToken = process.env.FREESOUND_TOKEN || 'bs5DQrWNL9d8zrQl0ApCvcQqwg0gg8ytGE60qg5o';
+var io = require('socket.io')(http, {path: base_path + '/socket.io'});
+var fs = require('fs');
 
 var fullservername = hostname + ':' + hostnamePort;
-var rooms = ["1", "2", "3", "4"];
-var roomUsers = [[], [], [], []];
-var roomLastConnections = [null, null, null, null];
+var rooms = ["1", "2", "3", "4", "5", "6", "7", "8"];
+var roomUsers = [[], [], [], [], [], [], [], []];
+var roomLastConnections = [null, null, null, null, null, null, null, null];
 
 var sequencerState = {
   sequenceLength: 16,
+  tempo: 120,
   trackNames: ['kick', 'snare', 'hihat'],
   pads: [
     Array(64).fill(0),
@@ -27,9 +32,9 @@ var sequencerState = {
     Array(64).fill(0)
   ],
   sounds: [
-    'http://' + fullservername + '/assets/sounds/drum-samples/TR808/kick.mp3',
-    'http://' + fullservername + '/assets/sounds/drum-samples/TR808/snare.mp3',
-    'http://' + fullservername + '/assets/sounds/drum-samples/TR808/hihat.mp3'
+    base_path + '/assets/sounds/drum-samples/TR808/kick.ogg',
+    base_path + '/assets/sounds/drum-samples/TR808/snare.ogg',
+    base_path + '/assets/sounds/drum-samples/TR808/hihat.ogg'
   ],
   waves: [
     [false, false],
@@ -39,11 +44,18 @@ var sequencerState = {
   gains: [-6, -6, -6]
 };
 
-var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
-                      JSON.parse(JSON.stringify(sequencerState)),
-                      JSON.parse(JSON.stringify(sequencerState)),
-                      JSON.parse(JSON.stringify(sequencerState))];
+var sequencerPresetFiles = [];
+getListPresetFiles();
 
+var sequencerStates = [JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                       JSON.parse(JSON.stringify(sequencerState)),
+                      ];
 
 
 //moteur de template
@@ -51,9 +63,12 @@ app.set('view engine', 'ejs');
 
 //middleware
 app.use(session);
-app.use('/assets', express.static(__dirname + '/static'));
-app.use('/assets', express.static(__dirname + '/node_modules'));
-io.use(sharedsession(session, {autoSave:true})); 
+app.use(base_path + '/assets', express.static(__dirname + '/static'));
+app.use(base_path + '/assets', express.static(__dirname + '/node_modules'));
+io.use(sharedsession(session, {
+  autoSave: true
+}));
+app.set('trust proxy', true)
 
 
 // ON CONNECTION CONNECT TO ROOM AND SEND STATE TO CLIENT 
@@ -63,13 +78,13 @@ io.sockets.on('connection', function (socket) {
     console.log("New client connected to room: " + room);
     socket.join(room);
     socket.chatRoom = null;
-    
+
     // store connection activity
-    roomLastConnections[room] =  new Date();
-    
+    roomLastConnections[room] = new Date();
+
     // if username in session, autolog tu chat
     socket.username = socket.handshake.session.username;
-    if (socket.username!=null) {
+    if (socket.username != null) {
       socket.chatRoom = room;
       roomUsers[room].push(socket.username);
       socket.emit('autoLogin', {
@@ -84,7 +99,12 @@ io.sockets.on('connection', function (socket) {
     }
 
     // send state
-    io.sockets.in(room).emit('SendCurrentState', sequencerStates[room]);
+    socket.emit('SendCurrentState', sequencerStates[room]);
+    
+    // send preset names
+    for (i = 0; i < sequencerPresetFiles.length; i++) {
+      socket.emit('sendSaveSequencerPreset', sequencerPresetFiles[i].split('.')[0]);
+    }
 
     // PAD RECEPTION VIA THE CLIENT
     socket.on('pad', function (message) {
@@ -94,6 +114,14 @@ io.sockets.on('connection', function (socket) {
       var padId = message[1];
       var padState = message[2];
       sequencerStates[room]['pads'][trackId][padId] = padState;
+    });
+
+    // TEMPO RECEPTION VIA THE CLIENT
+    socket.on('tempo', function (message) {
+      console.log('receive tempo change: ' + message);
+      socket.in(room).broadcast.emit('tempo', message);
+      var tempo = message;
+      sequencerStates[room].tempo = tempo;
     });
 
     // NEW TRACK
@@ -139,21 +167,36 @@ io.sockets.on('connection', function (socket) {
       socket.in(room).broadcast.emit('sendWaveRegion', message);
       sequencerStates[room].waves[trackId] = [message[1], message[2]];
     });
-    
+
     // CHANGE LENGTH SEQUENCE
-    socket.on('sequenceLength', function(message) {
-      console.log('recieve change senquence length: ' + message);
+    socket.on('sequenceLength', function (message) {
+      console.log('receive change senquence length: ' + message);
       sequencerStates[room].sequenceLength = message;
       socket.in(room).broadcast.emit('sendSequenceLength', message);
     });
-    
+
     // CHANGE TRACK GAIN
-    socket.on('gain', function(message) {
-      console.log('recieve change gain: ' + message);
+    socket.on('gain', function (message) {
+      console.log('receive change gain: ' + message);
       sequencerStates[room].gains[message[0]] = message[1];
       socket.in(room).broadcast.emit('sendGain', message);
     });
     
+    // SAVE PRESET
+    socket.on('savePreset', function (message) {
+      console.log('receive save preset');
+      var presetName = message[1];
+      var sequencerPresetState = JSON.parse(message[0]);
+      savePreset(presetName, sequencerPresetState)
+      io.sockets.in(room).emit('sendSaveSequencerPreset', presetName);
+    });
+    
+    socket.on('loadPreset', function (message) {
+      console.log('receive load preset');
+      var preset = getPreset(message);
+      sequencerStates[room] = preset;
+      io.sockets.in(room).emit('sendSequencerPreset', JSON.stringify(preset));
+    });
 
     // CHAT
     // when the client emits 'new message', this listens and executes
@@ -167,7 +210,7 @@ io.sockets.on('connection', function (socket) {
 
     // when the client emits 'add user', this listens and executes
     socket.on('add user', function (username) {
-      if (socket.chatRoom!=null) {
+      if (socket.chatRoom != null) {
         console.log("Client change name on room: " + room);
         socket.in(room).broadcast.emit('user change name', {
           oldName: socket.username,
@@ -219,7 +262,7 @@ io.sockets.on('connection', function (socket) {
         // echo globally that this client has left
         socket.in(socket.chatRoom).broadcast.emit('user left', {
           username: socket.username,
-          numUsers: roomUsers[socket.chatRoom].length-1
+          numUsers: roomUsers[socket.chatRoom].length - 1
         });
         // delete user from roomUsers lists
         var index = roomUsers[socket.chatRoom].indexOf(socket.username);
@@ -232,52 +275,87 @@ io.sockets.on('connection', function (socket) {
 });
 
 
+// PRESETS
+function getListPresetFiles() {
+  fs.readdir('./presets/', function(err, items) {
+    console.log("Existing presets: " + items);
+    sequencerPresetFiles = items;
+  });
+}
+
+function getPreset(presetId) {
+  var preset = require('./presets/' + sequencerPresetFiles[presetId]);
+  return require('./presets/' + sequencerPresetFiles[presetId]);
+}
+
+function savePreset(presetName, preset) {
+  var jsonPreset = JSON.stringify(preset);
+  fs.writeFile('./presets/' + presetName + '.json', jsonPreset, 'utf8');
+  sequencerPresetFiles.push(presetName + '.json');
+}
 
 
+// ACTIVITY DATE
 function updateActivity(datetime) {
-    var theevent = new Date(datetime);
-    now = new Date();
-    var sec_num = (now - theevent) / 1000;
-    var days    = Math.floor(sec_num / (3600 * 24));
-    var hours   = Math.floor((sec_num - (days * (3600 * 24)))/3600);
-    var minutes = Math.floor((sec_num - (days * (3600 * 24)) - (hours * 3600)) / 60);
-    var seconds = Math.floor(sec_num - (days * (3600 * 24)) - (hours * 3600) - (minutes * 60));
+  var theevent = new Date(datetime);
+  now = new Date();
+  var sec_num = (now - theevent) / 1000;
+  var days = Math.floor(sec_num / (3600 * 24));
+  var hours = Math.floor((sec_num - (days * (3600 * 24))) / 3600);
+  var minutes = Math.floor((sec_num - (days * (3600 * 24)) - (hours * 3600)) / 60);
+  var seconds = Math.floor(sec_num - (days * (3600 * 24)) - (hours * 3600) - (minutes * 60));
 
-    if (hours   < 10) {hours   = "0"+hours;}
-    if (minutes < 10) {minutes = "0"+minutes;}
-    if (seconds < 10) {seconds = "0"+seconds;}
+  if (hours < 10) {
+    hours = "0" + hours;
+  }
+  if (minutes < 10) {
+    minutes = "0" + minutes;
+  }
+  if (seconds < 10) {
+    seconds = "0" + seconds;
+  }
 
-    if (days>1000) {
-      return '-'
-    } else if (days>30) {
-      return 'more than 30 days ago'
-    } else {
-      return  days+' days '+ hours+' hours '+minutes+' min '+seconds+ ' s ';
-    }
+  if (days > 1000) {
+    return '-'
+  } else if (days > 30) {
+    return 'more than 30 days ago'
+  } else {
+    return days + ' days ' + hours + ' hours ' + minutes + ' min ' + seconds + ' s ';
+  }
 }
 
 // VIEWS
-app.get('/', (req, res) => {
+app.get(base_path + '/', (req, res) => {
   var room = req.query.room;
-  // var username = req.query.username;
+  var adminClient = req.query.admin == adminPassword;
   if (room) {
     res.render('index.ejs', {
-      fullservername: fullservername,
-      room: room
+      room: room,
+      adminClient: adminClient,
+      base_path: base_path
     });
   } else {
     var dateNow = new Date();
-    var roomConnectionsAgo = roomLastConnections.map(function(e) {
+    var roomConnectionsAgo = roomLastConnections.map(function (e) {
       var time = updateActivity(e)
-      if (time<0) { time=0; }
+      if (time < 0) {
+        time = 0;
+      }
       return updateActivity(e)
     });
     res.render('home.ejs', {
       fullservername: fullservername,
       roomUsers: roomUsers,
       roomConnectionsAgo: roomConnectionsAgo,
+      base_path: base_path
     });
   }
+});
+
+
+// AJAX
+app.get(base_path + '/get_freesound_token', function(req, res){
+  res.send(freesoundClientToken);
 });
 
 

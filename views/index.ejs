@@ -6,13 +6,13 @@
   <meta charset="UTF-8">
   <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="./assets/bootstrap-slider/dist/css/bootstrap-slider.min.css">
-  <link rel="stylesheet" type="text/css" href="../assets/stylesheets/styles.css">
+  <link rel="stylesheet" href="..<%=base_path%>/assets/bootstrap-slider/dist/css/bootstrap-slider.min.css">
+  <link rel="stylesheet" type="text/css" href="..<%=base_path%>/assets/stylesheets/styles.css">
 </head>
 
-<body>
+<body id="site-body">
   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-  <script src="/socket.io/socket.io.js"></script>
+  <script src="..<%=base_path%>/socket.io/socket.io.js"></script>
 
   <!--    HEADER   -->
   <div class="container-fluid">
@@ -30,10 +30,15 @@
     <div class="row" id="room-container">
       <div class="col-md-8" style="padding-top: 10px; padding-bottom:10px;">
         <span style="font-size:14px;font-weight: bold;" id="room-number">Room:</span>
-        <a class="btn btn-success <% if(room==1){ %>active<% } %>" href="/?room=1">1</a>
-        <a class="btn btn-success <% if(room==2){ %>active<% } %>" href="/?room=2">2</a>
-        <a class="btn btn-success <% if(room==3){ %>active<% } %>" href="/?room=3">3</a>
-        <a class="btn btn-success <% if(room==4){ %>active<% } %>" href="/?room=4">4</a> &emsp;&emsp;
+        <a class="btn btn-success <% if(room==1){ %>active<% } %>" href="<%=base_path%>/?room=1">1</a>
+        <a class="btn btn-success <% if(room==2){ %>active<% } %>" href="<%=base_path%>/?room=2">2</a>
+        <a class="btn btn-success <% if(room==3){ %>active<% } %>" href="<%=base_path%>/?room=3">3</a>
+        <a class="btn btn-success <% if(room==4){ %>active<% } %>" href="<%=base_path%>/?room=4">4</a> 
+        <a class="btn btn-success <% if(room==5){ %>active<% } %>" href="<%=base_path%>/?room=5">5</a> 
+        <a class="btn btn-success <% if(room==6){ %>active<% } %>" href="<%=base_path%>/?room=6">6</a> 
+        <a class="btn btn-success <% if(room==7){ %>active<% } %>" href="<%=base_path%>/?room=7">7</a>
+        <a class="btn btn-success <% if(room==8){ %>active<% } %>" href="<%=base_path%>/?room=8">8</a>
+        &emsp;&emsp;
         <span style="font-size:14px;font-weight: bold;" id="room-number">Nickname:</span>
         <form id="nickname-form" action="javascript:void(0);" style="display: inline-block;">
           <input class="my-box-white usernameInput" style="width:160px;" type="text" placeholder="Enter nickname" maxlength="14" />
@@ -45,14 +50,17 @@
     <!--    PLAY TEMPO CONTAINER    -->
     <div class="row">
       <div class="col-md-12 tempoBorder">
-        <button id="play-pause" onclick="this.blur();" type="button" class="btn btn-success">
+        <button id="play-pause" type="button" class="btn btn-success">
           <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
         </button>
+        <button id="record" type="button" class="btn btn-success">
+          <span class="glyphicon glyphicon-record" aria-hidden="true"></span>
+        </button>&emsp;&emsp;
         <span class="tempo-container">
           <label >Tempo:</label>
           <input id="tempo-input" disabled>
           <span id="decrease-tempo" class="glyphicon glyphicon-minus btn btn-success tempo-btn"></span>
-        <span id="increase-tempo" class="glyphicon glyphicon-plus btn btn-success tempo-btn"></span>
+          <span id="increase-tempo" class="glyphicon glyphicon-plus btn btn-success tempo-btn"></span>
         </span>&emsp;&emsp;
         <span>
           <label >Sequence length:</label>
@@ -61,6 +69,19 @@
             <button type="button" class="btn btn-success" id="change-sequence-length" style="width:80px;">Choose</button>
           </form>
         </span>
+        <%if (adminClient) { %> &emsp;&emsp;
+          <span>
+            <label >Presets:</label>
+            <button id="save-preset" type="button" class="btn btn-success">Save</button>
+            <span class="dropdown">
+              <button class="btn btn-success dropdown-toggle" type="button" id="dropdown-presets" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Load
+              </button>
+              <div id="preset-container" class="dropdown-menu" aria-labelledby="dropdown-presets">
+              </div>
+            </span>
+          </span>
+        <% } %>
       </div>
     </div>
 
@@ -86,7 +107,7 @@
     <div class="row" id="search-container">
       <div class="col-md-12">
         <form id="search-form" action="javascript:void(0);" style="display: inline-block;">
-          <input type="text" id="search-query" placeholder="Enter query" class="my-box-white">
+          <input type="text" id="search-query" placeholder="Enter sound query" class="my-box-white">
           <button type="button" id="search-button" class="btn btn-success" disabled>Search</button>
         </form>
         &emsp;
@@ -132,6 +153,14 @@
         <input class="inputMessage" placeholder="Type here..." />
       </div>
     </div>
+    
+    <!--   EXPORT CONTAINER    -->
+    <div class="row" id="export-container" style="padding-top: 10px; padding-bottom:10px;">
+      <div class="col-md-6 export">
+        <label >Exported audio:</label>
+        <div class="exported-audio"></div>
+      </div>
+    </div>
     <br>
 
     <!--   EFFECT CONTAINER    -->
@@ -170,15 +199,16 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/wavesurfer.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.4.0/plugin/wavesurfer.regions.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/1.2.3/plugin/wavesurfer.timeline.min.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/jquery.knob.min.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/freesound.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/wave.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/kit.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/impulse-response.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/search.js"></script>
-  <script type="text/javascript" src="./assets/javascripts/app.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/jquery.knob.min.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/freesound.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/wave.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/kit.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/impulse-response.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/search.js"></script>
+  <script type="text/javascript" src="..<%=base_path%>/assets/javascripts/app.js"></script>
   <script>
-    
+    base_path = "<%=base_path%>";
+
     function addPadClickEvent(socket, trackId = null) {
       if (trackId) {
         // if an instrument is given, select the pads of it
@@ -203,6 +233,10 @@
     function sendDeleteTrack(trackName) {
       socket.emit('deleteTrack', trackName);
     }
+
+    function sendTempo(tempo) {
+      socket.emit('tempo', tempo);
+    }
     
     function sendSequenceLength(sequenceLength) {
       socket.emit('sequenceLength', sequenceLength);
@@ -211,12 +245,18 @@
     function sendTrackGain(trackId, gain) {
       socket.emit('gain', [trackId, gain]);
     }
+    
+    function sendSequencerPreset(sequencerState, presetName) {
+      socket.emit('savePreset', [sequencerState, presetName]);
+    }
 
+    function sendLoadSequencerPreset(presetId) {
+      socket.emit('loadPreset', presetId);
+    }
+    
     $(function() {
-
-      var servername = '<%= fullservername %>';
-      console.log("connecting to " + servername + " room " + '<%= room %>');
-      socket = io.connect(servername);
+      console.log("connecting to room " + '<%= room %>');
+      socket = io.connect('/', {path: '<%=base_path%>/socket.io'});
 
       socket.emit('room', '<%= room %>');
       setRoomForChat('<%= room %>');
@@ -231,6 +271,13 @@
       socket.on('sendPad', function(message) {
         console.log('Valeur des pads reçues', message);
         toggleSelectedListenerSocket(message[0], message[1], message[2]);
+      });
+
+      // on change tempo
+      socket.on('tempo', function(message) {
+        console.log('receive new tempo: ' + message);
+        var tempo = message;
+        changeTempo(tempo);
       });
 
       // on recieve new track
@@ -257,6 +304,8 @@
         var endTime = message[2];
         currentKit.waves[trackId].setStart(startTime);
         currentKit.waves[trackId].setEnd(endTime);
+        // update sequencer state
+        currentSequencerState.waves[trackId] = [startTime, endTime];
       });
       
       // on change sequence length
@@ -270,9 +319,20 @@
         var gain = message[1];
         changeTrackGain(trackId, gain)
       });
+      
+      // on receive sequencer preset
+      socket.on('sendSequencerPreset', function(message) {
+        console.log('preset: ' + message);
+        loadSequencerStatePreset(message);
+      });
+      
+      // on receive save sequencer preset
+      socket.on('sendSaveSequencerPreset', function(message) {
+        addSequencerPreset(message);
+      });
     })
   </script>
-    <script type="text/javascript" src="./assets/javascripts/chat.js"></script>
+  <script type="text/javascript" src="./assets/javascripts/chat.js"></script>
 </body>
 
 </html>

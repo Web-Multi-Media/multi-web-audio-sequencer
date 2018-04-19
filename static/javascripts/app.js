@@ -5,6 +5,9 @@ var compressor;
 var masterGainNode;
 var effectLevelNode;
 var lowPassFilterNode;
+var mediaRecorder;
+var recordingDest;
+var chunks = [];
 
 var noteTime;
 var startTime;
@@ -12,19 +15,22 @@ var lastDrawTime = -1;
 var rhythmIndex = 0;
 var timeoutId;
 var testBuffer = null;
+var isRecording = false;
+var isPlaying = false;
 
+var currentSequencerState = null;
 var currentKit = null;
 var wave = null;
 var reverbImpulseResponse = null;
+var sequencerPresetNames = [];
 
 var tempo = 120;
 var TEMPO_MAX = 200;
 var TEMPO_MIN = 40;
-var TEMPO_STEP = 4;
+var TEMPO_STEP = 1;
 var MAXLENGTH = 64;
 var COMPRESSOR_ACTIVATED = false;
 
-var numPages;
 
 if (window.hasOwnProperty('AudioContext') && !window.hasOwnProperty('webkitAudioContext')) {
   window.webkitAudioContext = AudioContext;
@@ -35,6 +41,7 @@ $(function () {
   addNewTrackEvent();
   addChangeSequenceLengthEvent();
   playPauseListener();
+  RecordListener();
   lowPassFilterListener();
   reverbListener();
   createLowPassFilterSliders();
@@ -77,7 +84,7 @@ function lowPassFilterListener() {
       lowPassFilterNode.active = false;
       $("#freq-slider,#quality-slider").slider("option", "disabled", true);
     }
-  })
+  });
 }
 
 function reverbListener() {
@@ -109,13 +116,15 @@ function changeQuality(event, ui) {
   lowPassFilterNode.Q.value = ui.value * 30;
 }
 
-function CheckAndTrigerPlayPause() {
+function checkAndTrigerPlayPause() {
   var $span = $('#play-pause').children("span");
   if ($span.hasClass('glyphicon-play')) {
     $span.removeClass('glyphicon-play');
     $span.addClass('glyphicon-pause');
+    isPlaying = 1;
     handlePlay();
   } else {
+    isPlaying = 0;
     $span.addClass('glyphicon-play');
     $span.removeClass('glyphicon-pause');
     handleStop();
@@ -131,12 +140,45 @@ function CheckAndTrigerPlayPause() {
 //  }
 //})
 
+function checkAndTrigerRecord() {
+  if (!isRecording) {
+    console.log("Record is triggered");
+    isRecording = 1;
+    $('#record').css('color', 'red');
+    mediaRecorder.start();
+  } else {
+    console.log("Record is untriggered");
+    isRecording = 0;
+    $('#record').css('color', 'white');
+    mediaRecorder.stop();
+  }
+}
+
 function playPauseListener() {
   $('#play-pause').click(function () {
-    CheckAndTrigerPlayPause();
+    checkAndTrigerPlayPause();
   });
 }
 
+function RecordListener() {
+  $('#record').click(function () {
+    checkAndTrigerRecord();
+  });
+}
+
+function onDataAvailableInRecorderFunc(evt) {
+  // push each chunk (blobs) in an array
+  if (evt.data.size > 0) {
+    chunks.push(evt.data);
+    var blob = new Blob(chunks, {
+      'type': 'audio/ogg; codecs=opus'
+    });
+    var soundSrc = URL.createObjectURL(blob);
+    var newHtmlEl = '<div style="height:40px; margin:3px;"><audio src=' + soundSrc + ' controls=controls></audio><a style="position: absolute; margin:3px;" class="btn btn-success" href=' + soundSrc + ' download="exported_loop.ogg">Download</a><br><div>';
+    $(newHtmlEl).appendTo(".exported-audio");
+    chunks = [];
+  }
+}
 
 function TranslateStateInActions(sequencerState) {
   var trackNames = sequencerState['trackNames'];
@@ -145,21 +187,27 @@ function TranslateStateInActions(sequencerState) {
   var waves = sequencerState['waves'];
   var sequenceLength = sequencerState['sequenceLength'];
   var gains = sequencerState['gains'];
+  var tempo = sequencerState['tempo'];
 
   // check if the tracks are already loaded
-  if (sequencerState.trackNames.length != $('.instrument').length) {
+  if (JSON.stringify(sequencerState) != JSON.stringify(currentSequencerState)) {
     // Delete all existing tracks
     var numLocalTracks = $('.instrument').length;
     for (var i = numLocalTracks - 1; i >= 0; i--) {
       deleteTrack(i);
     }
 
+    currentSequencerState = sequencerState;
+
+    // change tempo
+    changeTempo(tempo);
+
     // change seuquence length
     changeSequenceLength(sequenceLength);
 
     // Add tracks and load buffers
     for (var j = 0; j < trackNames.length; j++) {
-      addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1], gains[j]);
+      addNewTrack(j, trackNames[j], soundUrls[j], waves[j][0], waves[j][1], gains[j], pads[j]);
     }
 
     // Activate pads
@@ -178,6 +226,7 @@ function toggleSelectedListener(padEl) {
   var padClass = padEl.attr('class');
   var padId = padClass.split(' ')[1].split('_')[1];
   var padState = (padEl.hasClass("selected")) ? 1 : 0;
+  currentSequencerState.pads[trackId][padId] = padState;
   return [trackId, padId, padState]
 }
 
@@ -193,6 +242,7 @@ function toggleSelectedListenerSocket(trackId, padId, padState) {
       padEl.addClass("selected");
     }
   }
+  currentSequencerState.pads[trackId][padId] = padState;
 }
 
 // SEQUENCER SCHEDULER
@@ -204,6 +254,11 @@ function init() {
 
 function initializeAudioNodes() {
   context = new webkitAudioContext();
+  recordingDest = context.createMediaStreamDestination();
+  mediaRecorder = new MediaRecorder(recordingDest.stream);
+
+  mediaRecorder.ondataavailable = onDataAvailableInRecorderFunc;
+
   var finalMixNode;
   if (context.createDynamicsCompressor && COMPRESSOR_ACTIVATED) {
     // Create a dynamics compressor to sweeten the overall mix.
@@ -256,7 +311,7 @@ function loadImpulseResponses() {
   reverbImpulseResponse.load();
 }
 
-function playNote(buffer, noteTime, startTime, endTime, gainNode) {
+function playNote(buffer, noteTime, startTime, endTime, gainNode, soloMuteNode) {
   var voice = context.createBufferSource();
   voice.buffer = buffer;
 
@@ -271,8 +326,10 @@ function playNote(buffer, noteTime, startTime, endTime, gainNode) {
     currentLastNode = convolver;
   }
 
-  voice.connect(gainNode)
+  voice.connect(soloMuteNode);
+  soloMuteNode.connect(gainNode);
   gainNode.connect(currentLastNode);
+  gainNode.connect(recordingDest);
   voice.start(noteTime, startTime, endTime - startTime);
 }
 
@@ -284,21 +341,23 @@ function schedule() {
 
   while (noteTime < currentTime + 0.200) {
     var contextPlayTime = noteTime + startTime;
-    var $currentPads = $(".column_" + rhythmIndex);
-    $currentPads.each(function () {
-      if ($(this).hasClass("selected")) {
-        var trackId = $(this).parents('.instrument').index();
-        var wave = currentKit.waves[trackId];
-        playNote(currentKit.buffers[trackId], contextPlayTime, wave.startTime, wave.endTime, currentKit.gainNodes[trackId]);
+    currentSequencerState.pads.forEach(function (entry, trackId) {
+      if (entry[rhythmIndex] == 1) {
+        wave = currentKit.waves[trackId];
+        playNote(currentKit.buffers[trackId], 
+                 contextPlayTime, wave.startTime, wave.endTime, 
+                 currentKit.gainNodes[trackId], currentKit.soloMuteNodes[trackId]);
       }
     });
     if (noteTime != lastDrawTime) {
       lastDrawTime = noteTime;
       drawPlayhead(rhythmIndex);
     }
-    advanceNote();
+    if (isPlaying)
+      advanceNote();
   }
-  timeoutId = requestAnimationFrame(schedule)
+  if (isPlaying)
+    timeoutId = setTimeout(schedule, 50);
 }
 
 function drawPlayhead(xindex) {
@@ -314,7 +373,7 @@ function drawPlayhead(xindex) {
 
 function advanceNote() {
   // Advance time by a 16th note...
-  tempo = Number($("#tempo-input").val());
+  tempo = currentSequencerState.tempo;
   var secondsPerBeat = 60.0 / tempo;
   rhythmIndex++;
   if (rhythmIndex == currentKit.sequenceLength) {
@@ -339,7 +398,7 @@ function handlePlay(event) {
 }
 
 function handleStop(event) {
-  cancelAnimationFrame(timeoutId);
+  clearTimeout(timeoutId);
   $(".pad").removeClass("playing");
 }
 
@@ -347,18 +406,26 @@ function initializeTempo() {
   $("#tempo-input").val(tempo);
 }
 
+function changeTempo(tempo_input) {
+  tempo = tempo_input;
+  $("#tempo-input").val(tempo_input);
+  currentSequencerState.tempo = tempo;
+}
+
 function changeTempoListener() {
   $("#increase-tempo").click(function () {
     if (tempo < TEMPO_MAX) {
       tempo += TEMPO_STEP;
-      $("#tempo-input").val(tempo);
+      changeTempo(tempo);
+      sendTempo(tempo);
     }
   });
 
   $("#decrease-tempo").click(function () {
     if (tempo > TEMPO_MIN) {
       tempo -= TEMPO_STEP;
-      $("#tempo-input").val(tempo);
+      changeTempo(tempo);
+      sendTempo(tempo);
     }
   });
 }
@@ -402,8 +469,15 @@ function addNewTrackDetails() {
   });
 }
 
-function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6) {
+function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endTime = null, gain = -6, pads = null) {
   var uniqueTrackId = Date.now();
+
+  // update sequencer state
+  currentSequencerState.trackNames[trackId] = trackName;
+  currentSequencerState.pads[trackId] = pads !== null ? pads : Array(64).fill(0);
+  currentSequencerState.sounds[trackId] = soundUrl;
+  currentSequencerState.waves[trackId] = [startTime, endTime];
+  currentSequencerState.gains[trackId] = gain;
 
   // create html
   var padEl = '<div class="pad column_0">\n\n</div>\n';
@@ -430,21 +504,29 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
     uniqueTrackId +
     '" class="instrument-label"><i class="glyphicon glyphicon-chevron-right"></i> <strong class="instrumentName">' +
     trackName +
-    '</strong></a></div><div class="col-xs-8 col-lg-8 pad-container">' +
+    '</strong></a></div><div class="col-xs-7 col-lg-8 pad-container">' +
     padEl +
-    '</div><div class="col-xs-1 col-lg-1" title="Track gain"><input type="text" value="-6" class="dial"></div>' +
-    '<div class="col-xs-1 col-lg-1"><button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div><div id="edit-' +
+    '</div><div class="col-xs-3 col-lg-2" title="Track gain"><input type="text" value="-6" class="dial">' +
+    '<button type="button" class="mute-track btn btn-primary" data-toggle="button">M</button>' +
+    '<button type="button" class="solo-track btn btn-primary" data-toggle="button">S</button>' +
+    '<button class="deleteTrackButton btn btn-warning"><div class="glyphicon glyphicon-remove"></div></button></div>' + 
+    '<div id="edit-' +
     uniqueTrackId +
     '" class="edit-zone collapse"><div class="waveform-container"></div><div class="waveform-timeline"></div><button class="refreshWaveRegionButton btn btn-success"><i class="glyphicon glyphicon-refresh"></i></button></div></div></div>';
 
   var prevTrack = $('#newTrack');
   prevTrack.before(newTrack);
 
-  thisTrack = $('.instrument').eq(trackId);
+  var thisTrack = $('.instrument').eq(trackId);
 
   // add gainNode
   currentKit.gainNodes[trackId] = context.createGain();
   addKnob(trackId, gain);
+    
+  // add solo mute gain node
+  currentKit.soloMuteNodes[trackId] = context.createGain();
+  currentKit.mutedTracks[trackId] = 1;
+  currentKit.soloedTracks[trackId] = 0;
 
   // load wavesurfer visu
   currentKit.waves[trackId] = new Wave();
@@ -463,7 +545,7 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
   // load buffer
   if (soundUrl) {
     currentKit.loadSample(soundUrl, trackId);
-    if (startTime) {
+    if (startTime !== 'null' && startTime !== false) {
       wave.startTime = startTime;
       wave.endTime = endTime;
     }
@@ -473,14 +555,12 @@ function addNewTrack(trackId, trackName, soundUrl = null, startTime = null, endT
   addPadClickEvent(socket, trackId);
   addDeleteTrackClickEvent(trackId);
   addRotateTriangleEvent(trackId);
+  addMuteTrackEvent(trackId);
+  addSoloTrackEvent(trackId);
 }
 
 
 // gain knob
-function linear2db(x) {
-  return Math.pow(10, (x / 20));
-}
-
 function addKnob(trackId, gain) {
   var knob = $('.instrument').eq(trackId).find(".dial");
   knob.knob({
@@ -491,27 +571,26 @@ function addKnob(trackId, gain) {
     step: 1,
     displayInput: false,
     thickness: 0.5,
-    change : function(v) {
+    change: function (v) {
       var trackId = $(this.$).parents('.instrument').index();
-      currentKit.gainNodes[trackId].gain.value = linear2db(v);
+      currentKit.changeGainNodeValue(trackId, v);
     },
-    release: function(v) {
+    release: function (v) {
       var trackId = $(this.$).parents('.instrument').index();
-      currentKit.gainNodes[trackId].gain.value = linear2db(v);
+      currentKit.changeGainNodeValue(trackId, v);
       // send db gain value to server
       sendTrackGain(trackId, v)
     }
   });
   knob.val(gain.toString());
   knob.trigger('change');
-  currentKit.gainNodes[trackId].gain.value = linear2db(gain);
+  currentKit.changeGainNodeValue(trackId, gain);
 }
 
 function changeTrackGain(trackId, gain) {
   var knob = $('.instrument').eq(trackId).find(".dial");
   knob.val(gain.toString());
   knob.trigger('change');
-  console.log(gain)
 }
 
 
@@ -593,11 +672,78 @@ function deleteTrack(trackId) {
 
   // delete wave
   currentKit.waves.splice(trackId, 1);
-  
+
   // delete gain
-  currentKit.gains.splice(trackId, 1);
+  currentKit.gainNodes.splice(trackId, 1);
+  
+  // delete gain and solo mute lists
+  currentKit.soloMuteNodes.splice(trackId, 1);
+  currentKit.mutedTracks.splice(trackId, 1);
+  currentKit.soloedTracks.splice(trackId, 1);
+
+  // update sequencer state
+  currentSequencerState.trackNames.splice(trackId, 1);
+  currentSequencerState.sounds.splice(trackId, 1);
+  currentSequencerState.pads.splice(trackId, 1);
+  currentSequencerState.waves.splice(trackId, 1);
+  currentSequencerState.gains.splice(trackId, 1);
 }
 
+
+// Mute solo track
+function addMuteTrackEvent(trackId) {
+  var muteTrackButton = $('.instrument').eq(trackId).find('.mute-track').eq(0);
+  muteTrackButton.click(function () {
+    $(this).trigger("blur");
+    var trackId = $(this).parents('.instrument').index();
+    toggleMuteTrack(trackId);
+    solveMuteSoloConflicts();
+  });
+}
+
+function addSoloTrackEvent(trackId) {
+  var soloTrackButton = $('.instrument').eq(trackId).find('.solo-track').eq(0);
+  soloTrackButton.click(function () {
+    $(this).trigger("blur");
+    var trackId = $(this).parents('.instrument').index();
+    toggleSoloTrack(trackId);
+    solveMuteSoloConflicts();
+  });
+}
+
+function toggleSoloTrack(trackId) {
+  currentKit.soloedTracks[trackId] = (currentKit.soloedTracks[trackId] == 1) ? 0 : 1;
+  if (currentKit.soloedTracks[trackId] == 1 && currentKit.mutedTracks[trackId] == 0) {
+    $('.instrument').eq(trackId).find('.mute-track').eq(0).button('toggle');
+    toggleMuteTrack(trackId);
+  }
+}
+
+function toggleMuteTrack(trackId) {
+  currentKit.mutedTracks[trackId] = (currentKit.mutedTracks[trackId] == 1) ? 0 : 1;
+  if (currentKit.mutedTracks[trackId] == 0 && currentKit.soloedTracks[trackId] == 1) {
+    $('.instrument').eq(trackId).find('.solo-track').eq(0).button('toggle');
+    toggleSoloTrack(trackId);
+  }
+}
+
+function solveMuteSoloConflicts() {
+  var soloedTracks = currentKit.soloedTracks;
+  var mutedTracks = currentKit.mutedTracks;
+  
+  // Check if somes tracks are muted 
+  var payableTracks = soloedTracks.includes(1) ? soloedTracks : mutedTracks;
+
+  for (var trackId = 0; trackId < payableTracks.length; trackId++) {
+    if (payableTracks[trackId]) {
+      // track is not muted
+      currentKit.soloMuteNodes[trackId].gain.value = 1;
+    } else {
+      // track is muted
+      currentKit.soloMuteNodes[trackId].gain.value = 0;
+    }
+  }
+}
 
 // Drag and drop sounds
 function allowDrop(ev) {
@@ -661,5 +807,28 @@ function addRotateTriangleEvent(trackId) {
   $(".instrument-label").eq(trackId).click(function () {
     var trackId = $(this).parents('.instrument').index();
     $('.instrument').eq(trackId).find(".glyphicon").toggleClass('rotation');
+  });
+}
+
+
+// Presets
+function saveCurrentSequencerstatePreset(presetName) {
+  sendSequencerPreset(JSON.stringify(currentSequencerState), presetName);
+}
+
+function loadSequencerStatePreset(sequencerPresetState) {
+  TranslateStateInActions(JSON.parse(sequencerPresetState));
+}
+
+$("#save-preset").click(function () {
+  var presetName = sequencerPresetNames.length;
+  saveCurrentSequencerstatePreset(presetName);
+});
+
+function addSequencerPreset(presetName) {
+  sequencerPresetNames.push(presetName);
+  $("#preset-container").append('<div id="preset-' + presetName + '" class="dropdown-item btn" type="button">' + presetName + '</div>');
+  $("#preset-" + presetName).click(function () {
+    sendLoadSequencerPreset(sequencerPresetNames.indexOf(presetName));
   });
 }
