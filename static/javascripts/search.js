@@ -36,7 +36,8 @@ Search.prototype.searchFreesound = function (query, page, filter) {
       page: page,
       filter: filter,
       sort: sort,
-      fields: 'id,name,url,previews',
+      fields: 'id,name,url,previews,analysis',
+      descriptors: 'rhythm.onset_times' 
     },
     function (sounds) {
       var msg = ""
@@ -55,7 +56,7 @@ Search.prototype.searchFreesound = function (query, page, filter) {
         console.log(onsets)
         msg += "<div>" + self.freesoundIframe(snd.id) 
           + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" 
-          + snd.previews["preview-lq-mp3"] 
+          + snd.previews["preview-lq-ogg"] 
           + "' first-onset='" 
           + firstOnset
           + "'>Drag</div></div>";
