@@ -24,32 +24,31 @@ Wave.prototype.init = function(trackEl, container) {
 
 Wave.prototype.load = function(soundUrl) {
   var wavesurfer = this.wavesurfer;
-  var wave = this;
-  wave.soundUrl = soundUrl;
+  this.soundUrl = soundUrl;
   wavesurfer.load(soundUrl);
-  wavesurfer.on('ready', function() {
-    if (wave.region) {
-      wave.region.remove();
+  wavesurfer.on('ready', () => {
+    if (this.region) {
+      this.region.remove();
     }
     var duration = wavesurfer.getDuration();
-    wave.duration = duration;
-    if (wave.startTime === null) {wave.startTime = 0;}
-    if (wave.endTime === null) {wave.endTime = duration;}
-    wave.region = wavesurfer.addRegion({
-      start: wave.startTime,
-      end: wave.endTime,
+    this.duration = duration;
+    if (this.startTime === null) {this.startTime = 0;}
+    if (this.endTime === null) {this.endTime = duration;}
+    this.region = wavesurfer.addRegion({
+      start: this.startTime,
+      end: this.endTime,
       color: 'hsla(400, 100%, 30%, 0.2)',
     });
-    wavesurfer.on('region-updated', function(obj) {
-      wave.startTime = obj.start;
-      wave.endTime = obj.end;
+    wavesurfer.on('region-updated', (obj) => {
+      this.startTime = obj.start;
+      this.endTime = obj.end;
     });
-    wavesurfer.on('region-update-end', function(obj) {
-      wave.sendRegion();
+    wavesurfer.on('region-update-end', (obj) => {
+      this.sendRegion();
     });
     
     var timeline = Object.create(WaveSurfer.Timeline);
-    var waveContainer = $(wave.container);
+    var waveContainer = $(this.container);
     var timelineContainer = waveContainer.parents().children(".waveform-timeline")[0];
     timeline.init({
       wavesurfer: wavesurfer,
@@ -63,12 +62,13 @@ Wave.prototype.reload = function() {
   this.loadedAfterCollapse = true;
 }
 
-Wave.prototype.clear = function() {
+Wave.prototype.clear = function(onClear=function() {}) {
   this.startTime = null;
   this.endTime = null;
   this.duration = null;
   this.soundUrl = null;
   this.loadedAfterCollapse = false;
+  onClear();
 }
 
 Wave.prototype.setStart = function(startTime) {
@@ -91,5 +91,5 @@ Wave.prototype.restartRegion = function () {
 Wave.prototype.sendRegion = function () {
   var trackId = this.trackEl.index();
   socket.emit('waveRegion', [trackId, this.startTime, this.endTime]);
-  console.log('send wave region');
+  console.log('send wave region: ', this.startTime, this.endTime);
 };

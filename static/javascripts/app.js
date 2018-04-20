@@ -763,7 +763,6 @@ function exitDrop(ev) {
 function drag(ev) {
   currentSoundUrl = ev.target.getAttribute("sound-url");
   currentFirstOnset = parseFloat(ev.target.getAttribute("first-onset"));
-  console.log(ev.target.getAttribute("first-onset"));
   ev.dataTransfer.setData("text", "");
 }
 
@@ -776,8 +775,6 @@ function drop(ev) {
   // load sample
   currentKit.loadSample(currentSoundUrl, trackId, currentFirstOnset);
   sendLoadSound(trackId, currentSoundUrl);
-  console.log(currentFirstOnset)
-  
   trackEl.removeClass("drop-over");
 }
 

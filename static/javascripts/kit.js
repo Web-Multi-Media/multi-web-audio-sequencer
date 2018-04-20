@@ -41,8 +41,9 @@ Kit.prototype.loadSample = function(url, trackId, startTime = null) {
   var kit = this;
   
   // load wavesurfer visu
-  kit.waves[trackId].clear();
-  kit.waves[trackId].load(url);
+  kit.waves[trackId].clear(() => {
+    kit.waves[trackId].load(url)
+  });
   
   request.onload = function () {
     context.decodeAudioData(

@@ -53,7 +53,6 @@ Search.prototype.searchFreesound = function (query, page, filter) {
         } else {
           firstOnset = onsets;
         }
-        console.log(onsets)
         msg += "<div>" + self.freesoundIframe(snd.id) 
           + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" 
           + snd.previews["preview-lq-ogg"] 
