@@ -96,17 +96,17 @@ Search.prototype.noteType = function() {
   $('.loop-type').click(function() {
     loopType = $(this).val();
     if ($(this).val() === 'loop') {
-      $('#loop').attr('disabled', 'disabled');
-      $('#single-note').removeAttr('disabled');
-      $('#chord').removeAttr('disabled');
+      $('#loop').addClass('active');
+      $('#single-note').removeClass('active');
+      $('#chord').removeClass('active');
     } else if ($(this).val() === 'single-note') {
-      $('#single-note').attr('disabled', 'disabled');
-      $('#loop').removeAttr('disabled');
-      $('#chord').removeAttr('disabled');
+      $('#single-note').addClass('active');
+      $('#loop').removeClass('active');
+      $('#chord').removeClass('active');
     } else if ($(this).val() === 'chord') {
-      $('#chord').attr('disabled', 'disabled');
-      $('#loop').removeAttr('disabled');
-      $('#single-note').removeAttr('disabled');
+      $('#chord').addClass('active');
+      $('#loop').removeClass('active');
+      $('#single-note').removeClass('active');
     }
     console.log(loopType);
     return loopType;
@@ -119,8 +119,8 @@ Search.prototype.searchEvent = function () {
   var duration = "duration:[" + this.sliderValue.split(',')[0] + ".0 TO " + this.sliderValue.split(',')[1] + ".0]";
   var filter = duration;
   
-  if($('.loop-type:disabled').val() != undefined) {
-    this.loopType = "tag: " + $('.loop-type:disabled').val();
+  if($('.loop-type.active').val() != undefined) {
+    this.loopType = "tag: " + $('.loop-type.active').val();
     filter += this.loopType;
   }
   
