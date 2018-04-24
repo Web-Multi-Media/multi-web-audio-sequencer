@@ -10,7 +10,7 @@
       base: 'https://' + host + '/apiv2',
       textSearch: '/search/text/',
       contentSearch: '/search/content/',
-      combinedSearch: '/sounds/search/combined/',
+      combinedSearch: '/search/combined/',
       sound: '/sounds/<sound_id>/',
       soundAnalysis: '/sounds/<sound_id>/analysis/',
       similarSounds: '/sounds/<sound_id>/similar/',
@@ -57,7 +57,7 @@
       };
       var paramStr = "";
       for (var p in params) {
-        paramStr = paramStr + "&" + p + "=" + params[p];
+          paramStr = paramStr + "&" + p + "=" + params[p];
       }
       if (paramStr) {
         uri = uri + "?" + paramStr;
@@ -299,7 +299,7 @@
       combinedSearch: function (options, success, error) {
         if (!(options.target || options.analysis_file || options.query))
           throw ("Missing query, target or analysis_file");
-        search(options, uris.contentSearch, success, error);
+        search(options, uris.combinedSearch, success, error, SoundCollection);
       },
       getSound: function (soundId, success, error) {
         makeRequest(makeUri(uris.sound, [soundId]), success, error, {}, SoundObject);

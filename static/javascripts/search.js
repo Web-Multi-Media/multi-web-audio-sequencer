@@ -4,6 +4,7 @@ function initSearch() {
   search.setToken();
   search.addButtonEvents();
   search.noteType();
+  search.key();
   return search;
 }
 
@@ -14,6 +15,8 @@ function Search() {
   var numSounds = null;
   var sliderValue = null;
   var loopType = null;
+  var key = null;
+  var options = null;
 }
 
 Search.prototype.setToken = function () {
@@ -27,24 +30,55 @@ Search.prototype.freesoundIframe = function (soundId) {
   return '<iframe frameborder="0" scrolling="no" src="https://freesound.org/embed/sound/iframe/' + soundId + '/simple/small/" width="375" height="30"></iframe>';
 };
 
-Search.prototype.searchFreesound = function (query, page, filter) {
+// Search.prototype.searchFreesound = function (query, page, filter, descriptors) {
+  Search.prototype.searchFreesound = function (query, page, filter, descriptors) {
   var self = this;
 
-  self.query = query;
-  self.page = page;
-  self.filter = filter;
-  var sort = "rating_desc";
-  freesound.textSearch(query, {
-      page: page,
-      filter: filter,
-      sort: sort,
-      fields: 'id,name,url,previews',
-    },
+  // self.query = query;
+  // self.page = page;
+  // self.filter = filter;
+  // self.descriptors = descriptors;
+  // var sort = "rating_desc";
+  // freesound.combinedSearch(query, {
+  //     page: page,
+  //     filter: filter,
+  //     descriptors_filter : descriptors,
+  //     sort: sort,
+  //     fields: 'id,name,url,previews',
+  //   },
+    self.query = query;
+    self.page = page;
+    self.filter = filter;
+    self.descriptors = descriptors;
+    var sort = "rating_desc";
+    if (descriptors) {
+    options = {
+                  descriptors_filter: descriptors,
+                  query: query,
+                  page: page,
+                  filter: filter,
+                  
+                  sort: sort,
+                  fields: 'id,name,url,previews',
+                  
+              };
+     }else {
+      options = {
+        query: query,
+        page: page,
+        filter: filter,
+        sort: sort,
+        fields: 'id,name,url,previews'
+      };
+     }
+    freesound.combinedSearch((options), 
     function (sounds) {
+      console.log('valeur de la query', sounds);
       var msg = ""
       self.numSounds = sounds.count;
       self.numPages = Math.ceil(self.numSounds / 15);
       var numSoundCurrentPage = sounds.results.length;
+
       for (i = 0; i < numSoundCurrentPage; i++) {
         var snd = sounds.getSound(i);
         msg += "<div>" + self.freesoundIframe(snd.id) + "<div class='drag-me' draggable='true' ondragstart='drag(event)' sound-url='" + snd.previews["preview-lq-ogg"] + "'>Drag</div></div>";
@@ -68,7 +102,7 @@ Search.prototype.searchFreesound = function (query, page, filter) {
     function () {
       document.getElementById('error').innerHTML = "Error while searching...";
     }
-  );
+  )
 };
 
 Search.prototype.addButtonEvents = function () {
@@ -83,12 +117,12 @@ Search.prototype.addButtonEvents = function () {
 
   $('#previous').click(function () {
     self.page -= 1;
-    self.searchFreesound(self.query, self.page, self.filter);
+    self.searchFreesound(self.query, self.page, self.filter, self.descriptors);
   });
 
   $('#next').click(function () {
     self.page += 1;
-    self.searchFreesound(self.query, self.page, self.filter);
+    self.searchFreesound(self.query, self.page, self.filter, self.descriptors);
   });
 };
 
@@ -113,18 +147,38 @@ Search.prototype.noteType = function() {
   });
 }
 
+Search.prototype.key = function() {
+  $('.key').click(function(){
+    if($(this).hasClass('active')) {
+      $(this).removeClass('active');
+    } else {
+      $(this).addClass('active')
+      return $(this).value;
+    }
+  })
+}
 Search.prototype.searchEvent = function () {
   this.query = $('#search-query').val();
   this.sliderValue = $('#sampleDuration').val();
   var duration = "duration:[" + this.sliderValue.split(',')[0] + ".0 TO " + this.sliderValue.split(',')[1] + ".0]";
-  var filter = duration;
+  var descriptors;
+
+  var filter =  duration;
   
   if($('.loop-type.active').val() != undefined) {
-    this.loopType = "tag: " + $('.loop-type.active').val();
-    filter += this.loopType;
+    this.loopType = $('.loop-type.active').val();
+    filter += " tag:" + this.loopType;
   }
-  
+
+  if($('.key').hasClass('active')) {
+    this.key = "tonal.key_key:\"" + $('.key.active').val() + "\"";
+    descriptors = this.key
+    console.log(descriptors);
+  } 
+
   console.log(filter);
-  this.searchFreesound(this.query, 1, filter);
+  console.log(this.query);
+  // this.searchFreesound(this.query, 1, filter, this.descriptors);
+  this.searchFreesound(this.query, 1, filter, descriptors);
 };
 
