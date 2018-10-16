@@ -86,16 +86,18 @@ io.sockets.on('connection', function (socket) {
     socket.username = socket.handshake.session.username;
     if (socket.username != null) {
       socket.chatRoom = room;
-      roomUsers[room].push(socket.username);
-      socket.emit('autoLogin', {
-        numUsers: roomUsers[room].length,
-        username: socket.username
-      });
-      // echo globally (all clients) that a person has connected
-      socket.in(room).broadcast.emit('user joined', {
-        username: socket.username,
-        numUsers: roomUsers[room].length
-      });
+      if(Number.isInteger(room)){
+        roomUsers[room].push(socket.username);
+        socket.emit('autoLogin', {
+          numUsers: roomUsers[room].length,
+          username: socket.username
+        });
+        // echo globally (all clients) that a person has connected
+        socket.in(room).broadcast.emit('user joined', {
+          username: socket.username,
+          numUsers: roomUsers[room].length
+        });
+      }
     }
 
     // send state
