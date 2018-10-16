@@ -86,18 +86,16 @@ io.sockets.on('connection', function (socket) {
     socket.username = socket.handshake.session.username;
     if (socket.username != null) {
       socket.chatRoom = room;
-      if(Number.isInteger(room)){
-        roomUsers[room].push(socket.username);
-        socket.emit('autoLogin', {
-          numUsers: roomUsers[room].length,
-          username: socket.username
-        });
-        // echo globally (all clients) that a person has connected
-        socket.in(room).broadcast.emit('user joined', {
-          username: socket.username,
-          numUsers: roomUsers[room].length
-        });
-      }
+      roomUsers[room].push(socket.username);
+      socket.emit('autoLogin', {
+        numUsers: roomUsers[room].length,
+        username: socket.username
+      });
+      // echo globally (all clients) that a person has connected
+      socket.in(room).broadcast.emit('user joined', {
+        username: socket.username,
+        numUsers: roomUsers[room].length
+      });
     }
 
     // send state
@@ -330,7 +328,8 @@ function updateActivity(datetime) {
 app.get(base_path + '/', (req, res) => {
   var room = req.query.room;
   var adminClient = req.query.admin == adminPassword;
-  if (room) {
+  var roomInt = parseInt(room)
+  if (Number.isInteger(roomInt) && roomInt > 0 && roomInt < 9) {
     res.render('index.ejs', {
       room: room,
       adminClient: adminClient,
